@@ -9,6 +9,9 @@ html, body{
 @theme{
     --color-white-50: #d9ecff;
     --color-blue-100: #2d2d38;
+    --color-etherBlue: #5227FF;
+    --color-etherPink: #FF9FFC;
+    --color-etherPurple: #B19EEF;
 }
 
 @layer utilities{

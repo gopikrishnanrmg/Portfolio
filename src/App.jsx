@@ -1,16 +1,16 @@
-import { useState } from 'react'
 import './App.css'
-import Header from './components/Sections/Header/Header'
+import ChatMessage from './components/Chat/ChatMessage'
+import Header from './components/Header/Header'
 import Hero from './components/Sections/Hero'
 
 function App() {
-  const [count, setCount] = useState(0)
 
   return (
     <div className='min-h-screen flex flex-col'>
     <Header/>
     <main>
     <Hero></Hero>
+    <ChatMessage/>
     </main>
     </div>
   )

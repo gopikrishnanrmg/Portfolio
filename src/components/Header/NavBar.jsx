@@ -27,10 +27,10 @@ const NavBar = () => {
 
       <button className='md:hidden text-white text-xl mr-5 z-50' onClick={toggleMenu}>{open ? '✕' : '☰'}</button>
       <div
-        className={`fixed inset-0 h-screen bg-gray-900 text-white p-6 z-20 transition-all duration-300 ease-in-out
+        className={`fixed inset-0 h-screen backdrop-blur-xl text-white p-6 z-20 transition-all duration-300 ease-in-out
     ${open ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0 pointer-events-none'}`}
       >
-        <ul className='flex flex-col gap-6 text-lg mt-6'>
+        <ul className='flex flex-col gap-6 text-lg mt-20'>
           <ListItem mobile={open} id='#hero' title='Introduction'></ListItem>
           <ListItem mobile={open} id='#hero' title='Skills'></ListItem>
           <ListItem mobile={open} id='#hero' title='Work Experience'></ListItem>
