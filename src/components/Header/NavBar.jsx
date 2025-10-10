@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import ListItem from './ListItem';
-
+import Hamburger from './Hamburger';
 const NavBar = () => {
 
   const [open, setOpen] = useState(false);
@@ -25,7 +25,7 @@ const NavBar = () => {
         </ul>
       </nav>
 
-      <button className='md:hidden text-white text-xl mr-5 z-50' onClick={toggleMenu}>{open ? '✕' : '☰'}</button>
+      <Hamburger open={open} toggle={toggleMenu} />
       <div
         className={`fixed inset-0 h-screen backdrop-blur-xl text-white p-6 z-20 transition-all duration-300 ease-in-out
     ${open ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0 pointer-events-none'}`}

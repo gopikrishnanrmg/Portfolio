@@ -21,7 +21,7 @@ export default function HeroThree() {
       <ambientLight intensity={3} />
       <directionalLight position={[5, 5, 5]} />
       <Model scale={1.5} />
-      <OrbitControls />
+      <OrbitControls enableZoom={false}/>
     </Canvas>
   )
 }
