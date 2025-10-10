@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import ListItem from './ListItem';
 import Hamburger from './Hamburger';
+import gsap from "gsap";
+import { ScrollToPlugin } from "gsap/ScrollToPlugin";
+
 const NavBar = () => {
 
   const [open, setOpen] = useState(false);
@@ -13,12 +16,20 @@ const NavBar = () => {
     document.body.style.overflow = open ? 'hidden' : 'auto'
   }, [open])
 
+
+gsap.registerPlugin(ScrollToPlugin);
+
+const scrollToSection = (id) => {
+  gsap.to(window, { duration: 1, scrollTo: id, ease: "power2.inOut" });
+};
+
+
   return (
     <>
       <nav className='hidden md:flex mr-20'>
         <ul className='flex flex-center space-x-12 text-white text-lg'>
           <ListItem mobile={open} id='#hero' title='Introduction'></ListItem>
-          <ListItem mobile={open} id='#hero' title='Skills'></ListItem>
+          <ListItem mobile={open} id='#skills' title='Skills'></ListItem>
           <ListItem mobile={open} id='#hero' title='Work Experience'></ListItem>
           <ListItem mobile={open} id='#hero' title='Projects'></ListItem>
           <ListItem mobile={open} id='#hero' title='Testimonials'></ListItem>
@@ -32,7 +43,7 @@ const NavBar = () => {
       >
         <ul className='flex flex-col gap-6 text-lg mt-20'>
           <ListItem mobile={open} id='#hero' title='Introduction'></ListItem>
-          <ListItem mobile={open} id='#hero' title='Skills'></ListItem>
+          <ListItem mobile={open} id='#skills' title='Skills'></ListItem>
           <ListItem mobile={open} id='#hero' title='Work Experience'></ListItem>
           <ListItem mobile={open} id='#hero' title='Projects'></ListItem>
           <ListItem mobile={open} id='#hero' title='Testimonials'></ListItem>
