@@ -20,7 +20,7 @@ const Hamburger = ({ open, toggle }) => {
 
   return (
     <button
-      className='md:hidden flex flex-col justify-center items-center w-8 h-8 mr-1 relative z-50'
+      className='md:hidden flex flex-col justify-center items-center w-8 h-8 mr-1 relative z-60'
       onClick={toggle}
     >
       <span ref={top} className='block h-0.5 w-6 bg-white' />
