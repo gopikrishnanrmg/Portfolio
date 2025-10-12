@@ -11,7 +11,7 @@ const ListItem = (props) => {
   }
 
   return (
-    <li className={`${props.mobile?'active:bg-cyan-700 px-2':'hover:bg-cyan-700 rounded-2xl px-2 cursor-pointer'}`}
+    <li className={`${props.mobile?'active:text-cyan-500 px-2':'hover:text-cyan-500 rounded-2xl px-2 cursor-pointer'}`}
     onClick={() => scrollToSection(props.id)}>
         {props.title}
     </li>

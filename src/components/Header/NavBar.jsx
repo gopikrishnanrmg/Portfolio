@@ -32,11 +32,11 @@ const NavBar = () => {
             ${open ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0 pointer-events-none'}`}
         >
           <ul className="flex flex-col gap-6 text-lg mt-20">
-            <ListItem id="#hero" title="Introduction" />
-            <ListItem id="#skills" title="Skills" />
-            <ListItem id="#work" title="Work Experience" />
-            <ListItem id="#projects" title="Projects" />
-            <ListItem id="#testimonials" title="Testimonials" />
+            <ListItem id="#hero" title="Introduction" mobile/>
+            <ListItem id="#skills" title="Skills" mobile/>
+            <ListItem id="#work" title="Work Experience" mobile/>
+            <ListItem id="#projects" title="Projects" mobile/>
+            <ListItem id="#testimonials" title="Testimonials" mobile/>
           </ul>
         </div>,
         document.body
