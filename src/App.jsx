@@ -4,13 +4,14 @@ import Header from './components/Header/Header'
 import Hero from './components/Sections/Hero'
 import Skills from './components/Sections/Skills'
 import LiquidEther from './components/Sections/LiquidEther'
+import Footer from './components/Footer/Footer'
 
 function App() {
   return (
     <div className="relative min-h-screen flex flex-col">
       <Header />
       <main className="relative flex-1">
-        <div className="fixed inset-0 z-0">
+        <div className="fixed inset-0 z-0 pointer-events-none">
           <LiquidEther
             className="w-full h-full"
             colors={['#5227FF', '#FF9FFC', '#B19EEF']}
@@ -34,6 +35,7 @@ function App() {
         <Skills />
         <ChatMessage />
       </main>
+      <Footer/>
     </div>
   )
 }

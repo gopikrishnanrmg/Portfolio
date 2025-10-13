@@ -1,0 +1,35 @@
+import React from 'react'
+
+const Footer = () => {
+    return (
+        <footer className="w-full py-2 mt-15 text-center text-sm text-gray-400 border-t border-gray-700/50">
+            <p>
+                Copyleft © {new Date().getFullYear()} Gopikrishnan Rajeev.
+                This site is licensed under the&nbsp;
+                <a
+                    href="https://www.gnu.org/licenses/gpl-3.0.html"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-cyan-400 hover:underline"
+                >
+                    GNU GPL v3
+                </a>.
+            </p>
+            <p className="mt-2">
+                3D model credit:
+                <a
+                    href="https://sketchfab.com/3d-models/lowpoly-island-26c3f2f271ab41a5a0c9178ac5304df8"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-cyan-400 hover:underline"
+                >
+                    alfance
+                </a>
+                (licensed under CC BY 4.0).
+            </p>
+        </footer>
+
+    )
+}
+
+export default Footer
