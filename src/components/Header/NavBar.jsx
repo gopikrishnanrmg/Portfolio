@@ -4,16 +4,16 @@ import ListItem from './ListItem';
 import Hamburger from './Hamburger';
 
 const sections = [
-  { id: "#hero", title: "Introduction" },
-  { id: "#skills", title: "Skills" },
-  { id: "#work", title: "Work Experience" },
-  { id: "#projects", title: "Projects" },
-  { id: "#testimonials", title: "Testimonials" },
+  { id: '#hero', title: 'Introduction' },
+  { id: '#skills', title: 'Skills' },
+  { id: '#work', title: 'Work Experience' },
+  { id: '#projects', title: 'Projects' },
+  { id: '#testimonials', title: 'Testimonials' },
 ];
 
 const NavBar = () => {
   const [open, setOpen] = useState(false);
-  const [active, setActive] = useState("#hero");
+  const [active, setActive] = useState('#hero');
 
   const toggleMenu = () => setOpen(!open);
 
@@ -22,28 +22,8 @@ const NavBar = () => {
   }, [open]);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setActive(`#${entry.target.id}`);
-          }
-        });
-      },
-      { threshold: 0.3 }
-    );
-
-    sections.forEach((s) => {
-      const el = document.querySelector(s.id);
-      if (el) observer.observe(el);
-    });
-
-    return () => observer.disconnect();
-  }, []);
-
-  useEffect(() => {
-    if (open) {
-      const scrollPos = window.scrollY + window.innerHeight / 2;
+    const handler = () => {
+      const scrollPos = window.scrollY + window.innerHeight / 2; 
       let current = sections[0].id;
 
       sections.forEach((s) => {
@@ -58,13 +38,18 @@ const NavBar = () => {
       });
 
       setActive(current);
-    }
-  }, [open]);
+    };
+
+    window.addEventListener('scroll', handler);
+    handler(); 
+
+    return () => window.removeEventListener('scroll', handler);
+  }, []);
 
   return (
     <>
-      <nav className="hidden md:flex mr-20">
-        <ul className="flex space-x-12 text-white text-lg">
+      <nav className='hidden md:flex mr-20'>
+        <ul className='flex space-x-12 text-white text-lg'>
           {sections.map((s) => (
             <ListItem key={s.id} id={s.id} title={s.title} active={active} />
           ))}
@@ -78,7 +63,7 @@ const NavBar = () => {
           className={`fixed inset-0 h-screen backdrop-blur-xl text-white p-6 z-50 transition-all duration-300 ease-in-out
             ${open ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0 pointer-events-none'}`}
         >
-          <ul className="flex flex-col gap-6 text-lg mt-20">
+          <ul className='flex flex-col gap-6 text-lg mt-20'>
             {sections.map((s) => (
               <ListItem
                 key={s.id}
