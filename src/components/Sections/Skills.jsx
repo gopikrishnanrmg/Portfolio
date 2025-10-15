@@ -62,7 +62,7 @@ const Skills = () => {
         { name: 'Bootstrap', src: '/icons/Bootstrap.svg' },
         // { name: 'VSCode', src: '/icons/vscode.svg' },
         { name: 'Unity', src: '/icons/Unity.svg' },
-        { name: 'OpenAi', src: '/icons/OpenAi.svg' },
+        { name: 'OpenAi APIs', src: '/icons/OpenAi.svg' },
         { name: 'Nodejs', src: '/icons/Node.svg' },
         { name: 'Express', src: '/icons/Express.svg' },
         // { name: 'Jupyter', src: '/icons/Jupyter.svg' },

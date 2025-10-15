@@ -71,11 +71,11 @@ const Hero = () => {
                     <a className='hover:text-cyan-500' href='https://github.com/gopikrishnanrmg'><FaGithub/></a>
                 </div>
                 <div className='flex flex-col md:flex-row md:flex-center gap-10 md:gap-5 flex-wrap mt-10 md:mt-20'>
-                    <Stats title='30+' description='Technologies Across Projects'/>
+                    <Stats title='30' description='Technologies Across Projects'/>
                     <div className='hidden md:block w-px h-8 bg-gray-500/50'></div>
-                    <Stats title='25+' description='Projects completed'/>
+                    <Stats title='25' description='Projects completed'/>
                     <div className='hidden md:block w-px h-8 bg-gray-500/50'></div>
-                    <Stats title='12000+' description='Users'/>
+                    <Stats title='12000' description='Users'/>
                 </div>
             </div>
             <div className='flex flex-1 flex-center'>
