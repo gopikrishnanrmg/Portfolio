@@ -13,7 +13,7 @@ const SkillComponent = (props) => {
 
         const directions = props.techMap.map(() => {
             const angle = Math.random() * 2 * Math.PI
-            const distance = 120 + Math.random() * 80 // px
+            const distance = 60 + Math.random() * 40 // px, reduced for less overflow
             return {
                 x: Math.cos(angle) * distance,
                 y: Math.sin(angle) * distance
@@ -62,16 +62,18 @@ const SkillComponent = (props) => {
     return (
         <div className='flex flex-col' ref={containerRef}>
             <div className='mb-5'>{props.title}</div>
-            <div className='flex flex-row flex-wrap gap-5'>
-                {props.techMap.map((item, i) => (
-                    <div
-                        key={item.name}
-                        ref={el => itemRefs.current[i] = el}
-                        style={{ willChange: 'transform, opacity' }}
-                    >
-                        <SkillComponentMap name={item.name} src={item.src} />
-                    </div>
-                ))}
+            <div className='overflow-hidden'>
+                <div className='flex flex-row flex-wrap gap-5'>
+                    {props.techMap.map((item, i) => (
+                        <div
+                            key={item.name}
+                            ref={el => itemRefs.current[i] = el}
+                            style={{ willChange: 'transform, opacity' }}
+                        >
+                            <SkillComponentMap name={item.name} src={item.src} />
+                        </div>
+                    ))}
+                </div>
             </div>
         </div>
     )

@@ -18,7 +18,17 @@ const NavBar = () => {
   const toggleMenu = () => setOpen(!open);
 
   useEffect(() => {
-    document.body.style.overflow = open ? 'hidden' : 'auto';
+    // Only set overflow on mobile screens
+    const isMobile = window.innerWidth < 768;
+    if (isMobile && open) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+    }
+    // Clean up on unmount
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
   }, [open]);
 
   useEffect(() => {

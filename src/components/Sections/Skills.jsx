@@ -86,6 +86,9 @@ const Skills = () => {
         //     </div>
         // </section>
         <section id='skills' className='flex flex-col text-xl md:text-2xl gap-15 pt-20 mx-5'>
+            {/* <h1 className='flex-1 text-center text-lg md-text-xl'>
+            'True fullstack' engineer with experience across the entire software development lifecycle
+            </h1> */}
             <div className='flex-1'>
                 <SkillComponent title='Architecture' techMap={architecture} />
             </div>
