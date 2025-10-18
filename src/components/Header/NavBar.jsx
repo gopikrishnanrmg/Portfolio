@@ -6,7 +6,7 @@ import Hamburger from './Hamburger';
 const sections = [
   { id: '#hero', title: 'Introduction' },
   { id: '#skills', title: 'Skills' },
-  { id: '#work', title: 'Work Experience' },
+  { id: '#work-experience', title: 'Work Experience' },
   { id: '#projects', title: 'Projects' },
   { id: '#testimonials', title: 'Testimonials' },
 ];
@@ -18,17 +18,7 @@ const NavBar = () => {
   const toggleMenu = () => setOpen(!open);
 
   useEffect(() => {
-    // Only set overflow on mobile screens
-    const isMobile = window.innerWidth < 768;
-    if (isMobile && open) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'auto';
-    }
-    // Clean up on unmount
-    return () => {
-      document.body.style.overflow = 'auto';
-    };
+    document.body.style.overflow = open ? 'hidden' : 'auto';
   }, [open]);
 
   useEffect(() => {

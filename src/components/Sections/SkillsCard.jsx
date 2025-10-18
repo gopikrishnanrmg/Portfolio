@@ -23,7 +23,7 @@ const SkillsCard = ({ title, techMap }) => {
     >
       <div
         ref={titleRef}
-        className='text-2xl font-light mb-3 z-10
+        className='text-2xl mb-3 z-10
                    bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-400
                    bg-clip-text text-transparent
                    [background-size:200%_200%]'

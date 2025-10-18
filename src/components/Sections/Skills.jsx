@@ -12,7 +12,7 @@ const Skills = () => {
         card,
         {
           opacity: 0,
-          z: 300,                
+          z: 300,
           scale: 1.05,
           y: -50,
           transformPerspective: 1000,
@@ -27,11 +27,26 @@ const Skills = () => {
             trigger: card,
             start: 'top 85%',
             end: 'top 40%',
-            scrub: true,         
+            scrub: true,
           },
         }
       )
     })
+
+    gsap.fromTo(
+      '#skills-title',
+      { opacity: 0, y: -30 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 1,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: '#skills-title',
+          start: 'top 90%',
+        },
+      }
+    )
   }, [])
 
     const architecture = [
@@ -106,20 +121,28 @@ const Skills = () => {
         { name: 'Blender', src: '/icons/Blender.svg' }
     ]    
 
- return (
-    <section
-      id='skills'
-      className='grid [grid-template-columns:repeat(auto-fit,minmax(18rem,1fr))]
-                 [grid-auto-flow:dense] [grid-auto-rows:masonry] gap-8 pt-20 mx-5'
-    >
-      <SkillsCard title='Architecture' techMap={architecture} />
-      <SkillsCard title='Development' techMap={development} />
-      <SkillsCard title='Testing' techMap={testing} />
-      <SkillsCard title='Devops' techMap={devops} />
-      <SkillsCard
-        title='Additional Exposure (From projects and learning)'
-        techMap={miscellaneous}
-      />
+  return (
+    <section id='skills' className='relative mx-auto max-w-6xl py-20'>
+      <h2
+        id='skills-title'
+        className='text-3xl font-extralight text-center mb-16 text-cyan-400'
+      >
+        Skills
+      </h2>
+
+      <div
+        className='grid [grid-template-columns:repeat(auto-fit,minmax(18rem,1fr))]
+                   [grid-auto-flow:dense] [grid-auto-rows:masonry] gap-8 mx-5'
+      >
+        <SkillsCard title='Architecture' techMap={architecture} />
+        <SkillsCard title='Development' techMap={development} />
+        <SkillsCard title='Testing' techMap={testing} />
+        <SkillsCard title='Devops' techMap={devops} />
+        <SkillsCard
+          title='Additional Exposure (From projects and learning)'
+          techMap={miscellaneous}
+        />
+      </div>
     </section>
   )
 }

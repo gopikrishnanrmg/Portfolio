@@ -3,6 +3,7 @@ import ChatMessage from './components/Chat/ChatMessage'
 import Header from './components/Header/Header'
 import Hero from './components/Sections/Hero'
 import Skills from './components/Sections/Skills'
+import WorkExperience from './components/Sections/WorkExperience'
 import LiquidEther from './components/Sections/LiquidEther'
 import Footer from './components/Footer/Footer'
 
@@ -33,6 +34,7 @@ function App() {
         </div>
         <Hero />
         <Skills />
+        <WorkExperience />
         <ChatMessage />
       </main>
       <Footer/>
