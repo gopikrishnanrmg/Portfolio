@@ -16,7 +16,7 @@ const SkillsCard = ({ title, techMap }) => {
 
   return (
     <div
-      className='relative flex flex-col rounded-2xl p-4 w-full min-h-40
+      className='skills-card relative flex flex-col rounded-2xl p-4 w-full min-h-40
                  transition-all duration-300 backdrop-blur-2xl border border-cyan-500
                  shadow-2xl shadow-cyan-500/30 ring-1 ring-white/20 overflow-hidden
                  bg-[url(/backgrounds/honeycomb.svg)] bg-[length:120px_69.28px]'

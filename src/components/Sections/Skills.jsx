@@ -1,6 +1,38 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import SkillsCard from './SkillsCard'
+import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+
+gsap.registerPlugin(ScrollTrigger)
+
 const Skills = () => {
+  useEffect(() => {
+    gsap.utils.toArray('.skills-card').forEach(card => {
+      gsap.fromTo(
+        card,
+        {
+          opacity: 0,
+          z: 300,                
+          scale: 1.05,
+          y: -50,
+          transformPerspective: 1000,
+        },
+        {
+          opacity: 1,
+          z: 0,
+          scale: 1,
+          y: 0,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: card,
+            start: 'top 85%',
+            end: 'top 40%',
+            scrub: true,         
+          },
+        }
+      )
+    })
+  }, [])
 
     const architecture = [
         { name: 'UML', src: '/icons/UML.svg' },
@@ -74,21 +106,22 @@ const Skills = () => {
         { name: 'Blender', src: '/icons/Blender.svg' }
     ]    
 
-    return (
-<section
-  id="skills"
-  className="grid [grid-template-columns:repeat(auto-fit,minmax(18rem,1fr))] 
-             [grid-auto-flow:dense] [grid-auto-rows:masonry] gap-8 pt-20 mx-5"
->
-  <SkillsCard title="Architecture" techMap={architecture} />
-  <SkillsCard title="Development" techMap={development} />
-  <SkillsCard title="Testing" techMap={testing} />
-  <SkillsCard title="Devops" techMap={devops} />
-  <SkillsCard title="Additional Exposure (From projects - Not core skills)" techMap={miscellaneous} />
-</section>
-
-
-    )
+ return (
+    <section
+      id='skills'
+      className='grid [grid-template-columns:repeat(auto-fit,minmax(18rem,1fr))]
+                 [grid-auto-flow:dense] [grid-auto-rows:masonry] gap-8 pt-20 mx-5'
+    >
+      <SkillsCard title='Architecture' techMap={architecture} />
+      <SkillsCard title='Development' techMap={development} />
+      <SkillsCard title='Testing' techMap={testing} />
+      <SkillsCard title='Devops' techMap={devops} />
+      <SkillsCard
+        title='Additional Exposure (From projects and learning)'
+        techMap={miscellaneous}
+      />
+    </section>
+  )
 }
 
 export default Skills
