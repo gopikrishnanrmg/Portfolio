@@ -1,6 +1,5 @@
 import React from 'react'
-import SkillComponent from './SkillComponent'
-
+import SkillsCard from './SkillsCard'
 const Skills = () => {
 
     const architecture = [
@@ -76,35 +75,19 @@ const Skills = () => {
     ]    
 
     return (
-        // <section id='skills' className='flex justify-around min-h-screen pt-20 z-10'>
-        //      <div className='flex flex-col justify-evenly w-full text-2xl md:text-4xl mx-1'>
-        //         <SkillComponent title='Architecture' techMap={architecture}/>
-        //         {/* <div className='hidden md:block h-px min-w-screen bg-gray-500/50'></div> */}
-        //         <SkillComponent title='Development' techMap={development}/>
-        //         <div>Testing</div>
-        //         <div>Deployment</div>
-        //     </div>
-        // </section>
-        <section id='skills' className='flex flex-col text-xl md:text-2xl gap-15 pt-20 mx-5'>
-            {/* <h1 className='flex-1 text-center text-lg md-text-xl'>
-            'True fullstack' engineer with experience across the entire software development lifecycle
-            </h1> */}
-            <div className='flex-1'>
-                <SkillComponent title='Architecture' techMap={architecture} />
-            </div>
-            <div className='flex-1'>
-                <SkillComponent title='Development' techMap={development} />
-            </div>
-            <div className='flex-1'>
-                <SkillComponent title='Testing' techMap={testing} />
-            </div>
-            <div className='flex-1'>
-                <SkillComponent title='Devops' techMap={devops} />
-            </div>
-            <div className='flex-1'>
-                <SkillComponent title='Additional tools I have used in the past' techMap={miscellaneous} />
-            </div>
-        </section>
+<section
+  id="skills"
+  className="grid [grid-template-columns:repeat(auto-fit,minmax(18rem,1fr))] 
+             [grid-auto-flow:dense] [grid-auto-rows:masonry] gap-8 pt-20 mx-5"
+>
+  <SkillsCard title="Architecture" techMap={architecture} />
+  <SkillsCard title="Development" techMap={development} />
+  <SkillsCard title="Testing" techMap={testing} />
+  <SkillsCard title="Devops" techMap={devops} />
+  <SkillsCard title="Additional Exposure (From projects - Not core skills)" techMap={miscellaneous} />
+</section>
+
+
     )
 }
 

@@ -13,8 +13,8 @@ const ListItem = ({ id, title, active }) => {
   
   return (
  <li
-  className={`px-2 cursor-pointer rounded-2xl transition-colors 
-    ${isActive ? 'text-cyan-400 font-bold' : 'text-white'} 
+  className={`px-2 cursor-pointer rounded-2xl transition-colors font-light
+    ${isActive ? 'text-cyan-400 font-medium' : 'text-white'} 
     hover:text-cyan-500`}
   onClick={() => scrollToSection(id)}
 >
