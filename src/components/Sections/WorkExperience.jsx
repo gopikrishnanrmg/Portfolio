@@ -16,7 +16,7 @@ const experiences = [
       'Designed and implemented a VM usage notification service (Java + Power Automate) reducing cloud costs by 25%.',
       'Secured web application endpoints by configuring a reverse proxy.',
     ],
-    highlightPrompt: true, 
+    highlightPrompt: true,
   },
   {
     role: 'Quality Assurance Specialist',
@@ -33,7 +33,7 @@ const experiences = [
       'Developed a browser extension (JavaScript + Jenkins APIs) to assist the team.',
       'Worked on AI POCs for JMeter script generation using internal LLM + MongoDB + ChromaDB in Python.',
     ],
-    highlightPrompt: true, 
+    highlightPrompt: true,
   },
   {
     role: 'Blockchain Engineer',
@@ -76,8 +76,8 @@ const WorkExperience = () => {
         ease: 'none',
         scrollTrigger: {
           trigger: sectionRef.current,
-          start: 'top top',
-          end: 'bottom bottom',
+          start: 'top center',
+          end: 'bottom center',
           scrub: true,
         },
       }
@@ -104,31 +104,41 @@ const WorkExperience = () => {
 
   return (
     <section
-      id='work-experience'
+      id="work-experience"
       ref={sectionRef}
-      className='relative mx-auto max-w-3xl py-20'
+      className="relative mx-auto max-w-5xl py-20"
     >
-      <div
-        ref={lineRef}
-        className='absolute left-1/2 -translate-x-1/2 top-0 w-1 bg-cyan-500 rounded-full'
-      />
-
-      <h2 className='text-3xl font-extralight text-center mb-16 text-cyan-400'>
+      <h2 className="text-3xl font-extralight text-center mb-16 text-cyan-400">
         Work Experience
       </h2>
 
-      <div className='space-y-16 relative'>
-        {experiences.slice().reverse().map((exp, i) => (
-          <div key={i} className='relative mx-auto w-full max-w-md'>
-            <WorkExperienceCard
-              role={exp.role}
-              company={exp.company}
-              period={exp.period}
-              points={exp.points}
-              highlightPrompt={exp.highlightPrompt}
-            />
-          </div>
-        ))}
+      <div className="relative">
+        <div
+          ref={lineRef}
+          className="absolute left-1/2 -translate-x-1/2 top-0 w-1 bg-cyan-500 rounded-full h-0"
+        />
+
+        <div className="flex flex-col space-y-16 relative">
+          {experiences.slice().reverse().map((exp, i) => (
+            <div
+              key={i}
+              className={`
+      relative flex w-full
+      ${i % 2 === 0 ? 'md:justify-start' : 'md:justify-end'}
+    `}
+            >
+              <div
+                className={`
+        w-full md:w-[48%]   // slightly less than half so margin has room
+        ${i % 2 === 0 ? 'md:mr-8' : 'md:ml-8'} // add gap from the line
+      `}
+              >
+                <WorkExperienceCard {...exp} />
+              </div>
+            </div>
+          ))}
+
+        </div>
       </div>
     </section>
   )

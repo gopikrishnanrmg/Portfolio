@@ -4,6 +4,7 @@ import Header from './components/Header/Header'
 import Hero from './components/Sections/Hero'
 import Skills from './components/Sections/Skills'
 import WorkExperience from './components/Sections/WorkExperience'
+import Projects from './components/Sections/Projects'
 import LiquidEther from './components/Sections/LiquidEther'
 import Footer from './components/Footer/Footer'
 
@@ -35,6 +36,7 @@ function App() {
         <Hero />
         <Skills />
         <WorkExperience />
+        <Projects/>
         <ChatMessage />
       </main>
       <Footer/>
