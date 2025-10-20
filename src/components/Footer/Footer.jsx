@@ -16,7 +16,7 @@ const Footer = () => {
                 </a>.
             </p>
             <p className="mt-2">
-                3D model credit:
+                3D model credit:<span> </span>
                 <a
                     href="https://sketchfab.com/3d-models/lowpoly-island-26c3f2f271ab41a5a0c9178ac5304df8"
                     target="_blank"

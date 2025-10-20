@@ -106,7 +106,7 @@ const WorkExperience = () => {
     <section
       id="work-experience"
       ref={sectionRef}
-      className="relative mx-auto max-w-5xl py-20"
+      className="relative mx-auto max-w-5xl py-20 px-5"
     >
       <h2 className="text-3xl font-extralight text-center mb-16 text-cyan-400">
         Work Experience
@@ -129,8 +129,8 @@ const WorkExperience = () => {
             >
               <div
                 className={`
-        w-full md:w-[48%]   // slightly less than half so margin has room
-        ${i % 2 === 0 ? 'md:mr-8' : 'md:ml-8'} // add gap from the line
+        w-full md:w-[48%]
+        ${i % 2 === 0 ? 'md:mr-8' : 'md:ml-8'}
       `}
               >
                 <WorkExperienceCard {...exp} />

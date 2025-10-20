@@ -18,11 +18,12 @@ const ProjectCard = ({ title, description, tech = [], banner, link }) => {
     <div
       className='project-card relative flex flex-col rounded-2xl overflow-hidden
                  transition-all duration-300 backdrop-blur-2xl border border-gray-700
-                 shadow-lg ring-1 ring-white/20'
+                 shadow-lg ring-1 ring-white/20 hover:border-cyan-500
+                  hover:shadow-cyan-500/30'
     >
       <div className={`h-28 bg-gradient-to-r ${banner}`} />
 
-      <div className='p-6 bg-black/40 flex flex-col flex-1'>
+      <div className='p-6 bg-black/40 flex flex-col flex-1 bg-[url(/backgrounds/honeycomb.svg)]'>
         <h3
           ref={titleRef}
           className='text-lg font-semibold mb-2 z-10
