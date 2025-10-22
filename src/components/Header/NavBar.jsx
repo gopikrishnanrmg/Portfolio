@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import ListItem from './ListItem';
 import Hamburger from './Hamburger';
+import { FaUser, FaTools, FaBriefcase, FaCode, FaComments } from "react-icons/fa";
 
 const sections = [
-  { id: '#hero', title: 'Introduction' },
-  { id: '#skills', title: 'Skills' },
-  { id: '#work-experience', title: 'Work Experience' },
-  { id: '#projects', title: 'Projects' },
-  { id: '#testimonials', title: 'Testimonials' },
+  { id: '#hero', title: 'Introduction', icon: <FaUser /> },
+  { id: '#skills', title: 'Skills', icon: <FaTools />  },
+  { id: '#work-experience', title: 'Work Experience', icon: <FaBriefcase />  },
+  { id: '#projects', title: 'Projects', icon: <FaCode />  },
+  { id: '#testimonials', title: 'Testimonials', icon: <FaComments />  },
 ];
 
 const NavBar = () => {
@@ -51,7 +52,7 @@ const NavBar = () => {
       <nav className='hidden md:flex mr-20'>
         <ul className='flex space-x-12 text-white text-lg'>
           {sections.map((s) => (
-            <ListItem key={s.id} id={s.id} title={s.title} active={active} />
+            <ListItem key={s.id} id={s.id} title={s.title} icon={s.icon} active={active} />
           ))}
         </ul>
       </nav>
@@ -69,6 +70,7 @@ const NavBar = () => {
                 key={s.id}
                 id={s.id}
                 title={s.title}
+                icon={s.icon}
                 active={active}
                 onClick={() => setOpen(false)} 
               />

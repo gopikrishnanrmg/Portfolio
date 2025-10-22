@@ -38,9 +38,10 @@ const WorkExperienceCard = ({
   return (
     <div
       className='experience-card relative flex flex-col rounded-2xl p-6 w-full
-                 transition-all duration-300 backdrop-blur-2xl border border-cyan-500
-                 shadow-2xl shadow-cyan-500/30 ring-1 ring-white/20 overflow-hidden
-                 bg-[url(/backgrounds/honeycomb.svg)] bg-[length:120px_69.28px]'
+           transition-all duration-300 backdrop-blur-2xl bg-black/40 border border-gray-700
+           shadow-lg ring-1 ring-white/20 overflow-hidden
+           bg-[url(/backgrounds/honeycomb.svg)] bg-[length:120px_69.28px]
+           hover:border-cyan-500 hover:shadow-cyan-500/30'
     >
       <div
         ref={titleRef}

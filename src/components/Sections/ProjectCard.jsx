@@ -13,7 +13,6 @@ const ProjectCard = ({ title, description, tech = [], banner, link }) => {
   }
 
   const handleMouseLeave = () => {
-    // Reset spotlight to center when leaving
     cardRef.current.style.setProperty('--spotlight-x', `50%`)
     cardRef.current.style.setProperty('--spotlight-y', `50%`)
   }
@@ -24,9 +23,9 @@ const ProjectCard = ({ title, description, tech = [], banner, link }) => {
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       className="project-card relative flex flex-col rounded-2xl overflow-hidden
-                 transition-all duration-300 backdrop-blur-2xl border border-gray-700
-                 shadow-lg ring-1 ring-white/20 hover:border-cyan-500
-                 hover:shadow-cyan-500/30"
++                transition-all duration-300 backdrop-blur-2xl bg-black/40 border border-gray-700
++                shadow-lg ring-1 ring-white/20 hover:border-cyan-500
++                hover:shadow-cyan-500/30"
       style={{
         background: `
           radial-gradient(
