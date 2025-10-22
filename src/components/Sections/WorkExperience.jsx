@@ -70,18 +70,19 @@ const WorkExperience = () => {
   useEffect(() => {
     gsap.fromTo(
       lineRef.current,
-      { height: 0 },
+      { scaleY: 0, transformOrigin: 'top center' },
       {
-        height: '100%',
+        scaleY: 1,
         ease: 'none',
         scrollTrigger: {
           trigger: sectionRef.current,
           start: 'top center',
           end: 'bottom center',
-          scrub: true,
+          scrub: 1, 
         },
       }
     )
+
 
     gsap.utils.toArray('.experience-card').forEach(card => {
       gsap.fromTo(
@@ -115,7 +116,9 @@ const WorkExperience = () => {
       <div className="relative">
         <div
           ref={lineRef}
-          className="absolute left-1/2 -translate-x-1/2 top-0 w-1 bg-cyan-500 rounded-full h-0"
+          className="absolute left-1/2 -translate-x-1/2 top-0 w-1 h-full rounded-full
+             bg-gradient-to-b from-cyan-400 via-purple-500 to-emerald-500
+             will-change-transform"
         />
 
         <div className="flex flex-col space-y-16 relative">
