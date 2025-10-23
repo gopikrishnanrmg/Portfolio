@@ -61,7 +61,7 @@ const NavBar = () => {
 
       {createPortal(
         <div
-          className={`fixed inset-0 h-screen backdrop-blur-xl text-white p-6 z-50 transition-all duration-300 ease-in-out
+          className={`fixed inset-0 h-screen backdrop-blur-xl text-white p-6 z-40 transition-all duration-300 ease-in-out
             ${open ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0 pointer-events-none'}`}
         >
           <ul className='flex flex-col gap-6 text-lg mt-20'>

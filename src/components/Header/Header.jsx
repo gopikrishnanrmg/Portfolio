@@ -14,7 +14,7 @@ const Header = () => {
 
   return (
     <header
-      className='fixed flex items-center justify-between py-2 md:py-4 w-full z-70 backdrop-blur-md'
+      className='fixed flex items-center justify-between py-2 md:py-4 w-full z-50 backdrop-blur-md'
     >
       <div className='flex flex-center'>
         <h1 className='text-cyan-500 text-4xl ml-5 mr-1'>GR</h1>

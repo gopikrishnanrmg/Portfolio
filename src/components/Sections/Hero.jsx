@@ -1,9 +1,9 @@
 import React from 'react'
 import SplitText from './SplitText';
-// import LiquidEther from './LiquidEther';
 import HeroThree from './HeroThree';
-import { FaLinkedinIn } from 'react-icons/fa';
-import { FaGithub } from 'react-icons/fa';
+import { FaLinkedinIn,FaGithub } from 'react-icons/fa';
+import CopyEmail from './CopyEmail';
+import EmailWithQR from './EmailWithQR';
 import Stats from './Stats';
 
 const Hero = () => {
@@ -13,25 +13,6 @@ const Hero = () => {
 
     return (
         <section id='hero' className='flex flex-col md:flex-row justify-evenly text-2xl md:text-4xl pt-16 min-h-screen z-10'>
-            {/* <div className='absolute inset-0'>
-                <LiquidEther
-                    colors={['#5227FF', '#FF9FFC', '#B19EEF']}
-                    mouseForce={20}
-                    cursorSize={100}
-                    isViscous={false}
-                    viscous={30}
-                    iterationsViscous={32}
-                    iterationsPoisson={32}
-                    resolution={0.5}
-                    isBounce={false}
-                    autoDemo={true}
-                    autoSpeed={0.5}
-                    autoIntensity={0.7}
-                    takeoverDuration={0.25}
-                    autoResumeDelay={3000}
-                    autoRampDuration={0.6}
-                />
-            </div> */}
             <div className='flex flex-1 flex-col flex-center space-y-2 mx-2 text-center'>
                 <SplitText
                     text={'Hello 👋🏻, I\'m'}
@@ -67,6 +48,7 @@ const Hero = () => {
                     Testing, and Deployment with specialization in the <span className='text-cyan-500'>Java </span> 
                     ecosystem.</p>
                 <div className='flex flex-center gap-10 mt-5'>
+                    <EmailWithQR/>
                     <a className='hover:text-cyan-500' href='https://linkedin.com/in/gopikrishnan-rajeev-2618a913b/'><FaLinkedinIn/></a>
                     <a className='hover:text-cyan-500' href='https://github.com/gopikrishnanrmg'><FaGithub/></a>
                 </div>

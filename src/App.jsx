@@ -1,5 +1,5 @@
 import './App.css'
-import ChatMessage from './components/Chat/ChatMessage'
+import ChatButton from './components/Chat/ChatButton'
 import Header from './components/Header/Header'
 import Hero from './components/Sections/Hero'
 import Skills from './components/Sections/Skills'
@@ -39,7 +39,7 @@ function App() {
         <WorkExperience />
         <Projects/>
         <Testimonials />
-        <ChatMessage />
+        <ChatButton />
       </main>
       <Footer/>
     </div>
