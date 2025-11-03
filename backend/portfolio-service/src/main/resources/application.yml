@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: portfolio-service
+  cloud:
+    config:
+      discovery:
+        enabled: true
+        service-id: config-server
+    consul:
+      host: ${CONSUL_HOST:localhost}
+      port: ${CONSUL_PORT:8500}
+  config:
+    import: "optional:configserver:"
