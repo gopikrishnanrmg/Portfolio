@@ -1,5 +1,6 @@
-package com.portfolio.portfolio_service.skill;
+package com.portfolio.portfolio_service.skill.repositories;
 
+import com.portfolio.portfolio_service.skill.models.Skill;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -1,4 +1,4 @@
-package com.portfolio.portfolio_service.skill;
+package com.portfolio.portfolio_service.skill.exceptions;
 
 public class FileProcessingException extends RuntimeException {
     public FileProcessingException(String message) {

@@ -1,5 +1,8 @@
-package com.portfolio.portfolio_service.skill;
+package com.portfolio.portfolio_service.skill.controllers;
 
+import com.portfolio.portfolio_service.skill.dtos.SkillRequest;
+import com.portfolio.portfolio_service.skill.dtos.SkillResponse;
+import com.portfolio.portfolio_service.skill.services.SkillService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.ResponseEntity;
@@ -17,31 +20,31 @@ public class SkillController {
     private final SkillService skillService;
 
     @PostMapping()
-    public ResponseEntity<ResponseSkillDTO> createSkill(
-            @RequestPart("data") RequestSkillDTO requestSkillDTO,
+    public ResponseEntity<SkillResponse> createSkill(
+            @RequestPart("data") SkillRequest skillRequest,
             @RequestPart("file") MultipartFile file){
-        ResponseSkillDTO created = skillService.createSkill(requestSkillDTO, file);
+        SkillResponse created = skillService.createSkill(skillRequest, file);
         URI location = URI.create("/api/v1/skills/" + created.skillId());
         return ResponseEntity.created(location).body(created);
     }
 
     @GetMapping()
-    public ResponseEntity<List<ResponseSkillDTO>> getAllSkills(){
+    public ResponseEntity<List<SkillResponse>> getAllSkills(){
         return ResponseEntity.ok().body(skillService.getAllSkills());
     }
 
     @GetMapping("/{category}")
-    public ResponseEntity<List<ResponseSkillDTO>> getSkillsByCategory(@PathVariable String category){
+    public ResponseEntity<List<SkillResponse>> getSkillsByCategory(@PathVariable String category){
         return ResponseEntity.ok().body(skillService.getSkillsByCategory(category));
     }
-    
+
     @PutMapping("/{id}")
-    public ResponseEntity<ResponseSkillDTO> updateSkill(
-            @RequestPart("requestSkillDTO") RequestSkillDTO requestSkillDTO,
+    public ResponseEntity<SkillResponse> updateSkill(
+            @RequestPart("requestSkillDTO") SkillRequest skillRequest,
             @RequestPart(value = "file", required = false) MultipartFile file,
             @PathVariable UUID id) {
 
-        ResponseSkillDTO response = skillService.updateSkill(id, requestSkillDTO, file);
+        SkillResponse response = skillService.updateSkill(id, skillRequest, file);
         return ResponseEntity.ok(response);
     }
 

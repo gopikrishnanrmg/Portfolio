@@ -1,4 +1,4 @@
-package com.portfolio.portfolio_service.skill;
+package com.portfolio.portfolio_service.skill.models;
 
 public enum Category {
     ARCHITECTURE,

@@ -1,4 +1,4 @@
-package com.portfolio.portfolio_service.skill;
+package com.portfolio.portfolio_service.skill.storage;
 
 public interface StorageService {
     String upload(byte[] data);

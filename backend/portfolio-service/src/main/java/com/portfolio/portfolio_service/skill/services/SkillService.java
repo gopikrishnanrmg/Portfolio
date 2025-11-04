@@ -1,5 +1,13 @@
-package com.portfolio.portfolio_service.skill;
+package com.portfolio.portfolio_service.skill.services;
 
+import com.portfolio.portfolio_service.skill.dtos.SkillRequest;
+import com.portfolio.portfolio_service.skill.dtos.SkillResponse;
+import com.portfolio.portfolio_service.skill.mappers.SkillMapper;
+import com.portfolio.portfolio_service.skill.storage.StorageService;
+import com.portfolio.portfolio_service.skill.exceptions.FileProcessingException;
+import com.portfolio.portfolio_service.skill.exceptions.SkillNotFoundException;
+import com.portfolio.portfolio_service.skill.models.Skill;
+import com.portfolio.portfolio_service.skill.repositories.SkillRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,50 +24,50 @@ public class SkillService {
     private final SkillMapper skillMapper;
     private final StorageService storageService;
 
-    public ResponseSkillDTO createSkill(RequestSkillDTO requestSkillDTO, MultipartFile file) {
+    public SkillResponse createSkill(SkillRequest skillRequest, MultipartFile file) {
         try {
             String resourceURI = storageService.upload(file.getBytes());
             Skill skill = new Skill();
-            skill.setCategory(requestSkillDTO.category());
-            skill.setName(requestSkillDTO.name());
+            skill.setCategory(skillRequest.category());
+            skill.setName(skillRequest.name());
             skill.setUri(resourceURI);
             Skill saved = skillRepository.save(skill);
-            return new ResponseSkillDTO(saved.getSkillId(), saved.getCategory(), saved.getName(), file.getBytes());
+            return new SkillResponse(saved.getSkillId(), saved.getCategory(), saved.getName(), file.getBytes());
         } catch (IOException e) {
             throw new FileProcessingException("Failed to process uploaded file", e);
         }
     }
 
-    public List<ResponseSkillDTO> getAllSkills() {
+    public List<SkillResponse> getAllSkills() {
         return skillRepository
                 .findAll()
                 .stream()
                 .filter(skill -> !skill.getIsDeleted())
-                .map(skill -> skillMapper.skillToResponseSkillDTO(skill, storageService.download(skill.getUri())))
+                .map(skill -> skillMapper.skillToSkillResponse(skill, storageService.download(skill.getUri())))
                 .toList();
     }
 
-    public List<ResponseSkillDTO> getSkillsByCategory(String category) {
+    public List<SkillResponse> getSkillsByCategory(String category) {
         return skillRepository
                 .findByCategory()
                 .stream()
                 .filter(skill -> !skill.getIsDeleted())
-                .map(skill -> skillMapper.skillToResponseSkillDTO(skill, storageService.download(skill.getUri())))
+                .map(skill -> skillMapper.skillToSkillResponse(skill, storageService.download(skill.getUri())))
                 .toList();
     }
 
-    public ResponseSkillDTO updateSkill(UUID skillId, RequestSkillDTO requestSkillDTO, MultipartFile file) {
+    public SkillResponse updateSkill(UUID skillId, SkillRequest skillRequest, MultipartFile file) {
         try {
             Skill skill = skillRepository
                     .findById(skillId)
                     .orElseThrow(() -> new SkillNotFoundException("Skill not found with id: " + skillId));
-            skill.setCategory(requestSkillDTO.category());
-            skill.setName(requestSkillDTO.name());
+            skill.setCategory(skillRequest.category());
+            skill.setName(skillRequest.name());
             skill.setUri(storageService.upload(file.getBytes()));
 
             Skill updated = skillRepository.save(skill);
 
-            return new ResponseSkillDTO(
+            return new SkillResponse(
                     updated.getSkillId(),
                     updated.getCategory(),
                     updated.getName(),

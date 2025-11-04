@@ -1,4 +1,4 @@
-package com.portfolio.portfolio_service.skill;
+package com.portfolio.portfolio_service.skill.exceptions;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
