@@ -3,6 +3,7 @@ package com.portfolio.portfolio_service.skill.services;
 import com.portfolio.portfolio_service.skill.dtos.SkillRequest;
 import com.portfolio.portfolio_service.skill.dtos.SkillResponse;
 import com.portfolio.portfolio_service.skill.mappers.SkillMapper;
+import com.portfolio.portfolio_service.skill.models.Category;
 import com.portfolio.portfolio_service.skill.storage.StorageService;
 import com.portfolio.portfolio_service.skill.exceptions.FileProcessingException;
 import com.portfolio.portfolio_service.skill.exceptions.SkillNotFoundException;
@@ -27,12 +28,9 @@ public class SkillService {
     public SkillResponse createSkill(SkillRequest skillRequest, MultipartFile file) {
         try {
             String resourceURI = storageService.upload(file.getBytes());
-            Skill skill = new Skill();
-            skill.setCategory(skillRequest.category());
-            skill.setName(skillRequest.name());
-            skill.setUri(resourceURI);
+            Skill skill = skillMapper.skillRequestToSkill(skillRequest, resourceURI);
             Skill saved = skillRepository.save(skill);
-            return new SkillResponse(saved.getSkillId(), saved.getCategory(), saved.getName(), file.getBytes());
+            return skillMapper.skillToSkillResponse(saved, file.getBytes());
         } catch (IOException e) {
             throw new FileProcessingException("Failed to process uploaded file", e);
         }
@@ -47,9 +45,9 @@ public class SkillService {
                 .toList();
     }
 
-    public List<SkillResponse> getSkillsByCategory(String category) {
+    public List<SkillResponse> getSkillsByCategory(Category category) {
         return skillRepository
-                .findByCategory()
+                .findByCategory(category)
                 .stream()
                 .filter(skill -> !skill.getIsDeleted())
                 .map(skill -> skillMapper.skillToSkillResponse(skill, storageService.download(skill.getUri())))
@@ -63,15 +61,13 @@ public class SkillService {
                     .orElseThrow(() -> new SkillNotFoundException("Skill not found with id: " + skillId));
             skill.setCategory(skillRequest.category());
             skill.setName(skillRequest.name());
-            skill.setUri(storageService.upload(file.getBytes()));
+
+            if (file != null && !file.isEmpty())
+                skill.setUri(storageService.upload(file.getBytes()));
 
             Skill updated = skillRepository.save(skill);
 
-            return new SkillResponse(
-                    updated.getSkillId(),
-                    updated.getCategory(),
-                    updated.getName(),
-                    storageService.download(updated.getUri()));
+            return skillMapper.skillToSkillResponse(updated, storageService.download(updated.getUri()));
 
         } catch (IOException e) {
             throw new FileProcessingException("Failed to process uploaded file", e);

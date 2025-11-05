@@ -2,6 +2,7 @@ package com.portfolio.portfolio_service.skill.controllers;
 
 import com.portfolio.portfolio_service.skill.dtos.SkillRequest;
 import com.portfolio.portfolio_service.skill.dtos.SkillResponse;
+import com.portfolio.portfolio_service.skill.models.Category;
 import com.portfolio.portfolio_service.skill.services.SkillService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -34,7 +35,7 @@ public class SkillController {
     }
 
     @GetMapping("/{category}")
-    public ResponseEntity<List<SkillResponse>> getSkillsByCategory(@PathVariable String category){
+    public ResponseEntity<List<SkillResponse>> getSkillsByCategory(@PathVariable Category category){
         return ResponseEntity.ok().body(skillService.getSkillsByCategory(category));
     }
 
@@ -63,6 +64,5 @@ public class SkillController {
             return ResponseEntity.notFound().build();
         }
     }
-
 
 }

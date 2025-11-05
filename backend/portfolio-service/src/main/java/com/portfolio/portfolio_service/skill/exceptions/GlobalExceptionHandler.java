@@ -11,6 +11,21 @@ import java.time.LocalDateTime;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(StorageException.class)
+    public ResponseEntity<ApiErrorResponse> handleStorageException(
+            StorageException ex, HttpServletRequest request) {
+
+        ApiErrorResponse response = new ApiErrorResponse(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Storage Error",
+                ex.getMessage() != null ? ex.getMessage() : "Failed to process storage operation",
+                request.getRequestURI(),
+                LocalDateTime.now()
+        );
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+    }
+
     @ExceptionHandler(FileProcessingException.class)
     public ResponseEntity<ApiErrorResponse> handleFileProcessingException(
             FileProcessingException ex, HttpServletRequest request) {
