@@ -114,7 +114,12 @@ public class SkillService {
     }
 
     public void deleteSkillHard(UUID skillId) {
-        skillRepository.deleteById(skillId);
+        skillRepository.findById(skillId).ifPresent(skill -> {
+            if (skill.getStorageKey() != null) {
+                storageService.delete(skill.getStorageKey());
+            }
+            skillRepository.delete(skill);
+        });
     }
 
 }
