@@ -1,4 +1,4 @@
-package com.portfolio.portfolio_service.skill.storage;
+package com.portfolio.portfolio_service.blob_storage;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

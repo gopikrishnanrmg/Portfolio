@@ -1,6 +1,6 @@
-package com.portfolio.portfolio_service.skill.storage;
+package com.portfolio.portfolio_service.blob_storage;
 
-import com.portfolio.portfolio_service.skill.storage.dtos.StorageResult;
+import com.portfolio.portfolio_service.blob_storage.dtos.StorageResult;
 
 public interface StorageService {
     StorageResult upload(byte[] data);

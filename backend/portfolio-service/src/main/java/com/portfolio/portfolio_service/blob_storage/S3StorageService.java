@@ -1,7 +1,7 @@
-package com.portfolio.portfolio_service.skill.storage;
+package com.portfolio.portfolio_service.blob_storage;
 
 import com.portfolio.portfolio_service.skill.exceptions.StorageException;
-import com.portfolio.portfolio_service.skill.storage.dtos.StorageResult;
+import com.portfolio.portfolio_service.blob_storage.dtos.StorageResult;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;

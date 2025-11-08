@@ -1,6 +1,5 @@
 package com.portfolio.portfolio_service.skill.models;
 
-import com.portfolio.portfolio_service.skill.storage.dtos.StorageResult;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -4,12 +4,12 @@ import com.portfolio.portfolio_service.skill.dtos.SkillRequest;
 import com.portfolio.portfolio_service.skill.dtos.SkillResponse;
 import com.portfolio.portfolio_service.skill.mappers.SkillMapper;
 import com.portfolio.portfolio_service.skill.models.Category;
-import com.portfolio.portfolio_service.skill.storage.StorageService;
+import com.portfolio.portfolio_service.blob_storage.StorageService;
 import com.portfolio.portfolio_service.skill.exceptions.FileProcessingException;
 import com.portfolio.portfolio_service.skill.exceptions.SkillNotFoundException;
 import com.portfolio.portfolio_service.skill.models.Skill;
 import com.portfolio.portfolio_service.skill.repositories.SkillRepository;
-import com.portfolio.portfolio_service.skill.storage.dtos.StorageResult;
+import com.portfolio.portfolio_service.blob_storage.dtos.StorageResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -86,6 +86,9 @@ public class SkillService {
                     .orElseThrow(() -> new SkillNotFoundException("Skill not found with id: " + skillId));
 
             if (file != null && !file.isEmpty()) {
+                if (skill.getStorageKey() != null)
+                    storageService.delete(skill.getStorageKey());
+
                 StorageResult resource = storageService.upload(file.getBytes());
                 skill.setStorageKey(resource.key());
             }
