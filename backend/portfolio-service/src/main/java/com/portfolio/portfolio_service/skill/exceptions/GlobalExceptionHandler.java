@@ -48,7 +48,7 @@ public class GlobalExceptionHandler {
         ApiErrorResponse response = new ApiErrorResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 "Unexpected Error",
-                "An unexpected error occurred",
+                ex.getMessage(),
                 request.getRequestURI(),
                 LocalDateTime.now()
         );
@@ -63,7 +63,7 @@ public class GlobalExceptionHandler {
         ApiErrorResponse response = new ApiErrorResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 "Internal Server Error",
-                "Something went wrong",
+                ex.getMessage(),
                 request.getRequestURI(),
                 LocalDateTime.now()
         );

@@ -1,8 +1,10 @@
 package com.portfolio.portfolio_service.skill.storage;
 
 import com.portfolio.portfolio_service.skill.exceptions.StorageException;
-import org.springframework.stereotype.Component;
+import com.portfolio.portfolio_service.skill.storage.dtos.StorageResult;
+import lombok.RequiredArgsConstructor;
 
+import org.springframework.stereotype.Service;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -10,22 +12,32 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
+import software.amazon.awssdk.auth.credentials.EnvironmentVariableCredentialsProvider;
+import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
 
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
 import java.time.Duration;
 import java.util.UUID;
 
-@Component
+@Service
+@RequiredArgsConstructor
 public class S3StorageService implements StorageService {
 
+    private final S3Presigner s3Presigner;
     private final String bucket = System.getenv("S3_BUCKET");
     private final Region region = Region.of(System.getenv("AWS_REGION"));
-    private final S3Client s3 = S3Client.builder().region(region).build();
-    private final S3Presigner presigner = S3Presigner.builder().region(region).build();
+    private final S3Client s3 = S3Client.builder()
+            .region(region)
+            .credentialsProvider(EnvironmentVariableCredentialsProvider.create())
+            .build();
+
+    private final S3Presigner presigner = S3Presigner.builder()
+            .region(region)
+            .credentialsProvider(EnvironmentVariableCredentialsProvider.create())
+            .build();
+
 
     @Override
-    public String upload(byte[] data) {
+    public StorageResult upload(byte[] data) {
         String key = UUID.randomUUID().toString();
 
         PutObjectRequest putReq = PutObjectRequest.builder()
@@ -45,23 +57,33 @@ public class S3StorageService implements StorageService {
                 .getObjectRequest(getReq)
                 .build();
 
-        return presigner.presignGetObject(presignReq).url().toString();
+        String url = presigner.presignGetObject(presignReq).url().toString();
+
+        return new StorageResult(key, url);
     }
 
     @Override
-    public byte[] download(String url) {
-        String key = url.substring(url.lastIndexOf("/") + 1);
+    public String generatePresignedUrl(String key) {
+        try {
+            GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+                    .bucket(bucket)
+                    .key(key)
+                    .build();
 
-        InputStream inputStream = s3.getObject(GetObjectRequest.builder()
-                .bucket(bucket)
-                .key(key)
-                .build());
+            Duration expiration = Duration.ofMinutes(15);
 
-        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-            inputStream.transferTo(baos);
-            return baos.toByteArray();
+            PresignedGetObjectRequest presignedRequest = s3Presigner.presignGetObject(
+                    GetObjectPresignRequest.builder()
+                            .signatureDuration(expiration)
+                            .getObjectRequest(getObjectRequest)
+                            .build()
+            );
+
+            return presignedRequest.url().toString();
+
         } catch (Exception e) {
-            throw new StorageException("Failed to download object", e);
+            throw new StorageException("Failed to generate presigned URL", e);
         }
     }
+
 }

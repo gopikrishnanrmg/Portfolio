@@ -18,6 +18,7 @@ import java.util.UUID;
 @RequestMapping("/api/v1/skills")
 @RequiredArgsConstructor
 public class SkillController {
+
     private final SkillService skillService;
 
     @PostMapping()
@@ -35,18 +36,24 @@ public class SkillController {
     }
 
     @GetMapping("/{category}")
-    public ResponseEntity<List<SkillResponse>> getSkillsByCategory(@PathVariable Category category){
-        return ResponseEntity.ok().body(skillService.getSkillsByCategory(category));
+    public ResponseEntity<List<SkillResponse>> getSkillsByCategory(@PathVariable String category) {
+        Category enumCategory = Category.valueOf(category.toUpperCase());
+        return ResponseEntity.ok(skillService.getSkillsByCategory(enumCategory));
     }
+
 
     @PutMapping("/{id}")
     public ResponseEntity<SkillResponse> updateSkill(
-            @RequestPart("requestSkillDTO") SkillRequest skillRequest,
-            @RequestPart(value = "file", required = false) MultipartFile file,
+            @RequestBody SkillRequest skillRequest,
             @PathVariable UUID id) {
+        return ResponseEntity.ok(skillService.updateSkill(id, skillRequest));
+    }
 
-        SkillResponse response = skillService.updateSkill(id, skillRequest, file);
-        return ResponseEntity.ok(response);
+    @PutMapping("/{id}/file")
+    public ResponseEntity<SkillResponse> uploadSkillFile(
+            @RequestParam MultipartFile file,
+            @PathVariable UUID id) {
+        return ResponseEntity.ok(skillService.uploadSkillFile(id, file));
     }
 
     @DeleteMapping("/{id}")

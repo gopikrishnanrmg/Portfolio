@@ -1,5 +1,6 @@
 package com.portfolio.portfolio_service.skill.models;
 
+import com.portfolio.portfolio_service.skill.storage.dtos.StorageResult;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,9 +19,12 @@ public class Skill {
     @GeneratedValue
     @Column(updatable = false, nullable = false)
     private UUID skillId;
+    @Enumerated(EnumType.STRING)
     private Category category;
     private String name;
-    private String uri;
+    @Column(columnDefinition = "TEXT")
+    private String storageKey;
     @Column(nullable = false, columnDefinition = "boolean default false")
-    private Boolean isDeleted;
+    @Builder.Default
+    private Boolean isDeleted = false;
 }
