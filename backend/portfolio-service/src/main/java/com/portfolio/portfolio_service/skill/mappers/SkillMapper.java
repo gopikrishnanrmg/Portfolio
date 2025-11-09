@@ -1,6 +1,6 @@
 package com.portfolio.portfolio_service.skill.mappers;
 
-import com.portfolio.portfolio_service.skill.dtos.SkillRequest;
+import com.portfolio.portfolio_service.skill.dtos.CreateSkillRequest;
 import com.portfolio.portfolio_service.skill.dtos.SkillResponse;
 import com.portfolio.portfolio_service.skill.models.Skill;
 import org.springframework.stereotype.Component;
@@ -11,7 +11,7 @@ public class SkillMapper {
         return new SkillResponse(skill.getSkillId(), skill.getCategory(), skill.getName(), iconUrl);
     }
 
-    public Skill skillRequestToSkill(SkillRequest skillRequest, String key) {
+    public Skill skillRequestToSkill(CreateSkillRequest skillRequest, String key) {
         return Skill
                 .builder()
                 .name(skillRequest.name())

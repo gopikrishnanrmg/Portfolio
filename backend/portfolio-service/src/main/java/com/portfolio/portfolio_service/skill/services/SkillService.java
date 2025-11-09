@@ -1,7 +1,8 @@
 package com.portfolio.portfolio_service.skill.services;
 
-import com.portfolio.portfolio_service.skill.dtos.SkillRequest;
+import com.portfolio.portfolio_service.skill.dtos.CreateSkillRequest;
 import com.portfolio.portfolio_service.skill.dtos.SkillResponse;
+import com.portfolio.portfolio_service.skill.dtos.UpdateSkillRequest;
 import com.portfolio.portfolio_service.skill.mappers.SkillMapper;
 import com.portfolio.portfolio_service.skill.models.Category;
 import com.portfolio.portfolio_service.blob_storage.StorageService;
@@ -26,7 +27,7 @@ public class SkillService {
     private final SkillMapper skillMapper;
     private final StorageService storageService;
 
-    public SkillResponse createSkill(SkillRequest skillRequest, MultipartFile file) {
+    public SkillResponse createSkill(CreateSkillRequest skillRequest, MultipartFile file) {
         try {
             StorageResult resource = storageService.upload(file.getBytes());
             Skill skill = skillMapper.skillRequestToSkill(skillRequest, resource.key());
@@ -65,12 +66,14 @@ public class SkillService {
                 .toList();
     }
 
-    public SkillResponse updateSkill(UUID skillId, SkillRequest skillRequest) {
+    public SkillResponse updateSkill(UUID skillId, UpdateSkillRequest skillRequest) {
         Skill skill = skillRepository.findById(skillId)
                 .orElseThrow(() -> new SkillNotFoundException("Skill not found with id: " + skillId));
 
-        skill.setCategory(skillRequest.category());
-        skill.setName(skillRequest.name());
+        if (skillRequest.category() != null)
+            skill.setCategory(skillRequest.category());
+        if (skillRequest.name() != null)
+            skill.setName(skillRequest.name());
 
         Skill updated = skillRepository.save(skill);
         String iconUrl = updated.getStorageKey() != null
@@ -85,13 +88,12 @@ public class SkillService {
             Skill skill = skillRepository.findById(skillId)
                     .orElseThrow(() -> new SkillNotFoundException("Skill not found with id: " + skillId));
 
-            if (file != null && !file.isEmpty()) {
-                if (skill.getStorageKey() != null)
-                    storageService.delete(skill.getStorageKey());
+            if (skill.getStorageKey() != null)
+                storageService.delete(skill.getStorageKey());
 
-                StorageResult resource = storageService.upload(file.getBytes());
-                skill.setStorageKey(resource.key());
-            }
+            StorageResult resource = storageService.upload(file.getBytes());
+            skill.setStorageKey(resource.key());
+
 
             Skill updated = skillRepository.save(skill);
             String iconUrl = updated.getStorageKey() != null

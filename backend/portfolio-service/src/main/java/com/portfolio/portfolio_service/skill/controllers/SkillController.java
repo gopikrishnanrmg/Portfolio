@@ -1,9 +1,13 @@
 package com.portfolio.portfolio_service.skill.controllers;
 
-import com.portfolio.portfolio_service.skill.dtos.SkillRequest;
+import com.portfolio.portfolio_service.skill.dtos.CreateSkillRequest;
 import com.portfolio.portfolio_service.skill.dtos.SkillResponse;
+import com.portfolio.portfolio_service.skill.dtos.UpdateSkillRequest;
 import com.portfolio.portfolio_service.skill.models.Category;
 import com.portfolio.portfolio_service.skill.services.SkillService;
+import com.portfolio.portfolio_service.validators.ValidFile;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.ResponseEntity;
@@ -23,8 +27,8 @@ public class SkillController {
 
     @PostMapping()
     public ResponseEntity<SkillResponse> createSkill(
-            @RequestPart("data") SkillRequest skillRequest,
-            @RequestPart("file") MultipartFile file){
+            @Valid @RequestPart("data") CreateSkillRequest skillRequest,
+            @ValidFile @RequestPart("file") MultipartFile file){
         SkillResponse created = skillService.createSkill(skillRequest, file);
         URI location = URI.create("/api/v1/skills/" + created.skillId());
         return ResponseEntity.created(location).body(created);
@@ -44,14 +48,14 @@ public class SkillController {
 
     @PutMapping("/{id}")
     public ResponseEntity<SkillResponse> updateSkill(
-            @RequestBody SkillRequest skillRequest,
+            @RequestBody UpdateSkillRequest skillRequest,
             @PathVariable UUID id) {
         return ResponseEntity.ok(skillService.updateSkill(id, skillRequest));
     }
 
     @PutMapping("/{id}/file")
     public ResponseEntity<SkillResponse> uploadSkillFile(
-            @RequestParam MultipartFile file,
+            @ValidFile @RequestParam MultipartFile file,
             @PathVariable UUID id) {
         return ResponseEntity.ok(skillService.uploadSkillFile(id, file));
     }
