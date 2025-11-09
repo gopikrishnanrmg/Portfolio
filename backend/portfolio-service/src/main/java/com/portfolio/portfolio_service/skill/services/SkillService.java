@@ -5,7 +5,7 @@ import com.portfolio.portfolio_service.skill.dtos.SkillResponse;
 import com.portfolio.portfolio_service.skill.mappers.SkillMapper;
 import com.portfolio.portfolio_service.skill.models.Category;
 import com.portfolio.portfolio_service.blob_storage.StorageService;
-import com.portfolio.portfolio_service.skill.exceptions.FileProcessingException;
+import com.portfolio.portfolio_service.exceptions.FileProcessingException;
 import com.portfolio.portfolio_service.skill.exceptions.SkillNotFoundException;
 import com.portfolio.portfolio_service.skill.models.Skill;
 import com.portfolio.portfolio_service.skill.repositories.SkillRepository;

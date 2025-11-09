@@ -1,6 +1,6 @@
 package com.portfolio.portfolio_service.blob_storage;
 
-import com.portfolio.portfolio_service.skill.exceptions.StorageException;
+import com.portfolio.portfolio_service.exceptions.StorageException;
 import com.portfolio.portfolio_service.blob_storage.dtos.StorageResult;
 import lombok.RequiredArgsConstructor;
 
