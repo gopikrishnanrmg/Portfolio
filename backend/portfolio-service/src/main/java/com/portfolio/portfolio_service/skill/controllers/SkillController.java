@@ -28,14 +28,14 @@ public class SkillController {
     @PostMapping()
     public ResponseEntity<SkillResponse> createSkill(
             @Valid @RequestPart("data") CreateSkillRequest skillRequest,
-            @ValidFile @RequestPart("file") MultipartFile file){
+            @ValidFile @RequestPart("file") MultipartFile file) {
         SkillResponse created = skillService.createSkill(skillRequest, file);
         URI location = URI.create("/api/v1/skills/" + created.skillId());
         return ResponseEntity.created(location).body(created);
     }
 
     @GetMapping()
-    public ResponseEntity<List<SkillResponse>> getAllSkills(){
+    public ResponseEntity<List<SkillResponse>> getAllSkills() {
         return ResponseEntity.ok().body(skillService.getAllSkills());
     }
 
@@ -61,19 +61,15 @@ public class SkillController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Boolean> deleteById(@PathVariable UUID id){
-        return skillService.deleteSkill(id)?
-                ResponseEntity.noContent().build():ResponseEntity.notFound().build();
+    public ResponseEntity<Void> deleteById(@PathVariable UUID id) {
+        skillService.deleteSkill(id);
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/hard/{id}")
     public ResponseEntity<Void> deleteByIdHard(@PathVariable UUID id) {
-        try {
-            skillService.deleteSkillHard(id);
-            return ResponseEntity.noContent().build();
-        } catch (EmptyResultDataAccessException e) {
-            return ResponseEntity.notFound().build();
-        }
+        skillService.deleteSkillHard(id);
+        return ResponseEntity.noContent().build();
     }
 
 }

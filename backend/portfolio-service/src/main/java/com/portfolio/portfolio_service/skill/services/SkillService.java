@@ -3,6 +3,8 @@ package com.portfolio.portfolio_service.skill.services;
 import com.portfolio.portfolio_service.skill.dtos.CreateSkillRequest;
 import com.portfolio.portfolio_service.skill.dtos.SkillResponse;
 import com.portfolio.portfolio_service.skill.dtos.UpdateSkillRequest;
+import com.portfolio.portfolio_service.skill.exceptions.DuplicateSkillException;
+import com.portfolio.portfolio_service.skill.exceptions.InvalidSkillUpdateException;
 import com.portfolio.portfolio_service.skill.mappers.SkillMapper;
 import com.portfolio.portfolio_service.skill.models.Category;
 import com.portfolio.portfolio_service.blob_storage.StorageService;
@@ -28,6 +30,9 @@ public class SkillService {
     private final StorageService storageService;
 
     public SkillResponse createSkill(CreateSkillRequest skillRequest, MultipartFile file) {
+        if (skillRepository.existsByName(skillRequest.name()))
+            throw new DuplicateSkillException("Skill name already exists");
+
         try {
             StorageResult resource = storageService.upload(file.getBytes());
             Skill skill = skillMapper.skillRequestToSkill(skillRequest, resource.key());
@@ -72,8 +77,12 @@ public class SkillService {
 
         if (skillRequest.category() != null)
             skill.setCategory(skillRequest.category());
-        if (skillRequest.name() != null)
-            skill.setName(skillRequest.name());
+        if (skillRequest.name() != null) {
+            if(!skillRequest.name().isBlank())
+                skill.setName(skillRequest.name());
+            else
+                throw new InvalidSkillUpdateException("Skill name cannot be blank");
+        }
 
         Skill updated = skillRepository.save(skill);
         String iconUrl = updated.getStorageKey() != null
@@ -107,24 +116,22 @@ public class SkillService {
         }
     }
 
-    public boolean deleteSkill(UUID skillId) {
-        return skillRepository
-                .findById(skillId)
-                .map(skill -> {
-                    skill.setIsDeleted(true);
-                    skillRepository.save(skill);
-                    return true;
-                })
-                .orElse(false);
+    public void deleteSkill(UUID skillId) {
+        Skill skill = skillRepository.findById(skillId)
+                .orElseThrow(() -> new SkillNotFoundException("Skill not found with id: " + skillId));
+
+        skill.setIsDeleted(true);
+        skillRepository.save(skill);
     }
 
     public void deleteSkillHard(UUID skillId) {
-        skillRepository.findById(skillId).ifPresent(skill -> {
-            if (skill.getStorageKey() != null) {
-                storageService.delete(skill.getStorageKey());
-            }
-            skillRepository.delete(skill);
-        });
+        Skill skill = skillRepository.findById(skillId)
+                .orElseThrow(() -> new SkillNotFoundException("Skill not found with id: " + skillId));
+
+        if (skill.getStorageKey() != null) {
+            storageService.delete(skill.getStorageKey());
+        }
+        skillRepository.delete(skill);
     }
 
 }

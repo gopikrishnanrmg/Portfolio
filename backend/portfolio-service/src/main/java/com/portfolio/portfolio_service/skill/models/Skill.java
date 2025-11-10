@@ -13,6 +13,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 @Entity
+@Table(name = "skills")
 public class Skill {
     @Id
     @GeneratedValue
@@ -20,6 +21,7 @@ public class Skill {
     private UUID skillId;
     @Enumerated(EnumType.STRING)
     private Category category;
+    @Column(unique = true)
     private String name;
     @Column(columnDefinition = "TEXT")
     private String storageKey;
