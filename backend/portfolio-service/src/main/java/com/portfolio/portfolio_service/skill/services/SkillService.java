@@ -38,8 +38,8 @@ public class SkillService {
             Skill skill = skillMapper.skillRequestToSkill(skillRequest, resource.key());
             Skill saved = skillRepository.save(skill);
 
-            String iconUrl = storageService.generatePresignedUrl(resource.key());
-            return skillMapper.skillToSkillResponse(saved, iconUrl);
+            String url = storageService.generatePresignedUrl(resource.key());
+            return skillMapper.skillToSkillResponse(saved, url);
         } catch (IOException e) {
             throw new FileProcessingException("Failed to process uploaded file", e);
         }
@@ -50,10 +50,10 @@ public class SkillService {
                 .stream()
                 .filter(skill -> !skill.getIsDeleted())
                 .map(skill -> {
-                    String iconUrl = skill.getStorageKey() != null
+                    String url = skill.getStorageKey() != null
                             ? storageService.generatePresignedUrl(skill.getStorageKey())
                             : null;
-                    return skillMapper.skillToSkillResponse(skill, iconUrl);
+                    return skillMapper.skillToSkillResponse(skill, url);
                 })
                 .toList();
     }
@@ -63,10 +63,10 @@ public class SkillService {
                 .stream()
                 .filter(skill -> !skill.getIsDeleted())
                 .map(skill -> {
-                    String iconUrl = skill.getStorageKey() != null
+                    String url = skill.getStorageKey() != null
                             ? storageService.generatePresignedUrl(skill.getStorageKey())
                             : null;
-                    return skillMapper.skillToSkillResponse(skill, iconUrl);
+                    return skillMapper.skillToSkillResponse(skill, url);
                 })
                 .toList();
     }
@@ -85,11 +85,11 @@ public class SkillService {
         }
 
         Skill updated = skillRepository.save(skill);
-        String iconUrl = updated.getStorageKey() != null
+        String url = updated.getStorageKey() != null
                 ? storageService.generatePresignedUrl(updated.getStorageKey())
                 : null;
 
-        return skillMapper.skillToSkillResponse(updated, iconUrl);
+        return skillMapper.skillToSkillResponse(updated, url);
     }
 
     public SkillResponse uploadSkillFile(UUID skillId, MultipartFile file) {
@@ -105,11 +105,11 @@ public class SkillService {
 
 
             Skill updated = skillRepository.save(skill);
-            String iconUrl = updated.getStorageKey() != null
+            String url = updated.getStorageKey() != null
                     ? storageService.generatePresignedUrl(updated.getStorageKey())
                     : null;
 
-            return skillMapper.skillToSkillResponse(updated, iconUrl);
+            return skillMapper.skillToSkillResponse(updated, url);
 
         } catch (IOException e) {
             throw new FileProcessingException("Failed to process uploaded file", e);

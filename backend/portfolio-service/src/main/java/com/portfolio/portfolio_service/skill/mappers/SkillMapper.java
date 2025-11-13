@@ -7,8 +7,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class SkillMapper {
-    public SkillResponse skillToSkillResponse(Skill skill, String iconUrl) {
-        return new SkillResponse(skill.getSkillId(), skill.getCategory(), skill.getName(), iconUrl);
+    public SkillResponse skillToSkillResponse(Skill skill, String url) {
+        return new SkillResponse(skill.getSkillId(), skill.getCategory(), skill.getName(), url);
     }
 
     public Skill skillRequestToSkill(CreateSkillRequest skillRequest, String key) {
