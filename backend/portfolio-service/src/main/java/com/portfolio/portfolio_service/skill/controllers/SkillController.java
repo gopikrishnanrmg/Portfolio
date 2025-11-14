@@ -7,9 +7,7 @@ import com.portfolio.portfolio_service.skill.models.Category;
 import com.portfolio.portfolio_service.skill.services.SkillService;
 import com.portfolio.portfolio_service.validators.ValidFile;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -44,7 +42,6 @@ public class SkillController {
         Category enumCategory = Category.valueOf(category.toUpperCase());
         return ResponseEntity.ok(skillService.getSkillsByCategory(enumCategory));
     }
-
 
     @PutMapping("/{id}")
     public ResponseEntity<SkillResponse> updateSkill(

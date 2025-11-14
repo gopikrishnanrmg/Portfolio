@@ -7,8 +7,6 @@ import com.portfolio.portfolio_service.skill.dtos.UpdateSkillRequest;
 import com.portfolio.portfolio_service.skill.models.Category;
 import com.portfolio.portfolio_service.skill.services.SkillService;
 import lombok.RequiredArgsConstructor;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -21,6 +19,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.List;
 import java.util.UUID;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
@@ -64,6 +63,46 @@ class SkillControllerTest {
                         .contentType(MediaType.MULTIPART_FORM_DATA))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.skillId").value(skillId.toString()));
+    }
+
+    @Test
+    void createSkill_shouldThrowDTOValidationError() throws Exception {
+        CreateSkillRequest request = new CreateSkillRequest(Category.DEVELOPMENT, null);
+        MockMultipartFile file = new MockMultipartFile("file", "icon.png", "image/png", "dummy".getBytes());
+        MockMultipartFile data = new MockMultipartFile("data", "", "application/json",
+                objectMapper.writeValueAsBytes(request));
+
+        SkillResponse response = new SkillResponse(skillId, Category.DEVELOPMENT, "React", "url");
+
+        when(skillService.createSkill(any(), any())).thenReturn(response);
+
+        mockMvc.perform(multipart("/api/v1/skills")
+                        .file(data)
+                        .file(file)
+                        .contentType(MediaType.MULTIPART_FORM_DATA))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value(containsString("must not be blank")))
+                .andExpect(jsonPath("$.error").value("Validation Error"));
+    }
+
+    @Test
+    void createSkill_shouldThrowFileValidationError() throws Exception {
+        CreateSkillRequest request = new CreateSkillRequest(Category.DEVELOPMENT, "React");
+        MockMultipartFile file = new MockMultipartFile("file", "icon.png", "image/png", "".getBytes());
+        MockMultipartFile data = new MockMultipartFile("data", "", "application/json",
+                objectMapper.writeValueAsBytes(request));
+
+        SkillResponse response = new SkillResponse(skillId, Category.DEVELOPMENT, "React", "url");
+
+        when(skillService.createSkill(any(), any())).thenReturn(response);
+
+        mockMvc.perform(multipart("/api/v1/skills")
+                        .file(data)
+                        .file(file)
+                        .contentType(MediaType.MULTIPART_FORM_DATA))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value(containsString("must be present and not empty")))
+                .andExpect(jsonPath("$.error").value("Validation Error"));
     }
 
     @Test
