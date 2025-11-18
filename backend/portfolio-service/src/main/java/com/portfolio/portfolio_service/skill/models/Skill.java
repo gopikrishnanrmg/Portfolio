@@ -20,10 +20,11 @@ public class Skill {
     @Column(updatable = false, nullable = false)
     private UUID skillId;
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Category category;
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String name;
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String storageKey;
     @Column(nullable = false, columnDefinition = "boolean default false")
     @Builder.Default

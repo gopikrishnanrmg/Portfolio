@@ -22,8 +22,7 @@ import java.util.UUID;
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -136,7 +135,12 @@ class SkillControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("Spring Boot"));
+                .andExpect(jsonPath("$.skillId").value(skillId.toString()))
+                .andExpect(jsonPath("$.name").value("Spring Boot"))
+                .andExpect(jsonPath("$.category").value("DEVELOPMENT"))
+                .andExpect(jsonPath("$.url").value("url"));
+
+        verify(skillService).updateSkill(eq(skillId), any());
     }
 
     @Test

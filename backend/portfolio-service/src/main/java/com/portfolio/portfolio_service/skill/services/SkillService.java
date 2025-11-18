@@ -49,12 +49,7 @@ public class SkillService {
         return skillRepository.findAll()
                 .stream()
                 .filter(skill -> !skill.getIsDeleted())
-                .map(skill -> {
-                    String url = skill.getStorageKey() != null
-                            ? storageService.generatePresignedUrl(skill.getStorageKey())
-                            : null;
-                    return skillMapper.skillToSkillResponse(skill, url);
-                })
+                .map(skill -> skillMapper.skillToSkillResponse(skill, storageService.generatePresignedUrl(skill.getStorageKey())))
                 .toList();
     }
 
@@ -62,12 +57,7 @@ public class SkillService {
         return skillRepository.findByCategory(category)
                 .stream()
                 .filter(skill -> !skill.getIsDeleted())
-                .map(skill -> {
-                    String url = skill.getStorageKey() != null
-                            ? storageService.generatePresignedUrl(skill.getStorageKey())
-                            : null;
-                    return skillMapper.skillToSkillResponse(skill, url);
-                })
+                .map(skill -> skillMapper.skillToSkillResponse(skill, storageService.generatePresignedUrl(skill.getStorageKey())))
                 .toList();
     }
 
@@ -85,11 +75,8 @@ public class SkillService {
         }
 
         Skill updated = skillRepository.save(skill);
-        String url = updated.getStorageKey() != null
-                ? storageService.generatePresignedUrl(updated.getStorageKey())
-                : null;
 
-        return skillMapper.skillToSkillResponse(updated, url);
+        return skillMapper.skillToSkillResponse(updated, storageService.generatePresignedUrl(updated.getStorageKey()));
     }
 
     public SkillResponse uploadSkillFile(UUID skillId, MultipartFile file) {
@@ -97,19 +84,14 @@ public class SkillService {
             Skill skill = skillRepository.findById(skillId)
                     .orElseThrow(() -> new SkillNotFoundException("Skill not found with id: " + skillId));
 
-            if (skill.getStorageKey() != null)
-                storageService.delete(skill.getStorageKey());
+            storageService.delete(skill.getStorageKey());
 
             StorageResult resource = storageService.upload(file.getBytes());
             skill.setStorageKey(resource.key());
 
-
             Skill updated = skillRepository.save(skill);
-            String url = updated.getStorageKey() != null
-                    ? storageService.generatePresignedUrl(updated.getStorageKey())
-                    : null;
 
-            return skillMapper.skillToSkillResponse(updated, url);
+            return skillMapper.skillToSkillResponse(updated, storageService.generatePresignedUrl(updated.getStorageKey()));
 
         } catch (IOException e) {
             throw new FileProcessingException("Failed to process uploaded file", e);
@@ -128,9 +110,8 @@ public class SkillService {
         Skill skill = skillRepository.findById(skillId)
                 .orElseThrow(() -> new SkillNotFoundException("Skill not found with id: " + skillId));
 
-        if (skill.getStorageKey() != null) {
-            storageService.delete(skill.getStorageKey());
-        }
+        storageService.delete(skill.getStorageKey());
+
         skillRepository.delete(skill);
     }
 
