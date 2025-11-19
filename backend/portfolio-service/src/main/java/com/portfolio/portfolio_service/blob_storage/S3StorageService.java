@@ -4,6 +4,7 @@ import com.portfolio.portfolio_service.exceptions.StorageException;
 import com.portfolio.portfolio_service.blob_storage.dtos.StorageResult;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.regions.Region;
@@ -19,6 +20,7 @@ import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequ
 import java.time.Duration;
 import java.util.UUID;
 
+@Profile("prod")
 @Service
 @RequiredArgsConstructor
 public class S3StorageService implements StorageService {
