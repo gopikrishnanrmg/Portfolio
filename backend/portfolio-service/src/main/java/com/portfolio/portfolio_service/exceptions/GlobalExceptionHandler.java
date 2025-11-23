@@ -2,6 +2,10 @@ package com.portfolio.portfolio_service.exceptions;
 
 import com.portfolio.portfolio_service.skill.exceptions.DuplicateSkillException;
 import com.portfolio.portfolio_service.skill.exceptions.InvalidSkillUpdateException;
+import com.portfolio.portfolio_service.skill.exceptions.SkillNotFoundException;
+import com.portfolio.portfolio_service.workexp.exceptions.DuplicateWorkExpException;
+import com.portfolio.portfolio_service.workexp.exceptions.InvalidWorkExpUpdateException;
+import com.portfolio.portfolio_service.workexp.exceptions.WorkExpNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -76,6 +80,21 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(response);
     }
 
+    @ExceptionHandler(SkillNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleSkillNotFoundException(
+            SkillNotFoundException ex, HttpServletRequest request) {
+
+        ApiErrorResponse response = new ApiErrorResponse(
+                HttpStatus.NOT_FOUND.value(),
+                "Skill Not Found",
+                ex.getMessage(),
+                request.getRequestURI(),
+                LocalDateTime.now()
+        );
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+    }
+
     @ExceptionHandler(DuplicateSkillException.class)
     public ResponseEntity<ApiErrorResponse> handleDuplicateSkillException(
             DuplicateSkillException ex, HttpServletRequest request) {
@@ -134,6 +153,51 @@ public class GlobalExceptionHandler {
         );
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    @ExceptionHandler(WorkExpNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleWorkExpNotFoundException(
+            WorkExpNotFoundException ex, HttpServletRequest request) {
+
+        ApiErrorResponse response = new ApiErrorResponse(
+                HttpStatus.NOT_FOUND.value(),
+                "Work Experience Not Found",
+                ex.getMessage(),
+                request.getRequestURI(),
+                LocalDateTime.now()
+        );
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+    }
+
+    @ExceptionHandler(DuplicateWorkExpException.class)
+    public ResponseEntity<ApiErrorResponse> handleDuplicateWorkExpException(
+            DuplicateWorkExpException ex, HttpServletRequest request) {
+
+        ApiErrorResponse response = new ApiErrorResponse(
+                HttpStatus.CONFLICT.value(),
+                "Duplicate Work Experience",
+                ex.getMessage(),
+                request.getRequestURI(),
+                LocalDateTime.now()
+        );
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+    }
+
+    @ExceptionHandler(InvalidWorkExpUpdateException.class)
+    public ResponseEntity<ApiErrorResponse> handleInvalidWorkExpUpdateException(
+            InvalidWorkExpUpdateException ex, HttpServletRequest request) {
+
+        ApiErrorResponse response = new ApiErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                "Invalid Work Experience Update",
+                ex.getMessage(),
+                request.getRequestURI(),
+                LocalDateTime.now()
+        );
+
+        return ResponseEntity.badRequest().body(response);
     }
 
     @ExceptionHandler(RuntimeException.class)

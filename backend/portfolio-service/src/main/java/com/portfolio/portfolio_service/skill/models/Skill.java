@@ -26,7 +26,7 @@ public class Skill {
     private String name;
     @Column(columnDefinition = "TEXT", nullable = false)
     private String storageKey;
-    @Column(nullable = false, columnDefinition = "boolean default false")
+    @Column(nullable = false)
     @Builder.Default
     private Boolean isDeleted = false;
 }

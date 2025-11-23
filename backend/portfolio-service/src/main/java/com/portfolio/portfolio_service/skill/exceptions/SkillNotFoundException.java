@@ -8,4 +8,4 @@ public class SkillNotFoundException extends RuntimeException {
     public SkillNotFoundException(String message, Throwable cause) {
         super(message, cause);
     }
-   }
+}
