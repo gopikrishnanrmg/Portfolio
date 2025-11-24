@@ -41,6 +41,39 @@ class SkillServiceTest {
     private final UUID skillId = UUID.randomUUID();
 
     @Test
+    void createSkill_shouldSaveAndReturnResponse() throws IOException {
+        CreateSkillRequest request = new CreateSkillRequest(Category.DEVELOPMENT, "React");
+        MultipartFile file = mock(MultipartFile.class);
+
+        Skill skill = new Skill(skillId, Category.DEVELOPMENT, "React", "storage-key", false);
+        StorageResult storageResult = new StorageResult("storage-key", "url");
+
+        SkillResponse expectedResponse = new SkillResponse(skillId, Category.DEVELOPMENT, "React", "url");
+
+        when(skillRepository.existsByName("React")).thenReturn(false);
+        when(storageService.upload(file.getBytes())).thenReturn(storageResult);
+        when(storageService.generatePresignedUrl(storageResult.key())).thenReturn("url");
+        when(skillRepository.save(any(Skill.class))).thenReturn(skill);
+        when(skillMapper.skillRequestToSkill(request, storageResult.key()))
+                .thenReturn(Skill.builder()
+                        .name("React")
+                        .category(Category.DEVELOPMENT)
+                        .storageKey(storageResult.key())
+                        .build());
+        when(skillMapper.skillToSkillResponse(skill, "url")).thenReturn(expectedResponse);
+
+        SkillResponse actualResponse = skillService.createSkill(request, file);
+
+        assertEquals(expectedResponse, actualResponse);
+
+        verify(skillRepository).existsByName("React");
+        verify(storageService).upload(file.getBytes());
+        verify(storageService).generatePresignedUrl("storage-key");
+        verify(skillMapper).skillRequestToSkill(request, "storage-key");
+        verify(skillMapper).skillToSkillResponse(skill, "url");
+    }
+
+    @Test
     void createSkill_shouldThrowDuplicateSkillException() {
         CreateSkillRequest request = new CreateSkillRequest(Category.DEVELOPMENT, "React");
         MultipartFile file = mock(MultipartFile.class);
@@ -67,32 +100,77 @@ class SkillServiceTest {
     }
 
     @Test
-    void createSkill_shouldReturnSkillResponse() throws IOException {
-        CreateSkillRequest request = new CreateSkillRequest(Category.DEVELOPMENT, "React");
-        MultipartFile file = mock(MultipartFile.class);
-
+    void getSkillsByCategory_shouldReturnMappedResponses() {
         Skill skill = new Skill(skillId, Category.DEVELOPMENT, "React", "storage-key", false);
-        StorageResult storageResult = new StorageResult("storage-key", "url");
 
-        when(skillRepository.existsByName("React")).thenReturn(false);
-        when(storageService.upload(file.getBytes())).thenReturn(storageResult);
-        when(storageService.generatePresignedUrl(storageResult.key())).thenReturn("url");
-        when(skillRepository.save(any(Skill.class))).thenReturn(skill);
-        when(skillMapper.skillRequestToSkill(request, storageResult.key())).thenReturn(Skill.builder().name("React").category(Category.DEVELOPMENT).storageKey(storageResult.key()).build());
-        when(skillMapper.skillToSkillResponse(skill, "url")).thenReturn(new SkillResponse(skillId, Category.DEVELOPMENT, "React", "url"));
+        when(skillRepository.findByCategory(Category.DEVELOPMENT)).thenReturn(List.of(skill));
+        when(storageService.generatePresignedUrl("storage-key")).thenReturn("url");
+        when(skillMapper.skillToSkillResponse(skill, "url"))
+                .thenReturn(new SkillResponse(skillId, Category.DEVELOPMENT, "React", "url"));
 
-        SkillResponse response = skillService.createSkill(request, file);
+        List<SkillResponse> responses = skillService.getSkillsByCategory(Category.DEVELOPMENT);
 
-        assertEquals(skillId, response.skillId());
-        assertEquals("React", response.name());
-        assertEquals(Category.DEVELOPMENT, response.category());
-        assertEquals("url", response.url());
+        assertEquals(1, responses.size());
+        assertEquals("React", responses.get(0).name());
+        assertEquals("url", responses.get(0).url());
 
-        verify(skillRepository).existsByName("React");
-        verify(storageService).upload(file.getBytes());
+        verify(skillRepository).findByCategory(Category.DEVELOPMENT);
         verify(storageService).generatePresignedUrl("storage-key");
-        verify(skillMapper).skillRequestToSkill(request, "storage-key");
         verify(skillMapper).skillToSkillResponse(skill, "url");
+    }
+
+    @Test
+    void getSkillsByCategory_shouldFilterOutDeletedSkills() {
+        Skill deleted = new Skill(skillId, Category.DEVELOPMENT, "React", "storage-key", true);
+
+        when(skillRepository.findByCategory(Category.DEVELOPMENT)).thenReturn(List.of(deleted));
+
+        List<SkillResponse> responses = skillService.getSkillsByCategory(Category.DEVELOPMENT);
+
+        assertTrue(responses.isEmpty());
+        verify(skillRepository).findByCategory(Category.DEVELOPMENT);
+        verify(storageService, never()).generatePresignedUrl(anyString());
+        verify(skillMapper, never()).skillToSkillResponse(any(), any());
+    }
+
+    @Test
+    void getAllSkills_shouldReturnMappedResponses() {
+        Skill skill1 = new Skill(skillId, Category.DEVELOPMENT, "React", "storage-key1", false);
+        Skill skill2 = new Skill(UUID.randomUUID(), Category.ARCHITECTURE, "Design", "storage-key2", false);
+
+        when(skillRepository.findAll()).thenReturn(List.of(skill1, skill2));
+        when(storageService.generatePresignedUrl("storage-key1")).thenReturn("url1");
+        when(storageService.generatePresignedUrl("storage-key2")).thenReturn("url2");
+        when(skillMapper.skillToSkillResponse(skill1, "url1"))
+                .thenReturn(new SkillResponse(skillId, Category.DEVELOPMENT, "React", "url1"));
+        when(skillMapper.skillToSkillResponse(skill2, "url2"))
+                .thenReturn(new SkillResponse(skill2.getSkillId(), Category.ARCHITECTURE, "Design", "url2"));
+
+        List<SkillResponse> responses = skillService.getAllSkills();
+
+        assertEquals(2, responses.size());
+        assertEquals("React", responses.get(0).name());
+        assertEquals("Design", responses.get(1).name());
+
+        verify(skillRepository).findAll();
+        verify(storageService).generatePresignedUrl("storage-key1");
+        verify(storageService).generatePresignedUrl("storage-key2");
+        verify(skillMapper).skillToSkillResponse(skill1, "url1");
+        verify(skillMapper).skillToSkillResponse(skill2, "url2");
+    }
+
+    @Test
+    void getAllSkills_shouldFilterOutDeletedSkills() {
+        Skill deleted = new Skill(skillId, Category.DEVELOPMENT, "React", "storage-key", true);
+
+        when(skillRepository.findAll()).thenReturn(List.of(deleted));
+
+        List<SkillResponse> responses = skillService.getAllSkills();
+
+        assertTrue(responses.isEmpty());
+        verify(skillRepository).findAll();
+        verify(storageService, never()).generatePresignedUrl(anyString());
+        verify(skillMapper, never()).skillToSkillResponse(any(), any());
     }
 
     @Test
@@ -190,80 +268,6 @@ class SkillServiceTest {
         verify(storageService).upload(any());
         verify(skillRepository).save(existing);
         verify(skillMapper).skillToSkillResponse(updated, "new-url");
-    }
-
-    @Test
-    void getSkillsByCategory_shouldReturnMappedResponses() {
-        Skill skill = new Skill(skillId, Category.DEVELOPMENT, "React", "storage-key", false);
-
-        when(skillRepository.findByCategory(Category.DEVELOPMENT)).thenReturn(List.of(skill));
-        when(storageService.generatePresignedUrl("storage-key")).thenReturn("url");
-        when(skillMapper.skillToSkillResponse(skill, "url"))
-                .thenReturn(new SkillResponse(skillId, Category.DEVELOPMENT, "React", "url"));
-
-        List<SkillResponse> responses = skillService.getSkillsByCategory(Category.DEVELOPMENT);
-
-        assertEquals(1, responses.size());
-        assertEquals("React", responses.get(0).name());
-        assertEquals("url", responses.get(0).url());
-
-        verify(skillRepository).findByCategory(Category.DEVELOPMENT);
-        verify(storageService).generatePresignedUrl("storage-key");
-        verify(skillMapper).skillToSkillResponse(skill, "url");
-    }
-
-    @Test
-    void getSkillsByCategory_shouldFilterOutDeletedSkills() {
-        Skill deleted = new Skill(skillId, Category.DEVELOPMENT, "React", "storage-key", true);
-
-        when(skillRepository.findByCategory(Category.DEVELOPMENT)).thenReturn(List.of(deleted));
-
-        List<SkillResponse> responses = skillService.getSkillsByCategory(Category.DEVELOPMENT);
-
-        assertTrue(responses.isEmpty());
-        verify(skillRepository).findByCategory(Category.DEVELOPMENT);
-        verify(storageService, never()).generatePresignedUrl(anyString());
-        verify(skillMapper, never()).skillToSkillResponse(any(), any());
-    }
-
-    @Test
-    void getAllSkills_shouldReturnMappedResponses() {
-        Skill skill1 = new Skill(skillId, Category.DEVELOPMENT, "React", "storage-key1", false);
-        Skill skill2 = new Skill(UUID.randomUUID(), Category.ARCHITECTURE, "Design", "storage-key2", false);
-
-        when(skillRepository.findAll()).thenReturn(List.of(skill1, skill2));
-        when(storageService.generatePresignedUrl("storage-key1")).thenReturn("url1");
-        when(storageService.generatePresignedUrl("storage-key2")).thenReturn("url2");
-        when(skillMapper.skillToSkillResponse(skill1, "url1"))
-                .thenReturn(new SkillResponse(skillId, Category.DEVELOPMENT, "React", "url1"));
-        when(skillMapper.skillToSkillResponse(skill2, "url2"))
-                .thenReturn(new SkillResponse(skill2.getSkillId(), Category.ARCHITECTURE, "Design", "url2"));
-
-        List<SkillResponse> responses = skillService.getAllSkills();
-
-        assertEquals(2, responses.size());
-        assertEquals("React", responses.get(0).name());
-        assertEquals("Design", responses.get(1).name());
-
-        verify(skillRepository).findAll();
-        verify(storageService).generatePresignedUrl("storage-key1");
-        verify(storageService).generatePresignedUrl("storage-key2");
-        verify(skillMapper).skillToSkillResponse(skill1, "url1");
-        verify(skillMapper).skillToSkillResponse(skill2, "url2");
-    }
-
-    @Test
-    void getAllSkills_shouldFilterOutDeletedSkills() {
-        Skill deleted = new Skill(skillId, Category.DEVELOPMENT, "React", "storage-key", true);
-
-        when(skillRepository.findAll()).thenReturn(List.of(deleted));
-
-        List<SkillResponse> responses = skillService.getAllSkills();
-
-        assertTrue(responses.isEmpty());
-        verify(skillRepository).findAll();
-        verify(storageService, never()).generatePresignedUrl(anyString());
-        verify(skillMapper, never()).skillToSkillResponse(any(), any());
     }
 
     @Test

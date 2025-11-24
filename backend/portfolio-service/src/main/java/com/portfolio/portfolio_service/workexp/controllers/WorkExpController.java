@@ -42,13 +42,13 @@ public class WorkExpController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteById(@PathVariable UUID id) {
-        workExpService.deleteSkill(id);
+        workExpService.deleteWorkExp(id);
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/hard/{id}")
     public ResponseEntity<Void> deleteByIdHard(@PathVariable UUID id) {
-        workExpService.deleteSkillHard(id);
+        workExpService.deleteWorkExpHard(id);
         return ResponseEntity.noContent().build();
     }
 }

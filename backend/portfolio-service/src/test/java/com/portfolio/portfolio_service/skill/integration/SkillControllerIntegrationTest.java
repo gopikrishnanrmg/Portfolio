@@ -1,25 +1,26 @@
 package com.portfolio.portfolio_service.skill.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.javafaker.Faker;
-import com.portfolio.portfolio_service.blob_storage.StorageService;
-import com.portfolio.portfolio_service.blob_storage.dtos.StorageResult;
 import com.portfolio.portfolio_service.skill.dtos.CreateSkillRequest;
+import com.portfolio.portfolio_service.skill.dtos.UpdateSkillRequest;
 import com.portfolio.portfolio_service.skill.models.Category;
+import com.portfolio.portfolio_service.skill.models.Skill;
 import com.portfolio.portfolio_service.skill.repositories.SkillRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -35,16 +36,9 @@ class SkillControllerIntegrationTest {
     @Autowired
     private SkillRepository skillRepository;
 
-    @MockitoBean
-    private StorageService storageService;
-
     @BeforeEach
     void cleanDb() {
         skillRepository.deleteAll();
-
-        Mockito.when(storageService.upload(Mockito.any()))
-                .thenReturn(new StorageResult(java.util.UUID.randomUUID().toString(), Faker.instance().letterify("letter")));
-
     }
 
     @Test
@@ -64,4 +58,120 @@ class SkillControllerIntegrationTest {
 
         assertTrue(skillRepository.existsByName("React"));
     }
+
+    @Test
+    void getAllSkills_shouldReturnList() throws Exception {
+        skillRepository.save(
+                Skill.builder()
+                        .category(Category.DEVELOPMENT)
+                        .name("Java")
+                        .storageKey("fakeKey")
+                        .isDeleted(false)
+                        .build()
+        );
+
+        mockMvc.perform(get("/api/v1/skills"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].name").value("Java"));
+    }
+
+    @Test
+    void getSkillsByCategory_shouldReturnFilteredList() throws Exception {
+        skillRepository.save(
+                Skill.builder()
+                        .category(Category.DEVELOPMENT)
+                        .name("Java")
+                        .storageKey("fakeKey")
+                        .isDeleted(false)
+                        .build()
+        );
+        skillRepository.save(
+                Skill.builder()
+                        .category(Category.ARCHITECTURE)
+                        .name("UML")
+                        .storageKey("fakeKey")
+                        .isDeleted(false)
+                        .build()
+        );
+
+        mockMvc.perform(get("/api/v1/skills/DEVELOPMENT"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].name").value("Java"));
+    }
+
+    @Test
+    void updateSkill_shouldUpdateFields() throws Exception {
+        Skill skill = skillRepository.save(
+                Skill.builder()
+                        .category(Category.DEVELOPMENT)
+                        .name("Java")
+                        .storageKey("fakeKey")
+                        .isDeleted(false)
+                        .build()
+        );
+
+        UpdateSkillRequest update = new UpdateSkillRequest(Category.DEVELOPMENT, "Kotlin");
+
+        mockMvc.perform(put("/api/v1/skills/" + skill.getSkillId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(update)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("Kotlin"));
+    }
+
+    @Test
+    void uploadSkillFile_shouldReplaceFile() throws Exception {
+        Skill skill = skillRepository.save(
+                Skill.builder()
+                        .category(Category.DEVELOPMENT)
+                        .name("Java")
+                        .storageKey("oldKey")
+                        .isDeleted(false)
+                        .build()
+        );
+
+        MockMultipartFile file = new MockMultipartFile("file", "icon.png", "image/png", "dummy".getBytes());
+
+        mockMvc.perform(multipart("/api/v1/skills/" + skill.getSkillId() + "/file")
+                        .file(file)
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .with(request -> { request.setMethod("PUT"); return request; }))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("Java"));
+    }
+
+    @Test
+    void deleteSkill_shouldMarkDeleted() throws Exception {
+        Skill skill = skillRepository.save(
+                Skill.builder()
+                        .category(Category.DEVELOPMENT)
+                        .name("Java")
+                        .storageKey("fakeKey")
+                        .isDeleted(false)
+                        .build()
+        );
+
+        mockMvc.perform(delete("/api/v1/skills/" + skill.getSkillId()))
+                .andExpect(status().isNoContent());
+
+        assertTrue(skillRepository.findById(skill.getSkillId()).get().getIsDeleted());
+    }
+
+    @Test
+    void deleteSkillHard_shouldRemoveEntity() throws Exception {
+        Skill skill = skillRepository.save(
+                Skill.builder()
+                        .category(Category.DEVELOPMENT)
+                        .name("Java")
+                        .storageKey("fakeKey")
+                        .isDeleted(false)
+                        .build()
+        );
+
+        mockMvc.perform(delete("/api/v1/skills/hard/" + skill.getSkillId()))
+                .andExpect(status().isNoContent());
+
+        assertFalse(skillRepository.findById(skill.getSkillId()).isPresent());
+    }
 }
+

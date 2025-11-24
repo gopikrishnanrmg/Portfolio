@@ -1,6 +1,5 @@
 package com.portfolio.portfolio_service.workexp.services;
 
-import com.portfolio.portfolio_service.skill.exceptions.SkillNotFoundException;
 import com.portfolio.portfolio_service.workexp.dtos.CreateWorkExpRequest;
 import com.portfolio.portfolio_service.workexp.dtos.UpdateWorkExpRequest;
 import com.portfolio.portfolio_service.workexp.dtos.WorkExpResponse;
@@ -88,7 +87,7 @@ public class WorkExpService {
         return workExpMapper.workExpToWorkExpResponse(updated);
     }
 
-    public void deleteSkill(UUID workExpId) {
+    public void deleteWorkExp(UUID workExpId) {
         WorkExp workExp = workExpRepository.findById(workExpId)
                 .orElseThrow(() -> new WorkExpNotFoundException("WorkExp not found with id: " + workExpId));
 
@@ -96,7 +95,7 @@ public class WorkExpService {
         workExpRepository.save(workExp);
     }
 
-    public void deleteSkillHard(UUID workExpId) {
+    public void deleteWorkExpHard(UUID workExpId) {
         WorkExp workExp = workExpRepository.findById(workExpId)
                 .orElseThrow(() -> new WorkExpNotFoundException("WorkExp not found with id: " + workExpId));
 

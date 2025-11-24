@@ -61,7 +61,10 @@ class SkillControllerTest {
                         .file(file)
                         .contentType(MediaType.MULTIPART_FORM_DATA))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.skillId").value(skillId.toString()));
+                .andExpect(jsonPath("$.skillId").value(skillId.toString()))
+                .andExpect(jsonPath("$.category").value(Category.DEVELOPMENT.toString()))
+                .andExpect(jsonPath("$.name").value("React"))
+                .andExpect(jsonPath("$.url").value("url"));
     }
 
     @Test
