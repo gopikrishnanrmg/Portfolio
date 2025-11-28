@@ -169,6 +169,8 @@ class SkillControllerTest {
 
         mockMvc.perform(delete("/api/v1/skills/" + skillId))
                 .andExpect(status().isNoContent());
+
+        verify(skillService).deleteSkill(skillId);
     }
 
     @Test
@@ -177,6 +179,7 @@ class SkillControllerTest {
 
         mockMvc.perform(delete("/api/v1/skills/hard/" + skillId))
                 .andExpect(status().isNoContent());
-    }
 
+        verify(skillService).deleteSkillHard(skillId);
+    }
 }

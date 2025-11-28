@@ -24,12 +24,10 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class WorkExpServiceTest {
 
-    @Mock
-    private WorkExpRepository workExpRepository;
+    @Mock private WorkExpRepository workExpRepository;
     @Mock private WorkExpMapper workExpMapper;
 
-    @InjectMocks
-    private WorkExpService workExpService;
+    @InjectMocks private WorkExpService workExpService;
 
     private final UUID workExpId = UUID.randomUUID();
 
@@ -104,6 +102,25 @@ class WorkExpServiceTest {
         verify(workExpMapper, never()).workExpToWorkExpResponse(deleted);
     }
 
+    @Test
+    void updateWorkExp_shouldReturnUpdatedResponse() {
+        UpdateWorkExpRequest request = new UpdateWorkExpRequest("Engineer", "CompanyY", LocalDate.of(2022,1,1), Optional.empty(), List.of("Updated"));
+        WorkExp workExp = new WorkExp(workExpId, "Dev", "CompanyX", LocalDate.of(2020,1,1), null, List.of("Old"), false);
+        WorkExpResponse response = new WorkExpResponse(workExpId, "Engineer", "CompanyY", LocalDate.of(2022,1,1), null, List.of("Updated"));
+
+        when(workExpRepository.findById(workExpId)).thenReturn(Optional.of(workExp));
+        when(workExpRepository.save(workExp)).thenReturn(workExp);
+        when(workExpMapper.workExpToWorkExpResponse(workExp)).thenReturn(response);
+
+        WorkExpResponse result = workExpService.updateWorkExp(workExpId, request);
+
+        assertEquals("Engineer", result.role());
+        assertEquals("CompanyY", result.company());
+
+        verify(workExpRepository).findById(workExpId);
+        verify(workExpRepository).save(workExp);
+        verify(workExpMapper).workExpToWorkExpResponse(workExp);
+    }
 
     @Test
     void updateWorkExp_shouldThrowWorkExpNotFoundException() {
@@ -131,36 +148,6 @@ class WorkExpServiceTest {
     }
 
     @Test
-    void updateWorkExp_shouldReturnUpdatedResponse() {
-        UpdateWorkExpRequest request = new UpdateWorkExpRequest("Engineer", "CompanyY", LocalDate.of(2022,1,1), Optional.empty(), List.of("Updated"));
-        WorkExp workExp = new WorkExp(workExpId, "Dev", "CompanyX", LocalDate.of(2020,1,1), null, List.of("Old"), false);
-        WorkExpResponse response = new WorkExpResponse(workExpId, "Engineer", "CompanyY", LocalDate.of(2022,1,1), null, List.of("Updated"));
-
-        when(workExpRepository.findById(workExpId)).thenReturn(Optional.of(workExp));
-        when(workExpRepository.save(workExp)).thenReturn(workExp);
-        when(workExpMapper.workExpToWorkExpResponse(workExp)).thenReturn(response);
-
-        WorkExpResponse result = workExpService.updateWorkExp(workExpId, request);
-
-        assertEquals("Engineer", result.role());
-        assertEquals("CompanyY", result.company());
-
-        verify(workExpRepository).findById(workExpId);
-        verify(workExpRepository).save(workExp);
-        verify(workExpMapper).workExpToWorkExpResponse(workExp);
-    }
-
-    @Test
-    void deleteWorkExp_shouldThrowWorkExpNotFoundException() {
-        when(workExpRepository.findById(workExpId)).thenReturn(Optional.empty());
-
-        assertThrows(WorkExpNotFoundException.class, () -> workExpService.deleteWorkExp(workExpId));
-
-        verify(workExpRepository).findById(workExpId);
-        verifyNoMoreInteractions(workExpRepository, workExpMapper);
-    }
-
-    @Test
     void deleteWorkExp_shouldMarkDeleted() {
         WorkExp workExp = new WorkExp(workExpId, "Dev", "CompanyX", LocalDate.of(2020,1,1), null, List.of("Point"), false);
 
@@ -175,10 +162,10 @@ class WorkExpServiceTest {
     }
 
     @Test
-    void deleteWorkExpHard_shouldThrowWorkExpNotFoundException() {
+    void deleteWorkExp_shouldThrowWorkExpNotFoundException() {
         when(workExpRepository.findById(workExpId)).thenReturn(Optional.empty());
 
-        assertThrows(WorkExpNotFoundException.class, () -> workExpService.deleteWorkExpHard(workExpId));
+        assertThrows(WorkExpNotFoundException.class, () -> workExpService.deleteWorkExp(workExpId));
 
         verify(workExpRepository).findById(workExpId);
         verifyNoMoreInteractions(workExpRepository, workExpMapper);
@@ -195,4 +182,15 @@ class WorkExpServiceTest {
         verify(workExpRepository).findById(workExpId);
         verify(workExpRepository).delete(workExp);
     }
+
+    @Test
+    void deleteWorkExpHard_shouldThrowWorkExpNotFoundException() {
+        when(workExpRepository.findById(workExpId)).thenReturn(Optional.empty());
+
+        assertThrows(WorkExpNotFoundException.class, () -> workExpService.deleteWorkExpHard(workExpId));
+
+        verify(workExpRepository).findById(workExpId);
+        verifyNoMoreInteractions(workExpRepository, workExpMapper);
+    }
+
 }

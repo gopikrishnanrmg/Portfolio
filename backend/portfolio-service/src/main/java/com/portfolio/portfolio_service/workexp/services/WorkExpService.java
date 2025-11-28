@@ -38,8 +38,7 @@ public class WorkExpService {
 
 
     public List<WorkExpResponse> getAllWorkExps() {
-        return workExpRepository
-                .findAll()
+        return workExpRepository.findAll()
                 .stream()
                 .filter(workExp -> !workExp.getIsDeleted())
                 .map(workExpMapper::workExpToWorkExpResponse)
