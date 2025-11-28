@@ -9,7 +9,6 @@ import com.portfolio.portfolio_service.projects.exceptions.ProjectNotFoundExcept
 import com.portfolio.portfolio_service.projects.mappers.ProjectMapper;
 import com.portfolio.portfolio_service.projects.models.Project;
 import com.portfolio.portfolio_service.projects.repositories.ProjectRepository;
-import com.portfolio.portfolio_service.workexp.exceptions.WorkExpNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -43,7 +42,7 @@ public class ProjectService {
 
     public ProjectResponse updateProject(UUID projectId, UpdateProjectRequest projectRequest) {
         Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new WorkExpNotFoundException("Project not found with id: " + projectId));
+                .orElseThrow(() -> new ProjectNotFoundException("Project not found with id: " + projectId));
 
         if (projectRequest.title() != null) {
             if (!projectRequest.title().isBlank())
@@ -73,11 +72,12 @@ public class ProjectService {
                 throw new InvalidProjectUpdateException("Banner cannot be blank");
         }
 
-        if (projectRequest.description() != null) {
-            if (!projectRequest.description().isBlank())
-                project.setDescription(projectRequest.description());
-            else
-                throw new InvalidProjectUpdateException("Link cannot be blank");
+        if (projectRequest.link() != null) {
+            if (projectRequest.link().isPresent()) {
+                project.setLink(projectRequest.link().get());
+            } else {
+                project.setLink(null);
+            }
         }
 
         Project updated = projectRepository.save(project);
