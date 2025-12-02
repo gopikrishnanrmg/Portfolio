@@ -67,11 +67,12 @@ public class SkillService {
 
         if (skillRequest.category() != null)
             skill.setCategory(skillRequest.category());
+
         if (skillRequest.name() != null) {
             if(!skillRequest.name().isBlank())
                 skill.setName(skillRequest.name());
             else
-                throw new InvalidSkillUpdateException("Skill name cannot be blank");
+                throw new InvalidSkillUpdateException("Name cannot be blank");
         }
 
         Skill updated = skillRepository.save(skill);
@@ -114,5 +115,4 @@ public class SkillService {
 
         skillRepository.delete(skill);
     }
-
 }

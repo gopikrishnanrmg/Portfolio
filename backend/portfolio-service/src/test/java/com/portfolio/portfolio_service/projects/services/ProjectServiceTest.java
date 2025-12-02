@@ -9,7 +9,6 @@ import com.portfolio.portfolio_service.projects.exceptions.ProjectNotFoundExcept
 import com.portfolio.portfolio_service.projects.mappers.ProjectMapper;
 import com.portfolio.portfolio_service.projects.models.Project;
 import com.portfolio.portfolio_service.projects.repositories.ProjectRepository;
-import com.portfolio.portfolio_service.workexp.exceptions.WorkExpNotFoundException;
 import org.junit.jupiter.api.Test;
 
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -106,11 +105,11 @@ class ProjectServiceTest {
     }
 
     @Test
-    void updateProject_shouldThrowWorkExpNotFoundException() {
+    void updateProject_shouldThrowProjectNotFoundException() {
         UpdateProjectRequest request = new UpdateProjectRequest("New Title", null, null, null, Optional.empty());
         when(projectRepository.findById(projectId)).thenReturn(Optional.empty());
 
-        assertThrows(WorkExpNotFoundException.class, () -> projectService.updateProject(projectId, request));
+        assertThrows(ProjectNotFoundException.class, () -> projectService.updateProject(projectId, request));
 
         verify(projectRepository).findById(projectId);
         verifyNoMoreInteractions(projectRepository, projectMapper);

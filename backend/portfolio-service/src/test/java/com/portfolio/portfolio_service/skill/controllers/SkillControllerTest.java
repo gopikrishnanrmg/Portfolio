@@ -41,7 +41,8 @@ class SkillControllerTest {
     @MockitoBean
     private SkillService skillService;
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    @Autowired
+    private ObjectMapper objectMapper;
 
     private final UUID skillId = UUID.randomUUID();
 

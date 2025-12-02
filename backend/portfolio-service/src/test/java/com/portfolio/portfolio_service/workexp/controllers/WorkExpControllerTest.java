@@ -63,7 +63,7 @@ class WorkExpControllerTest {
 
         when(workExpService.createWorkExp(any())).thenReturn(response);
 
-        mockMvc.perform(post("/api/v1/workexp")
+        mockMvc.perform(post("/api/v1/workexps")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
@@ -82,7 +82,7 @@ class WorkExpControllerTest {
                 List.of("Did stuff")
         );
 
-        mockMvc.perform(post("/api/v1/workexp")
+        mockMvc.perform(post("/api/v1/workexps")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
@@ -103,7 +103,7 @@ class WorkExpControllerTest {
 
         when(workExpService.getAllWorkExps()).thenReturn(List.of(response));
 
-        mockMvc.perform(get("/api/v1/workexp"))
+        mockMvc.perform(get("/api/v1/workexps"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].role").value("Developer"))
                 .andExpect(jsonPath("$[0].company").value("CompanyX"));
@@ -130,7 +130,7 @@ class WorkExpControllerTest {
 
         when(workExpService.updateWorkExp(eq(workExpId), any())).thenReturn(response);
 
-        mockMvc.perform(put("/api/v1/workexp/" + workExpId)
+        mockMvc.perform(put("/api/v1/workexps/" + workExpId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
@@ -145,7 +145,7 @@ class WorkExpControllerTest {
     void deleteWorkExp_shouldReturnNoContent() throws Exception {
         doNothing().when(workExpService).deleteWorkExp(workExpId);
 
-        mockMvc.perform(delete("/api/v1/workexp/" + workExpId))
+        mockMvc.perform(delete("/api/v1/workexps/" + workExpId))
                 .andExpect(status().isNoContent());
 
         verify(workExpService).deleteWorkExp(workExpId);
@@ -155,7 +155,7 @@ class WorkExpControllerTest {
     void deleteWorkExpHard_shouldReturnNoContent() throws Exception {
         doNothing().when(workExpService).deleteWorkExpHard(workExpId);
 
-        mockMvc.perform(delete("/api/v1/workexp/hard/" + workExpId))
+        mockMvc.perform(delete("/api/v1/workexps/hard/" + workExpId))
                 .andExpect(status().isNoContent());
 
         verify(workExpService).deleteWorkExpHard(workExpId);

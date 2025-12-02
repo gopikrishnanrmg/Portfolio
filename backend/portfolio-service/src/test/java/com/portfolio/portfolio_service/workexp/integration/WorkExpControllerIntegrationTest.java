@@ -54,7 +54,7 @@ class WorkExpControllerIntegrationTest {
             }
         """;
 
-        mockMvc.perform(post("/api/v1/workexp")
+        mockMvc.perform(post("/api/v1/workexps")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
                 .andExpect(status().isCreated())
@@ -83,7 +83,7 @@ class WorkExpControllerIntegrationTest {
 
         workExpRepository.saveAll(List.of(older, newer));
 
-        mockMvc.perform(get("/api/v1/workexp"))
+        mockMvc.perform(get("/api/v1/workexps"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2))
                 .andExpect(jsonPath("$[0].role").value("Older"))
@@ -110,7 +110,7 @@ class WorkExpControllerIntegrationTest {
             }
         """;
 
-        mockMvc.perform(put("/api/v1/workexp/" + workExp.getWorkExpId())
+        mockMvc.perform(put("/api/v1/workexps/" + workExp.getWorkExpId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(updateJson))
                 .andExpect(status().isOk())
@@ -129,7 +129,7 @@ class WorkExpControllerIntegrationTest {
                         .build()
         );
 
-        mockMvc.perform(delete("/api/v1/workexp/" + workExp.getWorkExpId()))
+        mockMvc.perform(delete("/api/v1/workexps/" + workExp.getWorkExpId()))
                 .andExpect(status().isNoContent());
 
         WorkExp deleted = workExpRepository.findById(workExp.getWorkExpId()).orElseThrow();
@@ -147,7 +147,7 @@ class WorkExpControllerIntegrationTest {
                         .build()
         );
 
-        mockMvc.perform(delete("/api/v1/workexp/hard/" + workExp.getWorkExpId()))
+        mockMvc.perform(delete("/api/v1/workexps/hard/" + workExp.getWorkExpId()))
                 .andExpect(status().isNoContent());
 
         assertFalse(workExpRepository.findById(workExp.getWorkExpId()).isPresent());

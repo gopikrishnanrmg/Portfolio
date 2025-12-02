@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/v1/workexp")
+@RequestMapping("/api/v1/workexps")
 @RequiredArgsConstructor
 public class WorkExpController {
 
@@ -24,7 +24,7 @@ public class WorkExpController {
     public ResponseEntity<WorkExpResponse> createWorkExp(
             @Valid @RequestBody CreateWorkExpRequest workExpRequest){
         WorkExpResponse created = workExpService.createWorkExp(workExpRequest);
-        URI location = URI.create("/api/v1/workexp/" + created.workExpId());
+        URI location = URI.create("/api/v1/workexps/" + created.workExpId());
         return ResponseEntity.created(location).body(created);
     }
 

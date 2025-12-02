@@ -23,7 +23,7 @@ public class ProjectService {
     private final ProjectRepository projectRepository;
     private final ProjectMapper projectMapper;
 
-    public ProjectResponse createProject(@Valid CreateProjectRequest projectRequest) {
+    public ProjectResponse createProject(CreateProjectRequest projectRequest) {
         if (projectRepository.existsByTitle(projectRequest.title()))
             throw new DuplicateProjectException("Project title already exists");
 
@@ -48,7 +48,7 @@ public class ProjectService {
             if (!projectRequest.title().isBlank())
                 project.setTitle(projectRequest.title());
             else
-                throw new InvalidProjectUpdateException("Project cannot be blank");
+                throw new InvalidProjectUpdateException("Title cannot be blank");
         }
 
         if (projectRequest.description() != null) {
