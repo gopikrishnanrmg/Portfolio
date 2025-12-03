@@ -8,5 +8,5 @@ import java.util.UUID;
 
 @Repository
 public interface TestimonialRepository extends JpaRepository<Testimonial, UUID>{
-        boolean existsByName(String name);
+        boolean existsByNameAndIsDeletedFalse(String name);
 }

@@ -39,7 +39,7 @@ class ProjectServiceTest {
         Project project = new Project(projectId, "Title", "Desc", List.of("Java"), "banner", "link", false);
         ProjectResponse expectedResponse = new ProjectResponse(projectId, "Title", "Desc", List.of("Java"), "banner", "link");
 
-        when(projectRepository.existsByTitle("Title")).thenReturn(false);
+        when(projectRepository.existsByTitleAndIsDeletedFalse("Title")).thenReturn(false);
         when(projectMapper.projectRequestToProject(request)).thenReturn(project);
         when(projectRepository.save(project)).thenReturn(project);
         when(projectMapper.projectToProjectResponse(project)).thenReturn(expectedResponse);
@@ -47,7 +47,7 @@ class ProjectServiceTest {
         ProjectResponse actualResponse = projectService.createProject(request);
 
         assertEquals(expectedResponse, actualResponse);
-        verify(projectRepository).existsByTitle("Title");
+        verify(projectRepository).existsByTitleAndIsDeletedFalse("Title");
         verify(projectMapper).projectRequestToProject(request);
         verify(projectRepository).save(project);
         verify(projectMapper).projectToProjectResponse(project);
@@ -56,11 +56,11 @@ class ProjectServiceTest {
     @Test
     void createProject_shouldThrowDuplicateProjectException() {
         CreateProjectRequest request = new CreateProjectRequest("Title", "Desc", List.of("Java"), "banner", "link");
-        when(projectRepository.existsByTitle("Title")).thenReturn(true);
+        when(projectRepository.existsByTitleAndIsDeletedFalse("Title")).thenReturn(true);
 
         assertThrows(DuplicateProjectException.class, () -> projectService.createProject(request));
 
-        verify(projectRepository).existsByTitle("Title");
+        verify(projectRepository).existsByTitleAndIsDeletedFalse("Title");
         verifyNoMoreInteractions(projectRepository, projectMapper);
     }
 

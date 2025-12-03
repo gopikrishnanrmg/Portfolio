@@ -50,7 +50,7 @@ class SkillServiceTest {
 
         SkillResponse expectedResponse = new SkillResponse(skillId, Category.DEVELOPMENT, "React", "url");
 
-        when(skillRepository.existsByName("React")).thenReturn(false);
+        when(skillRepository.existsByNameAndIsDeletedFalse("React")).thenReturn(false);
         when(storageService.upload(file.getBytes())).thenReturn(storageResult);
         when(storageService.generatePresignedUrl(storageResult.key())).thenReturn("url");
         when(skillRepository.save(any(Skill.class))).thenReturn(skill);
@@ -66,7 +66,7 @@ class SkillServiceTest {
 
         assertEquals(expectedResponse, actualResponse);
 
-        verify(skillRepository).existsByName("React");
+        verify(skillRepository).existsByNameAndIsDeletedFalse("React");
         verify(storageService).upload(file.getBytes());
         verify(storageService).generatePresignedUrl("storage-key");
         verify(skillMapper).skillRequestToSkill(request, "storage-key");
@@ -78,12 +78,12 @@ class SkillServiceTest {
         CreateSkillRequest request = new CreateSkillRequest(Category.DEVELOPMENT, "React");
         MultipartFile file = mock(MultipartFile.class);
 
-        when(skillRepository.existsByName("React")).thenReturn(true);
+        when(skillRepository.existsByNameAndIsDeletedFalse("React")).thenReturn(true);
 
         assertThrows(DuplicateSkillException.class,
                 () -> skillService.createSkill(request, file));
 
-        verify(skillRepository).existsByName("React");
+        verify(skillRepository).existsByNameAndIsDeletedFalse("React");
         verifyNoMoreInteractions(skillRepository, storageService, skillMapper);
     }
 
@@ -92,7 +92,7 @@ class SkillServiceTest {
         CreateSkillRequest request = new CreateSkillRequest(Category.DEVELOPMENT, "React");
         MultipartFile file = mock(MultipartFile.class);
 
-        when(skillRepository.existsByName("React")).thenReturn(false);
+        when(skillRepository.existsByNameAndIsDeletedFalse("React")).thenReturn(false);
         when(storageService.upload(file.getBytes())).thenThrow(new FileProcessingException("Upload failed"));
 
         assertThrows(FileProcessingException.class,

@@ -23,7 +23,7 @@ public class TestimonialService {
     private final TestimonialMapper testimonialMapper;
 
     public TestimonialResponse createTestimonial(CreateTestimonialRequest testimonialRequest) {
-        if (testimonialRepository.existsByName(testimonialRequest.name()))
+        if (testimonialRepository.existsByNameAndIsDeletedFalse(testimonialRequest.name()))
             throw new DuplicateTestimonialException("Testimonial with this name already exists");
 
         Testimonial testimonial = testimonialMapper.testimonialRequestToTestimonial(testimonialRequest);

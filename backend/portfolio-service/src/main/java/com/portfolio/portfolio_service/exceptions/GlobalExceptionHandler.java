@@ -1,8 +1,13 @@
 package com.portfolio.portfolio_service.exceptions;
 
+import com.portfolio.portfolio_service.projects.exceptions.DuplicateProjectException;
+import com.portfolio.portfolio_service.projects.exceptions.InvalidProjectUpdateException;
 import com.portfolio.portfolio_service.skill.exceptions.DuplicateSkillException;
 import com.portfolio.portfolio_service.skill.exceptions.InvalidSkillUpdateException;
 import com.portfolio.portfolio_service.skill.exceptions.SkillNotFoundException;
+import com.portfolio.portfolio_service.testimonials.exceptions.DuplicateTestimonialException;
+import com.portfolio.portfolio_service.testimonials.exceptions.InvalidTestimonialUpdateException;
+import com.portfolio.portfolio_service.testimonials.exceptions.TestimonialNotFoundException;
 import com.portfolio.portfolio_service.workexp.exceptions.DuplicateWorkExpException;
 import com.portfolio.portfolio_service.workexp.exceptions.InvalidWorkExpUpdateException;
 import com.portfolio.portfolio_service.workexp.exceptions.WorkExpNotFoundException;
@@ -198,6 +203,81 @@ public class GlobalExceptionHandler {
         );
 
         return ResponseEntity.badRequest().body(response);
+    }
+
+    @ExceptionHandler(DuplicateProjectException.class)
+    public ResponseEntity<ApiErrorResponse> handleDuplicateProjectException(
+            DuplicateProjectException ex, HttpServletRequest request) {
+
+        ApiErrorResponse response = new ApiErrorResponse(
+                HttpStatus.CONFLICT.value(),
+                "Duplicate Project",
+                ex.getMessage(),
+                request.getRequestURI(),
+                LocalDateTime.now()
+        );
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+    }
+
+    @ExceptionHandler(InvalidProjectUpdateException.class)
+    public ResponseEntity<ApiErrorResponse> handleInvalidProjectUpdateException(
+            InvalidProjectUpdateException ex, HttpServletRequest request) {
+
+        ApiErrorResponse response = new ApiErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                "Invalid Project Update",
+                ex.getMessage(),
+                request.getRequestURI(),
+                LocalDateTime.now()
+        );
+
+        return ResponseEntity.badRequest().body(response);
+    }
+
+    @ExceptionHandler(DuplicateTestimonialException.class)
+    public ResponseEntity<ApiErrorResponse> handleDuplicateTestimonialException(
+            DuplicateTestimonialException ex, HttpServletRequest request) {
+
+        ApiErrorResponse response = new ApiErrorResponse(
+                HttpStatus.CONFLICT.value(),
+                "Duplicate Testimonial",
+                ex.getMessage(),
+                request.getRequestURI(),
+                LocalDateTime.now()
+        );
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+    }
+
+    @ExceptionHandler(InvalidTestimonialUpdateException.class)
+    public ResponseEntity<ApiErrorResponse> handleInvalidTestimonialUpdateException(
+            InvalidTestimonialUpdateException ex, HttpServletRequest request) {
+
+        ApiErrorResponse response = new ApiErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                "Invalid Testimonial Update",
+                ex.getMessage(),
+                request.getRequestURI(),
+                LocalDateTime.now()
+        );
+
+        return ResponseEntity.badRequest().body(response);
+    }
+
+    @ExceptionHandler(TestimonialNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleTestimonialNotFoundException(
+            TestimonialNotFoundException ex, HttpServletRequest request) {
+
+        ApiErrorResponse response = new ApiErrorResponse(
+                HttpStatus.NOT_FOUND.value(),
+                "Testimonial Not Found",
+                ex.getMessage(),
+                request.getRequestURI(),
+                LocalDateTime.now()
+        );
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 
     @ExceptionHandler(RuntimeException.class)

@@ -56,7 +56,7 @@ class SkillControllerIntegrationTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name").value("React"));
 
-        assertTrue(skillRepository.existsByName("React"));
+        assertTrue(skillRepository.existsByNameAndIsDeletedFalse("React"));
     }
 
     @Test

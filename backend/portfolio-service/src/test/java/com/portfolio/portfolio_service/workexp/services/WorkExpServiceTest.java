@@ -43,7 +43,7 @@ class WorkExpServiceTest {
 
         WorkExpResponse expectedResponse = new WorkExpResponse(workExpId, "Developer", "CompanyX", LocalDate.of(2020,1,1), null, List.of("Did stuff"));
 
-        when(workExpRepository.existsByRoleAndCompanyAndStartDate("Developer","CompanyX", LocalDate.of(2020,1,1))).thenReturn(false);
+        when(workExpRepository.existsByRoleAndCompanyAndStartDateAndIsDeletedFalse("Developer","CompanyX", LocalDate.of(2020,1,1))).thenReturn(false);
         when(workExpMapper.workExpRequestToWorkExp(request)).thenReturn(workExp);
         when(workExpRepository.save(workExp)).thenReturn(workExp);
         when(workExpMapper.workExpToWorkExpResponse(workExp)).thenReturn(expectedResponse);
@@ -52,7 +52,7 @@ class WorkExpServiceTest {
 
         assertEquals(expectedResponse, actualResponse);
 
-        verify(workExpRepository).existsByRoleAndCompanyAndStartDate("Developer","CompanyX", LocalDate.of(2020,1,1));
+        verify(workExpRepository).existsByRoleAndCompanyAndStartDateAndIsDeletedFalse("Developer","CompanyX", LocalDate.of(2020,1,1));
         verify(workExpMapper).workExpRequestToWorkExp(request);
         verify(workExpRepository).save(workExp);
         verify(workExpMapper).workExpToWorkExpResponse(workExp);
@@ -62,11 +62,11 @@ class WorkExpServiceTest {
     void createWorkExp_shouldThrowDuplicateWorkExpException() {
         CreateWorkExpRequest request = new CreateWorkExpRequest("Developer", "CompanyX", LocalDate.of(2020,1,1), null, List.of("Did stuff"));
 
-        when(workExpRepository.existsByRoleAndCompanyAndStartDate("Developer","CompanyX", LocalDate.of(2020,1,1))).thenReturn(true);
+        when(workExpRepository.existsByRoleAndCompanyAndStartDateAndIsDeletedFalse("Developer","CompanyX", LocalDate.of(2020,1,1))).thenReturn(true);
 
         assertThrows(DuplicateWorkExpException.class, () -> workExpService.createWorkExp(request));
 
-        verify(workExpRepository).existsByRoleAndCompanyAndStartDate("Developer","CompanyX", LocalDate.of(2020,1,1));
+        verify(workExpRepository).existsByRoleAndCompanyAndStartDateAndIsDeletedFalse("Developer","CompanyX", LocalDate.of(2020,1,1));
         verifyNoMoreInteractions(workExpRepository, workExpMapper);
     }
 

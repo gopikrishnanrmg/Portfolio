@@ -28,8 +28,7 @@ class TestimonialServiceTest {
     @Mock private TestimonialRepository testimonialRepository;
     @Mock private TestimonialMapper testimonialMapper;
 
-    @InjectMocks
-    private TestimonialService testimonialService;
+    @InjectMocks private TestimonialService testimonialService;
 
     private final UUID testimonialId = UUID.randomUUID();
 
@@ -39,7 +38,7 @@ class TestimonialServiceTest {
         Testimonial testimonial = new Testimonial(testimonialId, "John Doe", "Engineer", "Text", "JD", "accent", false);
         TestimonialResponse expectedResponse = new TestimonialResponse(testimonialId, "John Doe", "Engineer", "Text", "JD", "accent");
 
-        when(testimonialRepository.existsByName("John Doe")).thenReturn(false);
+        when(testimonialRepository.existsByNameAndIsDeletedFalse("John Doe")).thenReturn(false);
         when(testimonialMapper.testimonialRequestToTestimonial(request)).thenReturn(testimonial);
         when(testimonialRepository.save(testimonial)).thenReturn(testimonial);
         when(testimonialMapper.testimonialToTestimonialResponse(testimonial)).thenReturn(expectedResponse);
@@ -47,7 +46,7 @@ class TestimonialServiceTest {
         TestimonialResponse actualResponse = testimonialService.createTestimonial(request);
 
         assertEquals(expectedResponse, actualResponse);
-        verify(testimonialRepository).existsByName("John Doe");
+        verify(testimonialRepository).existsByNameAndIsDeletedFalse("John Doe");
         verify(testimonialMapper).testimonialRequestToTestimonial(request);
         verify(testimonialRepository).save(testimonial);
         verify(testimonialMapper).testimonialToTestimonialResponse(testimonial);
@@ -56,11 +55,11 @@ class TestimonialServiceTest {
     @Test
     void createTestimonial_shouldThrowDuplicateTestimonialException() {
         CreateTestimonialRequest request = new CreateTestimonialRequest("John Doe", "Engineer", "Text", "JD", "accent");
-        when(testimonialRepository.existsByName("John Doe")).thenReturn(true);
+        when(testimonialRepository.existsByNameAndIsDeletedFalse("John Doe")).thenReturn(true);
 
         assertThrows(DuplicateTestimonialException.class, () -> testimonialService.createTestimonial(request));
 
-        verify(testimonialRepository).existsByName("John Doe");
+        verify(testimonialRepository).existsByNameAndIsDeletedFalse("John Doe");
         verifyNoMoreInteractions(testimonialRepository, testimonialMapper);
     }
 

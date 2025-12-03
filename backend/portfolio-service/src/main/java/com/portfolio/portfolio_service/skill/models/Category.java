@@ -4,5 +4,6 @@ public enum Category {
     ARCHITECTURE,
     DEVELOPMENT,
     DEVOPS,
-    TESTING;
+    TESTING,
+    MISCELLANEOUS;
 }

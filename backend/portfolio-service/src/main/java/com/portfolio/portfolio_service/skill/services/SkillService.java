@@ -30,7 +30,7 @@ public class SkillService {
     private final StorageService storageService;
 
     public SkillResponse createSkill(CreateSkillRequest skillRequest, MultipartFile file) {
-        if (skillRepository.existsByName(skillRequest.name()))
+        if (skillRepository.existsByNameAndIsDeletedFalse(skillRequest.name()))
             throw new DuplicateSkillException("Skill name already exists");
 
         try {

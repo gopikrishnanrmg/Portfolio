@@ -9,5 +9,5 @@ import java.util.UUID;
 
 @Repository
 public interface WorkExpRepository extends JpaRepository<WorkExp, UUID> {
-    boolean existsByRoleAndCompanyAndStartDate(String role, String company, LocalDate startDate);
+    boolean existsByRoleAndCompanyAndStartDateAndIsDeletedFalse(String role, String company, LocalDate startDate);
 }

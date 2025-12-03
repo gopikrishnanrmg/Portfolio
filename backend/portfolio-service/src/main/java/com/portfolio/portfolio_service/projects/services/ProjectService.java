@@ -9,7 +9,6 @@ import com.portfolio.portfolio_service.projects.exceptions.ProjectNotFoundExcept
 import com.portfolio.portfolio_service.projects.mappers.ProjectMapper;
 import com.portfolio.portfolio_service.projects.models.Project;
 import com.portfolio.portfolio_service.projects.repositories.ProjectRepository;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +23,7 @@ public class ProjectService {
     private final ProjectMapper projectMapper;
 
     public ProjectResponse createProject(CreateProjectRequest projectRequest) {
-        if (projectRepository.existsByTitle(projectRequest.title()))
+        if (projectRepository.existsByTitleAndIsDeletedFalse(projectRequest.title()))
             throw new DuplicateProjectException("Project title already exists");
 
         Project project = projectMapper.projectRequestToProject(projectRequest);

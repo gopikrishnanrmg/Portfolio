@@ -24,7 +24,7 @@ public class WorkExpService {
     private final WorkExpMapper workExpMapper;
 
     public WorkExpResponse createWorkExp(CreateWorkExpRequest workExpRequest) {
-        if (workExpRepository.existsByRoleAndCompanyAndStartDate(workExpRequest.role(), workExpRequest.company(), workExpRequest.startDate())) {
+        if (workExpRepository.existsByRoleAndCompanyAndStartDateAndIsDeletedFalse(workExpRequest.role(), workExpRequest.company(), workExpRequest.startDate())) {
             throw new DuplicateWorkExpException(
                     "Work experience already exists for role " + workExpRequest.role() +
                             ", company " + workExpRequest.company() +
