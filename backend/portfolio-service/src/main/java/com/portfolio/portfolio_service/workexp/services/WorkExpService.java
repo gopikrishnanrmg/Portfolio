@@ -63,6 +63,14 @@ public class WorkExpService {
                 throw new InvalidWorkExpUpdateException("Company cannot be blank");
         }
 
+        if (workExpRequest.note() != null) {
+            if (workExpRequest.note().isPresent()) {
+                workExp.setNote(workExpRequest.note().get());
+            } else {
+                workExp.setNote(null);
+            }
+        }
+
         if (workExpRequest.startDate() != null)
             workExp.setStartDate(workExpRequest.startDate());
 

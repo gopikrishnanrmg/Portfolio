@@ -7,5 +7,5 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.List;
 
-public record CreateWorkExpRequest(@NotBlank String role, @NotBlank String company, @NotNull LocalDate startDate, LocalDate endDate,@NotEmpty List<String> points) {
+public record CreateWorkExpRequest(@NotBlank String role, @NotBlank String company, String note, @NotNull LocalDate startDate, LocalDate endDate,@NotEmpty List<String> points) {
 }

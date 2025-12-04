@@ -4,5 +4,5 @@ import java.time.LocalDate;
 import java.util.UUID;
 import java.util.List;
 
-public record WorkExpResponse(UUID workExpId, String role, String company, LocalDate startDate, LocalDate endDate, List<String> points) {
+public record WorkExpResponse(UUID workExpId, String role, String company, String note, LocalDate startDate, LocalDate endDate, List<String> points) {
 }

@@ -48,6 +48,7 @@ class WorkExpControllerIntegrationTest {
             {
               "role": "Developer",
               "company": "CompanyX",
+              "note": null,
               "startDate": "2020-01-01",
               "endDate": null,
               "points": ["Did stuff"]

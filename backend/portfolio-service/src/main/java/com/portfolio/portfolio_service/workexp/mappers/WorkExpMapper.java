@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class WorkExpMapper {
     public WorkExpResponse workExpToWorkExpResponse(WorkExp workExp) {
-        return new WorkExpResponse(workExp.getWorkExpId(), workExp.getRole(), workExp.getCompany(), workExp.getStartDate(), workExp.getEndDate(), workExp.getPoints());
+        return new WorkExpResponse(workExp.getWorkExpId(), workExp.getRole(), workExp.getCompany(), workExp.getNote(), workExp.getStartDate(), workExp.getEndDate(), workExp.getPoints());
     }
 
     public WorkExp workExpRequestToWorkExp(CreateWorkExpRequest workExpRequest) {
@@ -16,6 +16,7 @@ public class WorkExpMapper {
                 .builder()
                 .role(workExpRequest.role())
                 .company(workExpRequest.company())
+                .note(workExpRequest.note())
                 .startDate(workExpRequest.startDate())
                 .endDate(workExpRequest.endDate())
                 .points(workExpRequest.points())

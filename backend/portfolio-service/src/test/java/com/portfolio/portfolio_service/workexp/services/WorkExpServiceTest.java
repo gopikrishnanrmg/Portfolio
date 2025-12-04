@@ -33,7 +33,7 @@ class WorkExpServiceTest {
 
     @Test
     void createWorkExp_shouldSaveAndReturnResponse() {
-        CreateWorkExpRequest request = new CreateWorkExpRequest("Developer", "CompanyX", LocalDate.of(2020,1,1), null, List.of("Did stuff"));
+        CreateWorkExpRequest request = new CreateWorkExpRequest("Developer", "CompanyX", null, LocalDate.of(2020,1,1), null, List.of("Did stuff"));
         WorkExp workExp = WorkExp.builder()
                 .workExpId(workExpId)
                 .role("Developer")
@@ -41,7 +41,7 @@ class WorkExpServiceTest {
                 .startDate(LocalDate.of(2020,1,1))
                 .build();
 
-        WorkExpResponse expectedResponse = new WorkExpResponse(workExpId, "Developer", "CompanyX", LocalDate.of(2020,1,1), null, List.of("Did stuff"));
+        WorkExpResponse expectedResponse = new WorkExpResponse(workExpId, "Developer", "CompanyX", null, LocalDate.of(2020,1,1), null, List.of("Did stuff"));
 
         when(workExpRepository.existsByRoleAndCompanyAndStartDateAndIsDeletedFalse("Developer","CompanyX", LocalDate.of(2020,1,1))).thenReturn(false);
         when(workExpMapper.workExpRequestToWorkExp(request)).thenReturn(workExp);
@@ -60,7 +60,7 @@ class WorkExpServiceTest {
 
     @Test
     void createWorkExp_shouldThrowDuplicateWorkExpException() {
-        CreateWorkExpRequest request = new CreateWorkExpRequest("Developer", "CompanyX", LocalDate.of(2020,1,1), null, List.of("Did stuff"));
+        CreateWorkExpRequest request = new CreateWorkExpRequest("Developer", "CompanyX", null, LocalDate.of(2020,1,1), null, List.of("Did stuff"));
 
         when(workExpRepository.existsByRoleAndCompanyAndStartDateAndIsDeletedFalse("Developer","CompanyX", LocalDate.of(2020,1,1))).thenReturn(true);
 
@@ -72,16 +72,16 @@ class WorkExpServiceTest {
 
     @Test
     void getAllWorkExps_shouldFilterDeletedAndSort() {
-        WorkExp older = new WorkExp(UUID.randomUUID(), "Older", "CompanyA",
+        WorkExp older = new WorkExp(UUID.randomUUID(), "Older", "CompanyA", "NoteA",
                 LocalDate.of(2019,1,1), null, List.of("Point"), false);
-        WorkExp newer = new WorkExp(workExpId, "Newer", "CompanyB",
+        WorkExp newer = new WorkExp(workExpId, "Newer", "CompanyB", "NoteB",
                 LocalDate.of(2021,1,1), null, List.of("Point"), false);
-        WorkExp deleted = new WorkExp(UUID.randomUUID(), "Deleted", "CompanyC",
+        WorkExp deleted = new WorkExp(UUID.randomUUID(), "Deleted", "CompanyC", null,
                 LocalDate.of(2020,1,1), null, List.of("Point"), true);
 
-        WorkExpResponse olderResponse = new WorkExpResponse(older.getWorkExpId(), "Older", "CompanyA",
+        WorkExpResponse olderResponse = new WorkExpResponse(older.getWorkExpId(), "Older", "CompanyA", "NoteA",
                 LocalDate.of(2019,1,1), null, List.of("Point"));
-        WorkExpResponse newerResponse = new WorkExpResponse(workExpId, "Newer", "CompanyB",
+        WorkExpResponse newerResponse = new WorkExpResponse(workExpId, "Newer", "CompanyB", "NoteB",
                 LocalDate.of(2021,1,1), null, List.of("Point"));
 
         when(workExpRepository.findAll()).thenReturn(List.of(older, newer, deleted));
@@ -104,9 +104,9 @@ class WorkExpServiceTest {
 
     @Test
     void updateWorkExp_shouldReturnUpdatedResponse() {
-        UpdateWorkExpRequest request = new UpdateWorkExpRequest("Engineer", "CompanyY", LocalDate.of(2022,1,1), Optional.empty(), List.of("Updated"));
-        WorkExp workExp = new WorkExp(workExpId, "Dev", "CompanyX", LocalDate.of(2020,1,1), null, List.of("Old"), false);
-        WorkExpResponse response = new WorkExpResponse(workExpId, "Engineer", "CompanyY", LocalDate.of(2022,1,1), null, List.of("Updated"));
+        UpdateWorkExpRequest request = new UpdateWorkExpRequest("Engineer", "CompanyY", Optional.empty(), LocalDate.of(2022,1,1), Optional.empty(), List.of("Updated"));
+        WorkExp workExp = new WorkExp(workExpId, "Dev", "CompanyX", null, LocalDate.of(2020,1,1), null, List.of("Old"), false);
+        WorkExpResponse response = new WorkExpResponse(workExpId, "Engineer", "CompanyY", null, LocalDate.of(2022,1,1), null, List.of("Updated"));
 
         when(workExpRepository.findById(workExpId)).thenReturn(Optional.of(workExp));
         when(workExpRepository.save(workExp)).thenReturn(workExp);
@@ -124,7 +124,7 @@ class WorkExpServiceTest {
 
     @Test
     void updateWorkExp_shouldThrowWorkExpNotFoundException() {
-        UpdateWorkExpRequest request = new UpdateWorkExpRequest("Engineer", "CompanyY", LocalDate.of(2022,1,1), Optional.empty(), List.of("Updated"));
+        UpdateWorkExpRequest request = new UpdateWorkExpRequest("Engineer", "CompanyY", Optional.empty(), LocalDate.of(2022,1,1), Optional.empty(), List.of("Updated"));
 
         when(workExpRepository.findById(workExpId)).thenReturn(Optional.empty());
 
@@ -136,8 +136,8 @@ class WorkExpServiceTest {
 
     @Test
     void updateWorkExp_shouldThrowInvalidWorkExpUpdateException() {
-        UpdateWorkExpRequest request = new UpdateWorkExpRequest("", "CompanyY", null, Optional.empty(), List.of("Updated"));
-        WorkExp workExp = new WorkExp(workExpId, "Dev", "CompanyX", LocalDate.of(2020,1,1), null, List.of("Old"), false);
+        UpdateWorkExpRequest request = new UpdateWorkExpRequest("", "CompanyY", null, null, Optional.empty(), List.of("Updated"));
+        WorkExp workExp = new WorkExp(workExpId, "Dev", "CompanyX", null, LocalDate.of(2020,1,1), null, List.of("Old"), false);
 
         when(workExpRepository.findById(workExpId)).thenReturn(Optional.of(workExp));
 
@@ -149,7 +149,7 @@ class WorkExpServiceTest {
 
     @Test
     void deleteWorkExp_shouldMarkDeleted() {
-        WorkExp workExp = new WorkExp(workExpId, "Dev", "CompanyX", LocalDate.of(2020,1,1), null, List.of("Point"), false);
+        WorkExp workExp = new WorkExp(workExpId, "Dev", "CompanyX", null, LocalDate.of(2020,1,1), null, List.of("Point"), false);
 
         when(workExpRepository.findById(workExpId)).thenReturn(Optional.of(workExp));
 
@@ -173,7 +173,7 @@ class WorkExpServiceTest {
 
     @Test
     void deleteWorkExpHard_shouldDelete() {
-        WorkExp workExp = new WorkExp(workExpId, "Dev", "CompanyX", LocalDate.of(2020,1,1), null, List.of("Point"), false);
+        WorkExp workExp = new WorkExp(workExpId, "Dev", "CompanyX", null, LocalDate.of(2020,1,1), null, List.of("Point"), false);
 
         when(workExpRepository.findById(workExpId)).thenReturn(Optional.of(workExp));
 

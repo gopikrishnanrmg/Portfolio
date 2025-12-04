@@ -31,6 +31,8 @@ public class WorkExp {
     private String role;
     @Column(nullable = false)
     private String company;
+    @Column(columnDefinition = "TEXT")
+    private String note;
     @Column(nullable = false)
     private LocalDate startDate;
     private LocalDate endDate;

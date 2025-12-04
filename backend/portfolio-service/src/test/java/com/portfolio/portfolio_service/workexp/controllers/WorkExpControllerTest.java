@@ -46,6 +46,7 @@ class WorkExpControllerTest {
         CreateWorkExpRequest request = new CreateWorkExpRequest(
                 "Developer",
                 "CompanyX",
+                null,
                 LocalDate.of(2020, 1, 1),
                 null,
                 List.of("Did stuff")
@@ -55,6 +56,7 @@ class WorkExpControllerTest {
                 workExpId,
                 "Developer",
                 "CompanyX",
+                null,
                 LocalDate.of(2020, 1, 1),
                 null,
                 List.of("Did stuff")
@@ -76,6 +78,7 @@ class WorkExpControllerTest {
         CreateWorkExpRequest request = new CreateWorkExpRequest(
                 "",
                 "CompanyX",
+                "note",
                 LocalDate.of(2020, 1, 1),
                 null,
                 List.of("Did stuff")
@@ -95,6 +98,7 @@ class WorkExpControllerTest {
                 workExpId,
                 "Developer",
                 "CompanyX",
+                "note",
                 LocalDate.of(2020, 1, 1),
                 null,
                 List.of("Did stuff")
@@ -105,7 +109,8 @@ class WorkExpControllerTest {
         mockMvc.perform(get("/api/v1/workexps"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].role").value("Developer"))
-                .andExpect(jsonPath("$[0].company").value("CompanyX"));
+                .andExpect(jsonPath("$[0].company").value("CompanyX"))
+                .andExpect(jsonPath("$[0].note").value("note"));
     }
 
     @Test
@@ -113,6 +118,7 @@ class WorkExpControllerTest {
         UpdateWorkExpRequest request = new UpdateWorkExpRequest(
                 "Engineer",
                 "CompanyY",
+                Optional.empty(),
                 LocalDate.of(2022, 1, 1),
                 Optional.empty(),
                 List.of("Updated")
@@ -122,6 +128,7 @@ class WorkExpControllerTest {
                 workExpId,
                 "Engineer",
                 "CompanyY",
+                null,
                 LocalDate.of(2022, 1, 1),
                 null,
                 List.of("Updated")
@@ -135,7 +142,8 @@ class WorkExpControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.workExpId").value(workExpId.toString()))
                 .andExpect(jsonPath("$.role").value("Engineer"))
-                .andExpect(jsonPath("$.company").value("CompanyY"));
+                .andExpect(jsonPath("$.company").value("CompanyY"))
+                .andExpect(jsonPath("$.note").doesNotExist());
 
         verify(workExpService).updateWorkExp(eq(workExpId), any());
     }
