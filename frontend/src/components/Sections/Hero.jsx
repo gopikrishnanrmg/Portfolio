@@ -12,7 +12,7 @@ const Hero = () => {
     };
 
     return (
-        <section id='hero' className='flex flex-col md:flex-row justify-evenly text-2xl md:text-4xl pt-16 min-h-screen z-10'>
+        <section id='hero' className='relative mx-auto w-full max-w-6xl lg:max-w-7xl xl:max-w-[1400px] flex flex-col md:flex-row justify-evenly text-base md:text-2xl lg:text-3xl pt-16 min-h-screen z-10 px-8'>
             <div className='flex flex-1 flex-col flex-center space-y-2 mx-2 text-center'>
                 <SplitText
                     text={'Hello 👋🏻, I\'m'}
@@ -31,7 +31,7 @@ const Hero = () => {
 
                 <SplitText
                     text='Gopikrishnan Rajeev'
-                    className='text-cyan-500 text-2xl md:text-4xl'
+                    className='text-cyan-500 text-2xl md:text-4xl lg:text-5xl'
                     delay={70} 
                     duration={0.6}
                     ease='power3.out'

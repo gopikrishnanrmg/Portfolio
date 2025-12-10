@@ -21,7 +21,7 @@ const ChatWindow = () => {
   }
 
   return (
-    <div className="flex flex-col w-full max-w-md h-[500px]
+    <div className="flex flex-col w-full max-w-sm md:max-w-md lg:max-w-lg h-[500px]
                     rounded-2xl backdrop-blur-2xl bg-black/40 border border-gray-700
                     shadow-lg ring-1 ring-white/20 overflow-hidden z-50">
 
