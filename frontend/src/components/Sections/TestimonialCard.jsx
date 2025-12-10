@@ -1,37 +1,43 @@
-import React, { useRef } from 'react'
+import React, { useRef, useCallback } from 'react'
 import { gsap } from 'gsap'
+import { throttle } from '../../utils/debounce'
 
 const TestimonialCard = ({ text, initials, accent, name, role }) => {
   const cardRef = useRef(null)
 
-  const handleMouseMove = e => {
-    const rect = cardRef.current.getBoundingClientRect()
-    const x = e.clientX - rect.left
-    const y = e.clientY - rect.top
-    const centerX = rect.width / 2
-    const centerY = rect.height / 2
+  const handleMouseMove = useCallback(
+    throttle((e) => {
+      if (!cardRef.current) return
+      const rect = cardRef.current.getBoundingClientRect()
+      const x = e.clientX - rect.left
+      const y = e.clientY - rect.top
+      const centerX = rect.width / 2
+      const centerY = rect.height / 2
 
-    const rotateX = ((y - centerY) / centerY) * 10
-    const rotateY = ((x - centerX) / centerX) * -10
+      const rotateX = ((y - centerY) / centerY) * 10
+      const rotateY = ((x - centerX) / centerX) * -10
 
-    gsap.to(cardRef.current, {
-      rotateX,
-      rotateY,
-      transformPerspective: 1000,
-      transformOrigin: 'center',
-      duration: 0.4,
-      ease: 'power2.out',
-    })
-  }
+      gsap.to(cardRef.current, {
+        rotateX,
+        rotateY,
+        transformPerspective: 1000,
+        transformOrigin: 'center',
+        duration: 0.4,
+        ease: 'power2.out',
+      })
+    }, 16),
+    []
+  )
 
-  const handleMouseLeave = () => {
+  const handleMouseLeave = useCallback(() => {
+    if (!cardRef.current) return
     gsap.to(cardRef.current, {
       rotateX: 0,
       rotateY: 0,
       duration: 0.8,
       ease: 'elastic.out(1, 0.3)',
     })
-  }
+  }, [])
 
   return (
     <div
@@ -81,4 +87,4 @@ const TestimonialCard = ({ text, initials, accent, name, role }) => {
   )
 }
 
-export default TestimonialCard
+export default React.memo(TestimonialCard)

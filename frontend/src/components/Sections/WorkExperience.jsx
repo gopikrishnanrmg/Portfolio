@@ -1,12 +1,10 @@
 import React, { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import WorkExperienceCard from './WorkExperienceCard'
-
-gsap.registerPlugin(ScrollTrigger)
 
 const experiences = [
   {
+    id: 'perf-test-1',
     role: 'Performance Test Engineer',
     company: 'SOTI',
     period: 'Sep 2025 – Present',
@@ -19,6 +17,7 @@ const experiences = [
     highlightPrompt: true,
   },
   {
+    id: 'qa-spec-1',
     role: 'Quality Assurance Specialist',
     company: 'SOTI',
     period: 'Sep 2023 – Aug 2025',
@@ -36,6 +35,7 @@ const experiences = [
     highlightPrompt: true,
   },
   {
+    id: 'blockchain-eng-1',
     role: 'Blockchain Engineer',
     company: 'Ensurity Technologies',
     period: 'Jun 2019 – Oct 2021',
@@ -53,6 +53,7 @@ const experiences = [
     ],
   },
   {
+    id: 'blockchain-intern-1',
     role: 'Blockchain Intern',
     company: 'Ensurity Technologies',
     period: 'Jan 2019 – May 2019',
@@ -68,7 +69,10 @@ const WorkExperience = () => {
   const lineRef = useRef(null)
 
   useEffect(() => {
-    gsap.fromTo(
+    const animations = [];
+    const scrollTriggers = [];
+
+    const lineAnim = gsap.fromTo(
       lineRef.current,
       { scaleY: 0, transformOrigin: 'top center' },
       {
@@ -82,10 +86,13 @@ const WorkExperience = () => {
         },
       }
     )
-
+    animations.push(lineAnim);
+    if (lineAnim.scrollTrigger) {
+      scrollTriggers.push(lineAnim.scrollTrigger);
+    }
 
     gsap.utils.toArray('.experience-card').forEach(card => {
-      gsap.fromTo(
+      const anim = gsap.fromTo(
         card,
         { opacity: 0, y: 50 },
         {
@@ -100,7 +107,16 @@ const WorkExperience = () => {
           },
         }
       )
+      animations.push(anim);
+      if (anim.scrollTrigger) {
+        scrollTriggers.push(anim.scrollTrigger);
+      }
     })
+
+    return () => {
+      animations.forEach(anim => anim.kill());
+      scrollTriggers.forEach(trigger => trigger.kill());
+    };
   }, [])
 
   return (
@@ -124,7 +140,7 @@ const WorkExperience = () => {
         <div className="flex flex-col space-y-16 relative">
           {experiences.slice().reverse().map((exp, i) => (
             <div
-              key={i}
+              key={exp.id}
               className={`
       relative flex w-full
       ${i % 2 === 0 ? 'md:justify-start' : 'md:justify-end'}

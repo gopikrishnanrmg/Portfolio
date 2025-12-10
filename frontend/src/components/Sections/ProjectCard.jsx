@@ -1,21 +1,26 @@
-import React, { useRef } from 'react'
-import { gsap } from 'gsap'
+import React, { useRef, useCallback } from 'react'
+import { throttle } from '../../utils/debounce'
 
 const ProjectCard = ({ title, description, tech = [], banner, link }) => {
   const cardRef = useRef(null)
 
-  const handleMouseMove = e => {
-    const rect = cardRef.current.getBoundingClientRect()
-    const x = e.clientX - rect.left
-    const y = e.clientY - rect.top
-    cardRef.current.style.setProperty('--spotlight-x', `${x}px`)
-    cardRef.current.style.setProperty('--spotlight-y', `${y}px`)
-  }
+  const handleMouseMove = useCallback(
+    throttle((e) => {
+      if (!cardRef.current) return
+      const rect = cardRef.current.getBoundingClientRect()
+      const x = e.clientX - rect.left
+      const y = e.clientY - rect.top
+      cardRef.current.style.setProperty('--spotlight-x', `${x}px`)
+      cardRef.current.style.setProperty('--spotlight-y', `${y}px`)
+    }, 16),
+    []
+  )
 
-  const handleMouseLeave = () => {
+  const handleMouseLeave = useCallback(() => {
+    if (!cardRef.current) return
     cardRef.current.style.setProperty('--spotlight-x', `50%`)
     cardRef.current.style.setProperty('--spotlight-y', `50%`)
-  }
+  }, [])
 
   return (
     <div
@@ -82,4 +87,5 @@ const ProjectCard = ({ title, description, tech = [], banner, link }) => {
   )
 }
 
-export default ProjectCard
+export default React.memo(ProjectCard)
+

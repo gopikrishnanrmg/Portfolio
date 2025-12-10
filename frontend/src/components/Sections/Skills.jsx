@@ -1,14 +1,14 @@
 import React, { useEffect } from 'react'
-import SkillsCard from './SkillsCard'
 import { gsap } from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
-
-gsap.registerPlugin(ScrollTrigger)
+import SkillsCard from './SkillsCard'
 
 const Skills = () => {
   useEffect(() => {
+    const animations = [];
+    const scrollTriggers = [];
+
     gsap.utils.toArray('.skills-card').forEach(card => {
-      gsap.fromTo(
+      const anim = gsap.fromTo(
         card,
         {
           opacity: 0,
@@ -31,9 +31,13 @@ const Skills = () => {
           },
         }
       )
+      animations.push(anim)
+      if (anim.scrollTrigger) {
+        scrollTriggers.push(anim.scrollTrigger)
+      }
     })
 
-    gsap.fromTo(
+    const titleAnim = gsap.fromTo(
       '#skills-title',
       { opacity: 0, y: -30 },
       {
@@ -47,6 +51,15 @@ const Skills = () => {
         },
       }
     )
+    animations.push(titleAnim)
+    if (titleAnim.scrollTrigger) {
+      scrollTriggers.push(titleAnim.scrollTrigger)
+    }
+
+    return () => {
+      animations.forEach(anim => anim.kill())
+      scrollTriggers.forEach(trigger => trigger.kill())
+    }
   }, [])
 
     const architecture = [

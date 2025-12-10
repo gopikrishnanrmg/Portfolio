@@ -1,14 +1,14 @@
 import React, { useEffect } from 'react'
-import ProjectCard from './ProjectCard'
 import { gsap } from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
-
-gsap.registerPlugin(ScrollTrigger)
+import ProjectCard from './ProjectCard'
 
 const Projects = () => {
   useEffect(() => {
+    const animations = [];
+    const scrollTriggers = [];
+
     gsap.utils.toArray('.project-card').forEach(card => {
-      gsap.fromTo(
+      const anim = gsap.fromTo(
         card,
         { opacity: 0, y: 40, scale: 0.95 },
         {
@@ -24,9 +24,13 @@ const Projects = () => {
           },
         }
       )
+      animations.push(anim)
+      if (anim.scrollTrigger) {
+        scrollTriggers.push(anim.scrollTrigger)
+      }
     })
 
-    gsap.fromTo(
+    const titleAnim = gsap.fromTo(
       '#projects-title',
       { opacity: 0, y: -30 },
       {
@@ -40,10 +44,20 @@ const Projects = () => {
         },
       }
     )
+    animations.push(titleAnim)
+    if (titleAnim.scrollTrigger) {
+      scrollTriggers.push(titleAnim.scrollTrigger)
+    }
+
+    return () => {
+      animations.forEach(anim => anim.kill())
+      scrollTriggers.forEach(trigger => trigger.kill())
+    }
   }, [])
 
   const projects = [
     {
+      id: 'ytlangf-1',
       title: 'YTLangF',
       description:
         'AI-powered, Peer-to-Peer Video Language Classifier. A sleek, decentralized AI application that cuts through YouTube clickbait by identifying the true spoken language behind video titles. Powered by a network of nodes connected via IPFS, it seamlessly classifies and shares language data in real-time. With bootstrap nodes on AWS for reliable discovery, you’ll always get accurate language insights—no more guessing games!',
@@ -52,6 +66,7 @@ const Projects = () => {
       link: 'https://github.com/gopikrishnanrmg/YTLangF',
     },
     {
+      id: 'migrator-1',
       title: 'MigratorEXT',
       description:
         'Developed in a team of 6, this tool supports partial and complete database migrations across heterogeneous systems. It enables seamless SQL ↔ NoSQL conversions, as well as structured/unstructured data transformations such as JSON ↔ XML and other format migrations. Built in Java, the tool leverages JDBC drivers and custom parsers to connect to multiple data sources, extract schemas, and transform records into the target format.',
@@ -60,6 +75,7 @@ const Projects = () => {
       link: 'https://github.com/kshitij-halankar/MigratorExt',
     },
     {
+      id: 'websearch-1',
       title: 'Web Search Engine',
       description:
         'Built a Java‑based web search engine in a team of 5, implementing inverted index with Trie, reverse index sorting, crawler, LRU caching, fuzzy search, and GUI for efficient query processing.',
@@ -68,6 +84,7 @@ const Projects = () => {
       link: 'https://github.com/kshitij-halankar/ACC-Web-Search-Engine',
     },
     {
+      id: 'wampac-1',
       title: 'WAMPAC Blockchain Implementation',
       description:
         'Built consensus and file restore mechanisms for the Indian Navy’s WAMPAC blockchain project with Java, IPFS, and BFT, plus a Vue.js dashboard for real‑time system health and recovery monitoring.',
@@ -76,6 +93,7 @@ const Projects = () => {
       link: '',
     },
     {
+      id: 'arp-1',
       title: 'ARP Spoof Protection System',
       description:
         'Developed a Dockerized security lab and application that protects nodes against ARP spoofing attacks using a PKI‑based challenge‑response procedure. The system employs RSA authentication, Scapy‑based ARP traffic monitoring, and honeypot deception to detect anomalies, repair ARP tables, and reverse spoofing attempts.',
@@ -84,6 +102,7 @@ const Projects = () => {
       link: 'https://github.com/gopikrishnanrmg/ARP-Spoof-Defence',
     },
     {
+      id: 'ubuntu-1',
       title: 'Ubuntu Touch for Redmi Note 4X',
       description:
         'Led porting of Ubuntu Touch OS to Xiaomi Redmi Note 4X, patched and built Linux kernel, fixed hardware bugs (Wi‑Fi, GPS, camera, calls), and released builds with 12,000+ downloads on XDA.',
@@ -92,6 +111,7 @@ const Projects = () => {
       link: 'https://forum.xda-developers.com/t/rom-ubports-ubuntu-touch-for-redmi-note-4x.4069381/',
     },
     {
+      id: 'nft-1',
       title: 'NFT Decentralized Application',
       description:
         'Designed and developed a decentralized NFT application inspired by CryptoKitties, enabling users to mint, mutate, and crossbreed NFTs with unique genetic traits. Each NFT carried a genome encoded in smart contracts, allowing deterministic inheritance and random mutations to create new, rare digital assets.',
@@ -100,6 +120,7 @@ const Projects = () => {
       link: '',
     },
     {
+      id: 'ftp-1',
       title: 'FTP Application',
       description:
         'Developed a multi‑client FTP server and client in C with support for resuming interrupted file transfers, user authentication, directory management, and core FTP commands (STOR, RETR, LIST, CWD, RNFR/RNTO, etc.), enabling reliable and concurrent file operations over TCP.',
@@ -108,6 +129,7 @@ const Projects = () => {
       link: 'https://github.com/gopikrishnanrmg/ASP_FTP_app',
     },
     {
+      id: 'shell-1',
       title: 'Custom Linux Shell',
       description:
         'Custom Linux shell in C supporting piped commands, built as part of an advanced systems programming course.',
@@ -117,6 +139,7 @@ const Projects = () => {
       hidden: true
     },
     {
+      id: 'goalhero-1',
       title: 'GoalHero',
       description:
         'Co‑developed GoalHero, a first‑person augmented reality mobile soccer game in a team of 8 using Unity, Blender, and C#. The game immerses players in a virtual penalty‑kick scenario, where they take shots on goal against a 3D animated goalkeeper projected into their real‑world environment through AR.',
@@ -125,6 +148,7 @@ const Projects = () => {
       link: 'https://github.com/HarshaVardhanNaiduGangavarapu/goalhero',
     },
     {
+      id: 'pinephone-1',
       title: 'PinePhone Tizen OS Port',
       description:
         'Ongoing project to port Tizen OS to PinePhone hardware. Built U-Boot, Linux kernel, and debugged hardware with UART.',
@@ -134,6 +158,7 @@ const Projects = () => {
       hidden: true
     },
     {
+      id: 'arduino-ac-1',
       title: 'Arduino Air Conditioner Remote',
       description:
         'Designed and built an Arduino‑based hardware system with an Android companion app to control SHARP air conditioners via Bluetooth. The project replicated the functionality of the original IR remote by capturing, decoding, and replaying infrared signals through custom circuits and mobile control.',
@@ -142,6 +167,7 @@ const Projects = () => {
       link: 'https://github.com/gopikrishnanrmg/Arduino_Remote_control_SHARP_AC',
     },
     {
+      id: 'robot-1',
       title: 'Arduino Robot',
       description:
         'Obstacle-avoiding robot using Arduino and ultrasound sensors.',
@@ -151,6 +177,7 @@ const Projects = () => {
       hidden: true
     },
     {
+      id: 'radio-1',
       title: 'Mobile Radio App',
       description:
         'Co‑developed a LAN‑based Android radio application to broadcast the university’s radio station for students and staff. The app enabled seamless streaming of live audio over the local network, providing a lightweight, accessible platform for campus‑wide communication and entertainment.',
@@ -174,9 +201,9 @@ const Projects = () => {
       >
         {projects
           .filter(proj => !proj.hidden)
-          .map((proj, i) => (
+          .map((proj) => (
             <ProjectCard
-              key={i}
+              key={proj.id}
               title={proj.title}
               description={proj.description}
               tech={proj.tech}

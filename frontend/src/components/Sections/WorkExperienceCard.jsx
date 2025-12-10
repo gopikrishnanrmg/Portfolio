@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState, useCallback } from 'react'
 import { gsap } from 'gsap'
 
 const WorkExperienceCard = ({
@@ -92,4 +92,4 @@ const WorkExperienceCard = ({
   )
 }
 
-export default WorkExperienceCard
+export default React.memo(WorkExperienceCard)
