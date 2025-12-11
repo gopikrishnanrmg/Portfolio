@@ -89,7 +89,7 @@ const Testimonials = () => {
                 Testimonials
             </h2>
 
-            <div className="grid [grid-template-columns:repeat(auto-fit,minmax(20rem,1fr))] gap-8 items-stretch">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch">
                 {testimonials.map((t) => (
                     <TestimonialCard key={t.id} {...t} />
                 ))}

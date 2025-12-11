@@ -7,9 +7,6 @@ import EmailWithQR from './EmailWithQR';
 import Stats from './Stats';
 
 const Hero = () => {
-    const handleAnimationComplete = () => {
-        console.log('All letters have animated!');
-    };
 
     return (
         <section id='hero' className='relative mx-auto w-full max-w-6xl lg:max-w-7xl xl:max-w-[1400px] flex flex-col md:flex-row justify-evenly text-base md:text-2xl lg:text-3xl pt-16 min-h-screen z-10 px-8'>
@@ -26,7 +23,6 @@ const Hero = () => {
                     threshold={0.1}
                     rootMargin='-100px'
                     textAlign='center'
-                    onLetterAnimationComplete={handleAnimationComplete}
                 />
 
                 <SplitText
@@ -41,7 +37,6 @@ const Hero = () => {
                     threshold={0.1}
                     rootMargin='-100px'
                     textAlign='center'
-                    onLetterAnimationComplete={handleAnimationComplete}
                 />
                 <p className='text-base md:text-xl'>Software Engineer with over 
                     5+ years of experience in all parts of SDLC including Design, Development, 

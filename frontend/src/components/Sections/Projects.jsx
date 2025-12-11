@@ -197,7 +197,7 @@ const Projects = () => {
       </h2>
 
       <div
-        className="grid [grid-template-columns:repeat(auto-fit,minmax(20rem,1fr))] gap-10"
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10"
       >
         {projects
           .filter(proj => !proj.hidden)

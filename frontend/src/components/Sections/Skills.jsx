@@ -135,7 +135,7 @@ const Skills = () => {
     ]    
 
   return (
-    <section id='skills' className='relative mx-auto w-full max-w-6xl lg:max-w-7xl xl:max-w-[1400px] py-20 px-8'>
+    <section id='skills' className='relative mx-auto w-full max-w-6xl lg:max-w-7xl xl:max-w-[1400px] py-20 px-8 overflow-x-hidden'>
       <h2
         id='skills-title'
         className='text-3xl md:text-4xl lg:text-5xl font-extralight text-center mb-16 text-cyan-400'
@@ -144,8 +144,7 @@ const Skills = () => {
       </h2>
 
       <div
-        className='grid [grid-template-columns:repeat(auto-fit,minmax(18rem,1fr))]
-                   [grid-auto-flow:dense] [grid-auto-rows:masonry] gap-8'
+        className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8'
       >
         <SkillsCard title='Architecture' techMap={architecture} />
         <SkillsCard title='Development' techMap={development} />
