@@ -145,7 +145,7 @@ const Skills = () => {
 
       <div
         className='grid [grid-template-columns:repeat(auto-fit,minmax(18rem,1fr))]
-                   [grid-auto-flow:dense] [grid-auto-rows:masonry] gap-8 mx-5'
+                   [grid-auto-flow:dense] [grid-auto-rows:masonry] gap-8'
       >
         <SkillsCard title='Architecture' techMap={architecture} />
         <SkillsCard title='Development' techMap={development} />
