@@ -84,7 +84,7 @@ const Testimonials = () => {
         <section id="testimonials" className="relative mx-auto w-full max-w-6xl lg:max-w-7xl xl:max-w-[1400px] py-20 px-8">
             <h2
                 id="testimonials-title"
-                className="text-3xl md:text-4xl lg:text-5xl font-extralight text-center mb-16 text-cyan-400"
+                className="text-2xl md:text-3xl lg:text-4xl font-extralight text-center mb-16 text-cyan-400"
             >
                 Testimonials
             </h2>
