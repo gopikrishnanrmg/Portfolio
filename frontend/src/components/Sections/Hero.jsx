@@ -9,7 +9,8 @@ import Stats from './Stats';
 const Hero = () => {
 
     return (
-        <section id='hero' className='relative mx-auto w-full max-w-6xl lg:max-w-7xl xl:max-w-[1400px] flex flex-col md:flex-row justify-evenly text-base md:text-2xl lg:text-3xl pt-16 min-h-screen z-10 px-8'>
+        <section id='hero' className='relative w-full flex flex-col md:flex-row justify-between
+                 text-base md:text-2xl lg:text-3xl pt-16 min-h-screen z-10 px-8'>
             <div className='flex flex-1 flex-col flex-center space-y-2 mx-2 text-center'>
                 <SplitText
                     text={'Hello 👋🏻, I\'m'}
@@ -47,7 +48,7 @@ const Hero = () => {
                     <a className='hover:text-cyan-500' href='https://linkedin.com/in/gopikrishnan-rajeev-2618a913b/'><FaLinkedinIn/></a>
                     <a className='hover:text-cyan-500' href='https://github.com/gopikrishnanrmg'><FaGithub/></a>
                 </div>
-                <div className='flex flex-col md:flex-row md:flex-center gap-10 md:gap-5 flex-wrap mt-10 md:mt-20'>
+                <div className='flex flex-col md:flex-row md:flex-center gap-10 md:gap-5 items-center justify-center flex-wrap mt-10 md:mt-20'>
                     <Stats title='30' description='Technologies Across Projects'/>
                     <div className='hidden md:block w-px h-8 bg-gray-500/50'></div>
                     <Stats title='25' description='Projects completed'/>

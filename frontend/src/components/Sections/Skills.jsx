@@ -8,29 +8,22 @@ const Skills = () => {
     const scrollTriggers = [];
 
     gsap.utils.toArray('.skills-card').forEach(card => {
-      const anim = gsap.fromTo(
-        card,
-        {
-          opacity: 0,
-          z: 300,
-          scale: 1.05,
-          y: -50,
-          transformPerspective: 1000,
-        },
-        {
-          opacity: 1,
-          z: 0,
-          scale: 1,
-          y: 0,
-          ease: 'power3.out',
-          scrollTrigger: {
-            trigger: card,
-            start: 'top 85%',
-            end: 'top 40%',
-            scrub: true,
-          },
-        }
-      )
+                  const anim = gsap.fromTo(
+                      card,
+                      { opacity: 0, y: 40, scale: 0.95 },
+                      {
+                          opacity: 1,
+                          y: 0,
+                          scale: 1,
+                          duration: 0.8,
+                          ease: 'power3.out',
+                          scrollTrigger: {
+                              trigger: card,
+                              start: 'top 85%',
+                              toggleActions: 'play none none reverse',
+                          },
+                      }
+                  )
       animations.push(anim)
       if (anim.scrollTrigger) {
         scrollTriggers.push(anim.scrollTrigger)
