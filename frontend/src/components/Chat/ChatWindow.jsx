@@ -44,11 +44,12 @@ const ChatWindow = () => {
         />
         <button
           onClick={sendMessage}
-          className="w-10 h-10 flex items-center justify-center rounded-full
-               bg-gradient-to-r from-cyan-500 to-purple-500
-               text-white hover:opacity-90 transition shrink-0"
+          className="w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14
+                    flex items-center justify-center rounded-full
+                    bg-gradient-to-r from-cyan-500 to-purple-500
+                    text-white hover:opacity-90 transition shrink-0"
         >
-          <FiSend className="w-4 h-4" />
+          <FiSend className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6" />
         </button>
       </div>
     </div>
