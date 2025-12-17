@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -17,13 +18,14 @@ import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignReques
 import software.amazon.awssdk.auth.credentials.EnvironmentVariableCredentialsProvider;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.util.UUID;
 
 @Profile("prod")
 @Service
 @RequiredArgsConstructor
-public class S3StorageService implements StorageService {
+public class S3StorageService implements StorageService<MultipartFile> {
 
     private final S3Presigner s3Presigner;
     private final String bucket = System.getenv("S3_BUCKET");
@@ -40,29 +42,34 @@ public class S3StorageService implements StorageService {
 
 
     @Override
-    public StorageResult upload(byte[] data) {
-        String key = UUID.randomUUID().toString();
+    public StorageResult upload(MultipartFile file) {
+        try {
+            String key = UUID.randomUUID().toString();
 
-        PutObjectRequest putReq = PutObjectRequest.builder()
-                .bucket(bucket)
-                .key(key)
-                .build();
+            PutObjectRequest putReq = PutObjectRequest.builder()
+                    .bucket(bucket)
+                    .key(key)
+                    .contentType(file.getContentType())
+                    .build();
 
-        s3.putObject(putReq, RequestBody.fromBytes(data));
+            s3.putObject(putReq, RequestBody.fromBytes(file.getBytes()));
 
-        GetObjectRequest getReq = GetObjectRequest.builder()
-                .bucket(bucket)
-                .key(key)
-                .build();
+            GetObjectRequest getReq = GetObjectRequest.builder()
+                    .bucket(bucket)
+                    .key(key)
+                    .build();
 
-        GetObjectPresignRequest presignReq = GetObjectPresignRequest.builder()
-                .signatureDuration(Duration.ofMinutes(15))
-                .getObjectRequest(getReq)
-                .build();
+            GetObjectPresignRequest presignReq = GetObjectPresignRequest.builder()
+                    .signatureDuration(Duration.ofMinutes(15))
+                    .getObjectRequest(getReq)
+                    .build();
 
-        String url = presigner.presignGetObject(presignReq).url().toString();
+            String url = presigner.presignGetObject(presignReq).url().toString();
 
-        return new StorageResult(key, url);
+            return new StorageResult(key, url);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

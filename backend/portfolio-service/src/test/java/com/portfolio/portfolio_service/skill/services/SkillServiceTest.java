@@ -33,7 +33,7 @@ import static org.mockito.Mockito.*;
 class SkillServiceTest {
 
     @Mock private SkillRepository skillRepository;
-    @Mock private StorageService storageService;
+    @Mock private StorageService<MultipartFile> storageService;
     @Mock private SkillMapper skillMapper;
 
     @InjectMocks private SkillService skillService;
@@ -51,7 +51,7 @@ class SkillServiceTest {
         SkillResponse expectedResponse = new SkillResponse(skillId, Category.DEVELOPMENT, "React", "url");
 
         when(skillRepository.existsByNameAndIsDeletedFalse("React")).thenReturn(false);
-        when(storageService.upload(file.getBytes())).thenReturn(storageResult);
+        when(storageService.upload(file)).thenReturn(storageResult);
         when(storageService.generatePresignedUrl(storageResult.key())).thenReturn("url");
         when(skillRepository.save(any(Skill.class))).thenReturn(skill);
         when(skillMapper.skillRequestToSkill(request, storageResult.key()))
@@ -67,7 +67,7 @@ class SkillServiceTest {
         assertEquals(expectedResponse, actualResponse);
 
         verify(skillRepository).existsByNameAndIsDeletedFalse("React");
-        verify(storageService).upload(file.getBytes());
+        verify(storageService).upload(file);
         verify(storageService).generatePresignedUrl("storage-key");
         verify(skillMapper).skillRequestToSkill(request, "storage-key");
         verify(skillMapper).skillToSkillResponse(skill, "url");
@@ -93,7 +93,7 @@ class SkillServiceTest {
         MultipartFile file = mock(MultipartFile.class);
 
         when(skillRepository.existsByNameAndIsDeletedFalse("React")).thenReturn(false);
-        when(storageService.upload(file.getBytes())).thenThrow(new FileProcessingException("Upload failed"));
+        when(storageService.upload(file)).thenThrow(new FileProcessingException("Upload failed"));
 
         assertThrows(FileProcessingException.class,
                 () -> skillService.createSkill(request, file));
@@ -230,12 +230,12 @@ class SkillServiceTest {
     }
 
     @Test
-    void uploadSkillFile_shouldThrowFileProcessingException() throws IOException {
+    void uploadSkillFile_shouldPropagateFileProcessingException() {
         MultipartFile file = mock(MultipartFile.class);
-        when(file.getBytes()).thenThrow(new IOException("IO error"));
-
         Skill existing = new Skill(skillId, Category.DEVELOPMENT, "React", "old-key", false);
+
         when(skillRepository.findById(skillId)).thenReturn(Optional.of(existing));
+        when(storageService.upload(file)).thenThrow(new FileProcessingException("Upload failed"));
 
         assertThrows(FileProcessingException.class,
                 () -> skillService.uploadSkillFile(skillId, file));
@@ -244,7 +244,6 @@ class SkillServiceTest {
     @Test
     void uploadSkillFile_shouldDeleteOldFileAndUploadNew() throws IOException {
         MultipartFile file = mock(MultipartFile.class);
-        when(file.getBytes()).thenReturn("dummy".getBytes());
 
         Skill existing = new Skill(skillId, Category.DEVELOPMENT, "React", "old-key", false);
         StorageResult storageResult = new StorageResult("new-key", "new-url");
