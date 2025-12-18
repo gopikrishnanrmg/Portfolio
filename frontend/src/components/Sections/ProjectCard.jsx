@@ -1,8 +1,10 @@
 import React, { useRef, useCallback } from 'react'
+import { bannerMap } from '../../utils/bannerMap'
 import { throttle } from '../../utils/debounce'
 
 const ProjectCard = ({ title, description, tech = [], banner, link }) => {
   const cardRef = useRef(null)
+  const gradientClasses = bannerMap[banner] || ["from-gray-400", "to-gray-600"]
 
   const handleMouseMove = useCallback(
     throttle((e) => {
@@ -41,7 +43,7 @@ const ProjectCard = ({ title, description, tech = [], banner, link }) => {
         `
       }}
     >
-      <div className={`h-28 bg-gradient-to-r ${banner}`} />
+      <div className={`h-28 bg-gradient-to-r ${gradientClasses.join(" ")}`} />
 
       <div className="p-6 bg-black/40 flex flex-col flex-1 bg-[url(/backgrounds/honeycomb.svg)]">
         <h3

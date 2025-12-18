@@ -1,103 +1,85 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { gsap } from 'gsap'
 import TestimonialCard from './TestimonialCard'
 
-const testimonials = [
-    {
-        id: 'sv-1',
-        name: 'Dr. Venkataraman Sarma',
-        role: 'CTO, Ensurity Technologies',
-        text: 'He suggested AI-based methods to improve consensus fairness — a calm yet confident leader with innovative yet systematic thinking.',
-        initials: 'SV',
-        accent: 'from-purple-400 to-cyan-500',
-    },
-    {
-        id: 'ck-1',
-        name: 'Mr. Chakradhar K',
-        role: 'Director, Ensurity Technologies',
-        text: 'He played a vital role in our Blockchain Token Authentication project — consistently exceeding expectations in security, identity verification, and decentralized wallet communication.',
-        initials: 'CK',
-        accent: 'from-pink-400 to-purple-500',
-    },
-    {
-        id: 'ms-1',
-        name: 'Dr. M Sethumadhavan',
-        role: 'Professor and Head of Cybersecurity, Amrita Vishwa Vidyapeetham',
-        text: 'Even as a associate developer, he delivered a well-documented, efficient implementation using recursion and object-oriented design — and went further by building a UI without being asked. A true perfectionist in software delivery.',
-        initials: 'MS',
-        accent: 'from-cyan-400 to-pink-500',
-    },
-    {
-        id: 'f-1',
-        name: 'filjusz',
-        role: 'Senior Member, XDA Developers',
-        text: 'Amazing project! Thanks for your work, really appreciate it. Glad to have opportunity to enjoy it. I hope it will grow with time.',
-        initials: 'F',
-        accent: 'from-cyan-400 to-pink-500',
-    }
-]
-
 const Testimonials = () => {
-    useEffect(() => {
-        const scrollTriggers = [];
-        const animations = [];
+  const [testimonials, setTestimonials] = useState([])
 
-        gsap.utils.toArray('.testimonial-card').forEach(card => {
-            const anim = gsap.fromTo(
-                card,
-                { opacity: 0, y: 40, scale: 0.95 },
-                {
-                    opacity: 1,
-                    y: 0,
-                    scale: 1,
-                    duration: 0.8,
-                    ease: 'power3.out',
-                    scrollTrigger: {
-                        trigger: card,
-                        start: 'top 85%',
-                        toggleActions: 'play none none reverse',
-                    },
-                }
-            )
-            animations.push(anim);
-            if (anim.scrollTrigger) {
-                scrollTriggers.push(anim.scrollTrigger);
-            }
-        })
+  useEffect(() => {
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/portfolio/api/v1/testimonials`)
+      .then(res => res.json())
+      .then(data => setTestimonials(data))
+      .catch(err => console.error('Error fetching testimonials:', err))
+  }, [])
 
-        const nameAnim = gsap.to('.testimonial-name', {
-            backgroundPosition: '100% center',
-            duration: 4,
-            repeat: -1,
-            yoyo: true,
-            ease: 'linear',
-        })
+  useEffect(() => {
+    const scrollTriggers = []
+    const animations = []
 
-        return () => {
-            animations.forEach(anim => anim.kill());
-            nameAnim.kill();
-            scrollTriggers.forEach(trigger => trigger.kill());
-        };
-    }, [])
+    gsap.utils.toArray('.testimonial-card').forEach(card => {
+      const anim = gsap.fromTo(
+        card,
+        { opacity: 0, y: 40, scale: 0.95 },
+        {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          duration: 0.8,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: card,
+            start: 'top 85%',
+            toggleActions: 'play none none reverse',
+          },
+        }
+      )
+      animations.push(anim)
+      if (anim.scrollTrigger) {
+        scrollTriggers.push(anim.scrollTrigger)
+      }
+    })
 
-    return (
-        <section id="testimonials" className="relative mx-auto w-full max-w-6xl lg:max-w-7xl xl:max-w-[1400px] py-20 px-8">
-            <h2
-                id="testimonials-title"
-                className="text-2xl md:text-3xl lg:text-4xl font-extralight text-center mb-16 text-cyan-400"
-            >
-                Testimonials
-            </h2>
+    const nameAnim = gsap.to('.testimonial-name', {
+      backgroundPosition: '100% center',
+      duration: 4,
+      repeat: -1,
+      yoyo: true,
+      ease: 'linear',
+    })
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch">
-                {testimonials.map((t) => (
-                    <TestimonialCard key={t.id} {...t} />
-                ))}
-            </div>
+    return () => {
+      animations.forEach(anim => anim.kill())
+      nameAnim.kill()
+      scrollTriggers.forEach(trigger => trigger.kill())
+    }
+  }, [testimonials]) 
 
-        </section>
-    )
+  return (
+    <section
+      id="testimonials"
+      className="relative mx-auto w-full max-w-6xl lg:max-w-7xl xl:max-w-[1400px] py-20 px-8"
+    >
+      <h2
+        id="testimonials-title"
+        className="text-2xl md:text-3xl lg:text-4xl font-extralight text-center mb-16 text-cyan-400"
+      >
+        Testimonials
+      </h2>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch">
+        {testimonials.map(t => (
+          <TestimonialCard
+            key={t.testimonialId}
+            name={t.name}
+            role={t.role}
+            text={t.text}
+            initials={t.initials}
+            accent={t.accent}
+          />
+        ))}
+      </div>
+    </section>
+  )
 }
 
 export default Testimonials
-

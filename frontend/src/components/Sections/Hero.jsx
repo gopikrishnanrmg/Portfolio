@@ -53,7 +53,7 @@ const Hero = () => {
                     <div className='hidden md:block w-px h-8 bg-gray-500/50'></div>
                     <Stats title='25' description='Projects completed'/>
                     <div className='hidden md:block w-px h-8 bg-gray-500/50'></div>
-                    <Stats title='12000' description='Users'/>
+                    <Stats title='12000' description='Project users'/>
                 </div>
             </div>
             <div className='flex flex-1 flex-center'>

@@ -1,76 +1,22 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { gsap } from 'gsap'
 import WorkExperienceCard from './WorkExperienceCard'
 
-const experiences = [
-  {
-    id: 'perf-test-1',
-    role: 'Performance Test Engineer',
-    company: 'SOTI',
-    period: 'Sep 2025 – Present',
-    points: [
-      'Architect and lead developer of a multithreaded VM orchestration solution (Java, Swing, SQL Server, OpenJPA, PowerShell).',
-      'Modeled architecture with UML, applied design patterns, automated operations with CI/CD, JUnit, Logging, Maven.',
-      'Designed and implemented a VM usage notification service (Java + Power Automate) reducing cloud costs by 25%.',
-      'Secured web application endpoints by configuring a reverse proxy.',
-    ],
-    highlightPrompt: true,
-  },
-  {
-    id: 'qa-spec-1',
-    role: 'Quality Assurance Specialist',
-    company: 'SOTI',
-    period: 'Sep 2023 – Aug 2025',
-    points: [
-      'Developed a Java library with custom JMeter plugins, AI chatbot integration, InfluxDB push, CI/CD, JUnit, Logging, Maven.',
-      'Created a web-based AWS stats dashboard (HTML, CSS, JS, AWS APIs) reducing infra cost by 15%.',
-      'Used Docker for debugging and containerization POCs.',
-      'Maintained internal legacy Java libraries for automation scripts.',
-      'Implemented system stats visualization during tests with Grafana.',
-      'Built automation scripts (Python, JMeter JDBC, Groovy, Selenium, JS) for API performance testing.',
-      'Automated DevOps pipelines on Jenkins with PowerShell.',
-      'Developed a browser extension (JavaScript + Jenkins APIs) to assist the team.',
-      'Worked on AI POCs for JMeter script generation using internal LLM + MongoDB + ChromaDB in Python.',
-    ],
-    highlightPrompt: true,
-  },
-  {
-    id: 'blockchain-eng-1',
-    role: 'Blockchain Engineer',
-    company: 'Ensurity Technologies',
-    period: 'Jun 2019 – Oct 2021',
-    points: [
-      'Developed REST APIs for Rubix Blockchain wallet (Spring Boot).',
-      'Implemented Gossip Protocol (Java + IPFS).',
-      'Built consensus protocol with a team of 6.',
-      'Developed Decentralized Identity Android app (Java).',
-      'Created automation tool for blockchain testing (Java + Bash).',
-      'Containerized Rubix wallet with Docker.',
-      'Built Flask REST API server (Python) for quorum node allocation.',
-      'POCs on MiniKube (Kubernetes) for orchestrating transactions.',
-      'Created Android POC for XSense Passwordless Authentication.',
-      'Researched and developed IPFS mobile Android solution (Java + IPFS Linux binary).',
-    ],
-  },
-  {
-    id: 'blockchain-intern-1',
-    role: 'Blockchain Intern',
-    company: 'Ensurity Technologies',
-    period: 'Jan 2019 – May 2019',
-    points: [
-      'Built Node.js REST API server for issuing KYC tokens.',
-      'Devised Rubix Blockchain’s Non-Linear Secret Sharing scheme (Java).',
-    ],
-  },
-]
-
 const WorkExperience = () => {
+  const [experiences, setExperiences] = useState([])
   const sectionRef = useRef(null)
   const lineRef = useRef(null)
 
   useEffect(() => {
-    const animations = [];
-    const scrollTriggers = [];
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/portfolio/api/v1/workexps`)
+      .then(res => res.json())
+      .then(data => setExperiences(data))
+      .catch(err => console.error('Error fetching experiences:', err))
+  }, [])
+
+  useEffect(() => {
+    const animations = []
+    const scrollTriggers = []
 
     const lineAnim = gsap.fromTo(
       lineRef.current,
@@ -82,14 +28,12 @@ const WorkExperience = () => {
           trigger: sectionRef.current,
           start: 'top center',
           end: 'bottom center',
-          scrub: 1, 
+          scrub: 1,
         },
       }
     )
-    animations.push(lineAnim);
-    if (lineAnim.scrollTrigger) {
-      scrollTriggers.push(lineAnim.scrollTrigger);
-    }
+    animations.push(lineAnim)
+    if (lineAnim.scrollTrigger) scrollTriggers.push(lineAnim.scrollTrigger)
 
     gsap.utils.toArray('.experience-card').forEach(card => {
       const anim = gsap.fromTo(
@@ -107,17 +51,15 @@ const WorkExperience = () => {
           },
         }
       )
-      animations.push(anim);
-      if (anim.scrollTrigger) {
-        scrollTriggers.push(anim.scrollTrigger);
-      }
+      animations.push(anim)
+      if (anim.scrollTrigger) scrollTriggers.push(anim.scrollTrigger)
     })
 
     return () => {
-      animations.forEach(anim => anim.kill());
-      scrollTriggers.forEach(trigger => trigger.kill());
-    };
-  }, [])
+      animations.forEach(anim => anim.kill())
+      scrollTriggers.forEach(trigger => trigger.kill())
+    }
+  }, [experiences])
 
   return (
     <section
@@ -138,25 +80,22 @@ const WorkExperience = () => {
         />
 
         <div className="flex flex-col space-y-16 relative">
-          {experiences.slice().reverse().map((exp, i) => (
+          {experiences.slice().map((exp, i) => (
             <div
-              key={exp.id}
-              className={`
-      relative flex w-full
-      ${i % 2 === 0 ? 'md:justify-start' : 'md:justify-end'}
-    `}
+              key={exp.workExpId}
+              className={`relative flex w-full ${
+                i % 2 === 0 ? 'md:justify-start' : 'md:justify-end'
+              }`}
             >
               <div
-                className={`
-        w-full md:w-[48%]
-        ${i % 2 === 0 ? 'md:mr-8' : 'md:ml-8'}
-      `}
+                className={`w-full md:w-[48%] ${
+                  i % 2 === 0 ? 'md:mr-8' : 'md:ml-8'
+                }`}
               >
                 <WorkExperienceCard {...exp} />
               </div>
             </div>
           ))}
-
         </div>
       </div>
     </section>

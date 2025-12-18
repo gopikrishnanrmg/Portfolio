@@ -1,6 +1,7 @@
 import React, { useRef, useCallback } from 'react'
 import { gsap } from 'gsap'
 import { throttle } from '../../utils/debounce'
+import { accentMap } from '../../utils/accentMap'
 
 const TestimonialCard = ({ text, initials, accent, name, role }) => {
   const cardRef = useRef(null)
@@ -39,6 +40,8 @@ const TestimonialCard = ({ text, initials, accent, name, role }) => {
     })
   }, [])
 
+  const accentClasses = accentMap[accent] || ["from-gray-400", "to-gray-600"]
+
   return (
     <div
       ref={cardRef}
@@ -64,12 +67,12 @@ const TestimonialCard = ({ text, initials, accent, name, role }) => {
       <p className="italic text-gray-200 mb-6 flex-1">{text}</p>
 
       <div className="flex items-center gap-4 mt-auto">
-        <div
-          className={`w-12 h-12 rounded-full flex items-center justify-center 
-                      text-white font-bold bg-gradient-to-r ${accent} flex-shrink-0`}
-        >
-          {initials}
-        </div>
+      <div
+        className={`w-12 h-12 rounded-full flex items-center justify-center 
+                    text-white font-bold bg-gradient-to-r ${accentClasses.join(" ")} flex-shrink-0`}
+      >
+        {initials}
+      </div>
 
         <div className="min-w-0">
           <p
