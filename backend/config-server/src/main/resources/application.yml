@@ -1,3 +1,6 @@
+server:
+  port: 8888
+
 spring:
   application:
     name: config-server
@@ -15,5 +18,11 @@ spring:
         register: true
         prefer-ip-address: true
 
-server:
-  port: 8888
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus,health,gateway
+  endpoint:
+    health:
+      show-details: always
