@@ -4,13 +4,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.portfolio.portfolio_service.testimonials.dtos.CreateTestimonialRequest;
 import com.portfolio.portfolio_service.testimonials.dtos.TestimonialResponse;
 import com.portfolio.portfolio_service.testimonials.dtos.UpdateTestimonialRequest;
+import com.portfolio.portfolio_service.testimonials.dtos.ReplaceTestimonialRequest;
 import com.portfolio.portfolio_service.testimonials.services.TestimonialService;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -111,13 +111,15 @@ class TestimonialControllerTest {
 
     @Test
     void updateTestimonial_shouldReturnUpdated() throws Exception {
-        UpdateTestimonialRequest request = new UpdateTestimonialRequest(
-                "Jane Doe",
-                "Product Manager",
-                "Updated testimonial text",
-                "JD",
-                "from-fuchsia-500 via-rose-400 to-amber-400"
-        );
+        String patchJson = """
+        {
+            "name": "Jane Doe",
+            "role": "Product Manager",
+            "text": "Updated testimonial text",
+            "initials": "JD",
+            "accent": "from-fuchsia-500 via-rose-400 to-amber-400"
+        }
+    """;
 
         TestimonialResponse response = new TestimonialResponse(
                 testimonialId,
@@ -130,9 +132,9 @@ class TestimonialControllerTest {
 
         when(testimonialService.updateTestimonial(eq(testimonialId), any())).thenReturn(response);
 
-        mockMvc.perform(put("/api/v1/testimonials/" + testimonialId)
+        mockMvc.perform(patch("/api/v1/testimonials/" + testimonialId)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+                        .content(patchJson))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.testimonialId").value(testimonialId.toString()))
                 .andExpect(jsonPath("$.name").value("Jane Doe"))
@@ -140,6 +142,57 @@ class TestimonialControllerTest {
                 .andExpect(jsonPath("$.text").value("Updated testimonial text"));
 
         verify(testimonialService).updateTestimonial(eq(testimonialId), any());
+    }
+
+    @Test
+    void replaceTestimonial_shouldReturnUpdated() throws Exception {
+        ReplaceTestimonialRequest request = new ReplaceTestimonialRequest(
+                "New Name",
+                "New Role",
+                "New Text",
+                "NN",
+                "new-accent"
+        );
+
+        TestimonialResponse response = new TestimonialResponse(
+                testimonialId,
+                "New Name",
+                "New Role",
+                "New Text",
+                "NN",
+                "new-accent"
+        );
+
+        when(testimonialService.replaceTestimonial(eq(testimonialId), any())).thenReturn(response);
+
+        mockMvc.perform(put("/api/v1/testimonials/" + testimonialId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.testimonialId").value(testimonialId.toString()))
+                .andExpect(jsonPath("$.name").value("New Name"))
+                .andExpect(jsonPath("$.role").value("New Role"))
+                .andExpect(jsonPath("$.text").value("New Text"));
+
+        verify(testimonialService).replaceTestimonial(eq(testimonialId), any());
+    }
+
+    @Test
+    void replaceTestimonial_shouldReturnBadRequestForInvalidDTO() throws Exception {
+        ReplaceTestimonialRequest request = new ReplaceTestimonialRequest(
+                "",
+                "Role",
+                "Text",
+                "JD",
+                "accent"
+        );
+
+        mockMvc.perform(put("/api/v1/testimonials/" + testimonialId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value("Validation Error"))
+                .andExpect(jsonPath("$.message").value(containsString("must not be blank")));
     }
 
     @Test

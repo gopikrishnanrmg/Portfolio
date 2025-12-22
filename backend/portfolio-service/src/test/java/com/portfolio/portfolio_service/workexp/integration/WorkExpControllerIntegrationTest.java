@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 
@@ -92,31 +93,78 @@ class WorkExpControllerIntegrationTest {
     }
 
     @Test
-    void updateWorkExp_shouldUpdateFields() throws Exception {
+    void patchWorkExp_shouldPartiallyUpdateFields() throws Exception {
         WorkExp workExp = workExpRepository.save(
                 WorkExp.builder()
-                        .role("Dev")
-                        .company("CompanyX")
-                        .startDate(LocalDate.of(2020,1,1))
-                        .points(List.of("Old"))
+                        .role("Old Role")
+                        .company("Old Company")
+                        .note("Old note")
+                        .startDate(LocalDate.of(2020, 1, 1))
+                        .endDate(null)
+                        .points(List.of("Old point"))
+                        .isDeleted(false)
                         .build()
         );
 
-        String updateJson = """
-            {
-              "role": "Engineer",
-              "company": "CompanyY",
-              "startDate": "2022-01-01",
-              "points": ["Updated"]
-            }
-        """;
+        String patchJson = """
+        {
+          "role": "Updated Role"
+        }
+    """;
+
+        mockMvc.perform(patch("/api/v1/workexps/" + workExp.getWorkExpId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(patchJson))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.role").value("Updated Role"))
+                .andExpect(jsonPath("$.company").value("Old Company"));
+
+        WorkExp updated = workExpRepository.findById(workExp.getWorkExpId()).orElseThrow();
+        assertEquals("Updated Role", updated.getRole());
+        assertEquals("Old Company", updated.getCompany());
+        assertEquals("Old note", updated.getNote());
+    }
+
+    @Test
+    void replaceWorkExp_shouldFullyReplaceEntity() throws Exception {
+        WorkExp workExp = workExpRepository.save(
+                WorkExp.builder()
+                        .role("Old Role")
+                        .company("Old Company")
+                        .note("Old note")
+                        .startDate(LocalDate.of(2020, 1, 1))
+                        .endDate(null)
+                        .points(List.of("Old point"))
+                        .isDeleted(false)
+                        .build()
+        );
+
+        String replaceJson = """
+        {
+          "role": "New Role",
+          "company": "New Company",
+          "note": "New note",
+          "startDate": "2023-01-01",
+          "endDate": "2024-01-01",
+          "points": ["New point"]
+        }
+    """;
 
         mockMvc.perform(put("/api/v1/workexps/" + workExp.getWorkExpId())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(updateJson))
+                        .content(replaceJson))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.role").value("Engineer"))
-                .andExpect(jsonPath("$.company").value("CompanyY"));
+                .andExpect(jsonPath("$.role").value("New Role"))
+                .andExpect(jsonPath("$.company").value("New Company"))
+                .andExpect(jsonPath("$.note").value("New note"));
+
+        WorkExp updated = workExpRepository.findById(workExp.getWorkExpId()).orElseThrow();
+        assertEquals("New Role", updated.getRole());
+        assertEquals("New Company", updated.getCompany());
+        assertEquals("New note", updated.getNote());
+        assertEquals(LocalDate.of(2023, 1, 1), updated.getStartDate());
+        assertEquals(LocalDate.of(2024, 1, 1), updated.getEndDate());
+        assertEquals(List.of("New point"), updated.getPoints());
     }
 
     @Test

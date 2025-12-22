@@ -1,5 +1,6 @@
 package com.portfolio.portfolio_service.skill.services;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.portfolio.portfolio_service.blob_storage.StorageService;
 import com.portfolio.portfolio_service.blob_storage.dtos.StorageResult;
 import com.portfolio.portfolio_service.exceptions.FileProcessingException;
@@ -174,37 +175,61 @@ class SkillServiceTest {
     }
 
     @Test
-    void updateSkill_shouldThrowSkillNotFoundException() {
-        UpdateSkillRequest request = new UpdateSkillRequest(Category.DEVELOPMENT, "ReactJS");
+    void updateSkill_shouldThrowSkillNotFoundException() throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+
+        UpdateSkillRequest request = new UpdateSkillRequest(
+                mapper.readTree("\"DEVELOPMENT\""),
+                mapper.readTree("\"ReactJS\"")
+        );
 
         when(skillRepository.findById(skillId)).thenReturn(Optional.empty());
 
         assertThrows(SkillNotFoundException.class,
                 () -> skillService.updateSkill(skillId, request));
+
+        verify(skillRepository).findById(skillId);
+        verifyNoMoreInteractions(skillRepository, skillMapper);
     }
 
     @Test
-    void updateSkill_shouldThrowInvalidSkillUpdateException() {
+    void updateSkill_shouldThrowInvalidSkillUpdateException() throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+
         Skill existing = new Skill(skillId, Category.DEVELOPMENT, "React", "storage-key", false);
-        UpdateSkillRequest request = new UpdateSkillRequest(Category.ARCHITECTURE, "");
+
+        UpdateSkillRequest request = new UpdateSkillRequest(
+                mapper.readTree("\"ARCHITECTURE\""),
+                mapper.readTree("\"\"")
+        );
 
         when(skillRepository.findById(skillId)).thenReturn(Optional.of(existing));
 
         assertThrows(InvalidSkillUpdateException.class,
                 () -> skillService.updateSkill(skillId, request));
+
+        verify(skillRepository).findById(skillId);
+        verifyNoMoreInteractions(skillRepository, skillMapper);
     }
 
     @Test
-    void updateSkill_shouldReturnUpdatedResponse() {
+    void updateSkill_shouldReturnUpdatedResponse() throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+
         Skill existing = new Skill(skillId, Category.DEVELOPMENT, "React", "storage-key", false);
-        UpdateSkillRequest request = new UpdateSkillRequest(Category.DEVELOPMENT, "ReactJS");
+
+        UpdateSkillRequest request = new UpdateSkillRequest(
+                mapper.readTree("\"DEVELOPMENT\""),
+                mapper.readTree("\"ReactJS\"")
+        );
 
         Skill updated = new Skill(skillId, Category.DEVELOPMENT, "ReactJS", "storage-key", false);
 
         when(skillRepository.findById(skillId)).thenReturn(Optional.of(existing));
         when(skillRepository.save(any(Skill.class))).thenReturn(updated);
         when(storageService.generatePresignedUrl(existing.getStorageKey())).thenReturn("url");
-        when(skillMapper.skillToSkillResponse(updated, "url")).thenReturn(new SkillResponse(skillId, Category.DEVELOPMENT, "ReactJS", "url"));
+        when(skillMapper.skillToSkillResponse(updated, "url"))
+                .thenReturn(new SkillResponse(skillId, Category.DEVELOPMENT, "ReactJS", "url"));
 
         SkillResponse response = skillService.updateSkill(skillId, request);
 
@@ -220,7 +245,7 @@ class SkillServiceTest {
     }
 
     @Test
-    void uploadSkillFile_shouldThrowSkillNotFoundException() throws IOException {
+    void uploadSkillFile_shouldThrowSkillNotFoundException() {
         MultipartFile file = mock(MultipartFile.class);
 
         when(skillRepository.findById(skillId)).thenReturn(Optional.empty());

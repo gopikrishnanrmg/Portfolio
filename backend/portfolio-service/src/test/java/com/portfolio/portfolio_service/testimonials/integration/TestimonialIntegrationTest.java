@@ -84,7 +84,7 @@ class TestimonialIntegrationTest {
     }
 
     @Test
-    void updateTestimonial_shouldUpdateFields() throws Exception {
+    void patchTestimonial_shouldPartiallyUpdateFields() throws Exception {
         Testimonial testimonial = testimonialRepository.save(
                 Testimonial.builder()
                         .name("Old Name")
@@ -96,28 +96,59 @@ class TestimonialIntegrationTest {
                         .build()
         );
 
-        String updateJson = """
-            {
-              "name": "New Name",
-              "role": "New Role",
-              "text": "Updated testimonial text",
-              "initials": "NN",
-              "accent": "new-accent"
-            }
-        """;
+        String patchJson = """
+        {
+          "name": "Updated Name"
+        }
+    """;
+
+        mockMvc.perform(patch("/api/v1/testimonials/" + testimonial.getTestimonialId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(patchJson))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("Updated Name"))
+                .andExpect(jsonPath("$.role").value("Old Role"));
+
+        Testimonial updated = testimonialRepository.findById(testimonial.getTestimonialId()).orElseThrow();
+        assertEquals("Updated Name", updated.getName());
+        assertEquals("Old Role", updated.getRole());
+    }
+
+    @Test
+    void replaceTestimonial_shouldReplaceAllFields() throws Exception {
+        Testimonial testimonial = testimonialRepository.save(
+                Testimonial.builder()
+                        .name("Old Name")
+                        .role("Old Role")
+                        .text("Old Text")
+                        .initials("ON")
+                        .accent("old-accent")
+                        .isDeleted(false)
+                        .build()
+        );
+
+        String replaceJson = """
+        {
+          "name": "New Name",
+          "role": "New Role",
+          "text": "New Text",
+          "initials": "NN",
+          "accent": "new-accent"
+        }
+    """;
 
         mockMvc.perform(put("/api/v1/testimonials/" + testimonial.getTestimonialId())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(updateJson))
+                        .content(replaceJson))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("New Name"))
                 .andExpect(jsonPath("$.role").value("New Role"))
-                .andExpect(jsonPath("$.text").value("Updated testimonial text"));
+                .andExpect(jsonPath("$.text").value("New Text"));
 
         Testimonial updated = testimonialRepository.findById(testimonial.getTestimonialId()).orElseThrow();
         assertEquals("New Name", updated.getName());
         assertEquals("New Role", updated.getRole());
-        assertEquals("Updated testimonial text", updated.getText());
+        assertEquals("New Text", updated.getText());
     }
 
     @Test

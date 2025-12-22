@@ -1,6 +1,7 @@
 package com.portfolio.portfolio_service.testimonials.controllers;
 
 import com.portfolio.portfolio_service.testimonials.dtos.CreateTestimonialRequest;
+import com.portfolio.portfolio_service.testimonials.dtos.ReplaceTestimonialRequest;
 import com.portfolio.portfolio_service.testimonials.dtos.TestimonialResponse;
 import com.portfolio.portfolio_service.testimonials.dtos.UpdateTestimonialRequest;
 import com.portfolio.portfolio_service.testimonials.services.TestimonialService;
@@ -33,11 +34,19 @@ public class TestimonialController {
         return ResponseEntity.ok().body(testimonialService.getAllTestimonials());
     }
 
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<TestimonialResponse> updateTestimonial(
             @RequestBody UpdateTestimonialRequest testimonialRequest,
             @PathVariable UUID id) {
         return ResponseEntity.ok(testimonialService.updateTestimonial(id, testimonialRequest));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<TestimonialResponse> replaceTestimonial(
+            @Valid @RequestBody ReplaceTestimonialRequest request,
+            @PathVariable UUID id
+    ) {
+        return ResponseEntity.ok(testimonialService.replaceTestimonial(id, request));
     }
 
     @DeleteMapping("/{id}")

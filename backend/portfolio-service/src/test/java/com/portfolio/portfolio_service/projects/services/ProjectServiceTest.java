@@ -1,7 +1,9 @@
 package com.portfolio.portfolio_service.projects.services;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.portfolio.portfolio_service.projects.dtos.CreateProjectRequest;
 import com.portfolio.portfolio_service.projects.dtos.ProjectResponse;
+import com.portfolio.portfolio_service.projects.dtos.ReplaceProjectRequest;
 import com.portfolio.portfolio_service.projects.dtos.UpdateProjectRequest;
 import com.portfolio.portfolio_service.projects.exceptions.DuplicateProjectException;
 import com.portfolio.portfolio_service.projects.exceptions.InvalidProjectUpdateException;
@@ -85,10 +87,35 @@ class ProjectServiceTest {
     }
 
     @Test
-    void updateProject_shouldReturnUpdatedResponse() {
-        UpdateProjectRequest request = new UpdateProjectRequest("New Title", "New Desc", List.of("Spring"), "new-banner", Optional.of("new-link"));
-        Project project = new Project(projectId, "Old Title", "Old Desc", List.of("Java"), "banner", "link", false);
-        ProjectResponse response = new ProjectResponse(projectId, "New Title", "New Desc", List.of("Spring"), "new-banner", "new-link");
+    void updateProject_shouldReturnUpdatedResponse() throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+
+        UpdateProjectRequest request = new UpdateProjectRequest(
+                mapper.readTree("\"New Title\""),
+                mapper.readTree("\"New Desc\""),
+                mapper.readTree("[\"Spring\"]"),
+                mapper.readTree("\"new-banner\""),
+                mapper.readTree("\"new-link\"")
+        );
+
+        Project project = new Project(
+                projectId,
+                "Old Title",
+                "Old Desc",
+                List.of("Java"),
+                "banner",
+                "link",
+                false
+        );
+
+        ProjectResponse response = new ProjectResponse(
+                projectId,
+                "New Title",
+                "New Desc",
+                List.of("Spring"),
+                "new-banner",
+                "new-link"
+        );
 
         when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
         when(projectRepository.save(project)).thenReturn(project);
@@ -105,24 +132,123 @@ class ProjectServiceTest {
     }
 
     @Test
-    void updateProject_shouldThrowProjectNotFoundException() {
-        UpdateProjectRequest request = new UpdateProjectRequest("New Title", null, null, null, Optional.empty());
+    void updateProject_shouldThrowProjectNotFoundException() throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+
+        UpdateProjectRequest request = new UpdateProjectRequest(
+                mapper.readTree("\"New Title\""),
+                null,
+                null,
+                null,
+                mapper.nullNode()
+        );
+
         when(projectRepository.findById(projectId)).thenReturn(Optional.empty());
 
-        assertThrows(ProjectNotFoundException.class, () -> projectService.updateProject(projectId, request));
+        assertThrows(ProjectNotFoundException.class,
+                () -> projectService.updateProject(projectId, request));
 
         verify(projectRepository).findById(projectId);
         verifyNoMoreInteractions(projectRepository, projectMapper);
     }
 
     @Test
-    void updateProject_shouldThrowInvalidProjectUpdateException() {
-        UpdateProjectRequest request = new UpdateProjectRequest("", null, null, null, Optional.empty());
-        Project project = new Project(projectId, "Old Title", "Old Desc", List.of("Java"), "banner", "link", false);
+    void updateProject_shouldThrowInvalidProjectUpdateException() throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+
+        UpdateProjectRequest request = new UpdateProjectRequest(
+                mapper.readTree("\"\""),
+                null,
+                null,
+                null,
+                null
+        );
+
+        Project project = new Project(
+                projectId,
+                "Old Title",
+                "Old Desc",
+                List.of("Java"),
+                "banner",
+                "link",
+                false
+        );
 
         when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
 
-        assertThrows(InvalidProjectUpdateException.class, () -> projectService.updateProject(projectId, request));
+        assertThrows(InvalidProjectUpdateException.class,
+                () -> projectService.updateProject(projectId, request));
+
+        verify(projectRepository).findById(projectId);
+        verifyNoMoreInteractions(projectRepository, projectMapper);
+    }
+
+    @Test
+    void replaceProject_shouldReplaceAllFields() {
+        ReplaceProjectRequest request = new ReplaceProjectRequest(
+                "New Title",
+                "New Desc",
+                List.of("Go"),
+                "new-banner",
+                "new-link"
+        );
+
+        Project project = new Project(projectId, "Old Title", "Old Desc",
+                List.of("Java"), "old-banner", "old-link", false);
+
+        when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
+        when(projectRepository.save(project)).thenReturn(project);
+
+        ProjectResponse response = new ProjectResponse(
+                projectId, "New Title", "New Desc", List.of("Go"), "new-banner", "new-link"
+        );
+        when(projectMapper.projectToProjectResponse(project)).thenReturn(response);
+
+        ProjectResponse result = projectService.replaceProject(projectId, request);
+
+        assertEquals("New Title", project.getTitle());
+        assertEquals("New Desc", project.getDescription());
+        assertEquals(List.of("Go"), project.getTech());
+        assertEquals("new-banner", project.getBanner());
+        assertEquals("new-link", project.getLink());
+    }
+
+    @Test
+    void replaceProject_shouldAllowNullOptionalFields() {
+        ReplaceProjectRequest request = new ReplaceProjectRequest(
+                "New Title",
+                "New Desc",
+                List.of("Go"),
+                "new-banner",
+                null
+        );
+
+        Project project = new Project(projectId, "Old Title", "Old Desc",
+                List.of("Java"), "old-banner", "old-link", false);
+
+        when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
+        when(projectRepository.save(project)).thenReturn(project);
+
+        ProjectResponse response = new ProjectResponse(
+                projectId, "New Title", "New Desc", List.of("Go"), "new-banner", null
+        );
+        when(projectMapper.projectToProjectResponse(project)).thenReturn(response);
+
+        ProjectResponse result = projectService.replaceProject(projectId, request);
+
+        assertNull(project.getLink());
+    }
+
+    @Test
+    void replaceProject_shouldThrowProjectNotFoundException() {
+        ReplaceProjectRequest request = new ReplaceProjectRequest(
+                "Title", "Desc", List.of("Java"), "banner", "link"
+        );
+
+        when(projectRepository.findById(projectId)).thenReturn(Optional.empty());
+
+        assertThrows(ProjectNotFoundException.class,
+                () -> projectService.replaceProject(projectId, request));
 
         verify(projectRepository).findById(projectId);
         verifyNoMoreInteractions(projectRepository, projectMapper);

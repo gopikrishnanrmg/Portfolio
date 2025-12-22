@@ -1,6 +1,7 @@
 package com.portfolio.portfolio_service.workexp.controllers;
 
 import com.portfolio.portfolio_service.workexp.dtos.CreateWorkExpRequest;
+import com.portfolio.portfolio_service.workexp.dtos.ReplaceWorkExpRequest;
 import com.portfolio.portfolio_service.workexp.dtos.UpdateWorkExpRequest;
 import com.portfolio.portfolio_service.workexp.dtos.WorkExpResponse;
 import com.portfolio.portfolio_service.workexp.services.WorkExpService;
@@ -33,11 +34,19 @@ public class WorkExpController {
         return ResponseEntity.ok().body(workExpService.getAllWorkExps());
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<WorkExpResponse> updateSkill(
+    @PatchMapping("/{id}")
+    public ResponseEntity<WorkExpResponse> updateWorkExp(
             @RequestBody UpdateWorkExpRequest workExpRequest,
             @PathVariable UUID id) {
         return ResponseEntity.ok(workExpService.updateWorkExp(id, workExpRequest));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<WorkExpResponse> replaceWorkExp(
+            @Valid @RequestBody ReplaceWorkExpRequest request,
+            @PathVariable UUID id
+    ) {
+        return ResponseEntity.ok(workExpService.replaceWorkExp(id, request));
     }
 
     @DeleteMapping("/{id}")

@@ -3,6 +3,7 @@ package com.portfolio.portfolio_service.projects.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.portfolio.portfolio_service.projects.dtos.CreateProjectRequest;
 import com.portfolio.portfolio_service.projects.dtos.ProjectResponse;
+import com.portfolio.portfolio_service.projects.dtos.ReplaceProjectRequest;
 import com.portfolio.portfolio_service.projects.dtos.UpdateProjectRequest;
 import com.portfolio.portfolio_service.projects.services.ProjectService;
 import lombok.RequiredArgsConstructor;
@@ -111,13 +112,15 @@ class ProjectControllerTest {
 
     @Test
     void updateProject_shouldReturnUpdated() throws Exception {
-        UpdateProjectRequest request = new UpdateProjectRequest(
-                "Updated Title",
-                "Updated Description",
-                List.of("Spring Boot"),
-                "from-fuchsia-500 via-rose-400 to-amber-400",
-                Optional.of("http://updated.com")
-        );
+        String patchJson = """
+        {
+          "title": "Updated Title",
+          "description": "Updated Description",
+          "tech": ["Spring Boot"],
+          "banner": "from-fuchsia-500 via-rose-400 to-amber-400",
+          "link": "http://updated.com"
+        }
+    """;
 
         ProjectResponse response = new ProjectResponse(
                 projectId,
@@ -130,9 +133,9 @@ class ProjectControllerTest {
 
         when(projectService.updateProject(eq(projectId), any())).thenReturn(response);
 
-        mockMvc.perform(put("/api/v1/projects/" + projectId)
+        mockMvc.perform(patch("/api/v1/projects/" + projectId)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+                        .content(patchJson))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.projectId").value(projectId.toString()))
                 .andExpect(jsonPath("$.title").value("Updated Title"))
@@ -140,6 +143,87 @@ class ProjectControllerTest {
 
         verify(projectService).updateProject(eq(projectId), any());
     }
+
+    @Test
+    void replaceProject_shouldReturnUpdated() throws Exception {
+        ReplaceProjectRequest request = new ReplaceProjectRequest(
+                "New Title",
+                "New Description",
+                List.of("Go"),
+                "new-banner",
+                "http://new-link.com"
+        );
+
+        ProjectResponse response = new ProjectResponse(
+                projectId,
+                "New Title",
+                "New Description",
+                List.of("Go"),
+                "new-banner",
+                "http://new-link.com"
+        );
+
+        when(projectService.replaceProject(eq(projectId), any())).thenReturn(response);
+
+        mockMvc.perform(put("/api/v1/projects/" + projectId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.projectId").value(projectId.toString()))
+                .andExpect(jsonPath("$.title").value("New Title"))
+                .andExpect(jsonPath("$.description").value("New Description"));
+
+        verify(projectService).replaceProject(eq(projectId), any());
+    }
+
+    @Test
+    void replaceProject_shouldAllowNullOptionalFields() throws Exception {
+        ReplaceProjectRequest request = new ReplaceProjectRequest(
+                "New Title",
+                "New Description",
+                List.of("Go"),
+                "new-banner",
+                null
+        );
+
+        ProjectResponse response = new ProjectResponse(
+                projectId,
+                "New Title",
+                "New Description",
+                List.of("Go"),
+                "new-banner",
+                null
+        );
+
+        when(projectService.replaceProject(eq(projectId), any())).thenReturn(response);
+
+        mockMvc.perform(put("/api/v1/projects/" + projectId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.link").doesNotExist());
+
+        verify(projectService).replaceProject(eq(projectId), any());
+    }
+
+    @Test
+    void replaceProject_shouldReturnBadRequestForInvalidDTO() throws Exception {
+        ReplaceProjectRequest request = new ReplaceProjectRequest(
+                "",
+                "New Description",
+                List.of("Go"),
+                "new-banner",
+                "http://new-link.com"
+        );
+
+        mockMvc.perform(put("/api/v1/projects/" + projectId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value("Validation Error"))
+                .andExpect(jsonPath("$.message").value(containsString("must not be blank")));
+    }
+
 
     @Test
     void deleteProject_shouldReturnNoContent() throws Exception {

@@ -61,19 +61,37 @@ public class SkillService {
         Skill skill = skillRepository.findById(skillId)
                 .orElseThrow(() -> new SkillNotFoundException("Skill not found with id: " + skillId));
 
-        if (skillRequest.category() != null)
-            skill.setCategory(skillRequest.category());
+        if (skillRequest.category() != null) {
+            if (skillRequest.category().isNull())
+                throw new InvalidSkillUpdateException("Category cannot be null");
+
+            Category value;
+            try {
+                value = Category.valueOf(skillRequest.category().asText());
+            } catch (IllegalArgumentException e) {
+                throw new InvalidSkillUpdateException("Invalid category");
+            }
+
+            skill.setCategory(value);
+        }
 
         if (skillRequest.name() != null) {
-            if(!skillRequest.name().isBlank())
-                skill.setName(skillRequest.name());
-            else
+            if (skillRequest.name().isNull())
+                throw new InvalidSkillUpdateException("Name cannot be null");
+
+            String value = skillRequest.name().asText();
+            if (value.isBlank())
                 throw new InvalidSkillUpdateException("Name cannot be blank");
+
+            skill.setName(value);
         }
 
         Skill updated = skillRepository.save(skill);
 
-        return skillMapper.skillToSkillResponse(updated, storageService.generatePresignedUrl(updated.getStorageKey()));
+        return skillMapper.skillToSkillResponse(
+                updated,
+                storageService.generatePresignedUrl(updated.getStorageKey())
+        );
     }
 
     public SkillResponse uploadSkillFile(UUID skillId, MultipartFile file) {

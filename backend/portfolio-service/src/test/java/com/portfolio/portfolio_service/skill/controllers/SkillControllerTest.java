@@ -28,7 +28,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 
 @WebMvcTest(SkillController.class)
 @RequiredArgsConstructor
@@ -129,14 +129,20 @@ class SkillControllerTest {
 
     @Test
     void updateSkill_shouldReturnUpdatedSkill() throws Exception {
-        UpdateSkillRequest request = new UpdateSkillRequest(Category.DEVELOPMENT, "Spring Boot");
+        String patchJson = """
+        {
+          "category": "DEVELOPMENT",
+          "name": "Spring Boot"
+        }
+    """;
+
         SkillResponse response = new SkillResponse(skillId, Category.DEVELOPMENT, "Spring Boot", "url");
 
         when(skillService.updateSkill(eq(skillId), any())).thenReturn(response);
 
-        mockMvc.perform(put("/api/v1/skills/" + skillId)
+        mockMvc.perform(patch("/api/v1/skills/" + skillId)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+                        .content(patchJson))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.skillId").value(skillId.toString()))
                 .andExpect(jsonPath("$.name").value("Spring Boot"))

@@ -26,7 +26,7 @@ public class Project {
     private String title;
     @Column(columnDefinition = "TEXT", nullable = false)
     private String description;
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @OrderColumn(name = "position")
     @NotEmpty
     private List<String> tech;
