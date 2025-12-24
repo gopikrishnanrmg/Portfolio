@@ -11,12 +11,6 @@ spring:
         git:
           uri: https://github.com/gopikrishnanrmg/portfolio-config-repo
           default-label: master
-    consul:
-      host: ${CONSUL_HOST:localhost}
-      port: ${CONSUL_PORT:8500}
-      discovery:
-        register: true
-        prefer-ip-address: true
 
 management:
   endpoints:

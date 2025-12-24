@@ -4,9 +4,10 @@ import ProjectCard from './ProjectCard'
 
 const Projects = () => {
   const [projects, setProjects] = useState([])
+  const API_BASE_URL = window.RUNTIME_CONFIG.API_BASE_URL
 
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_BASE_URL}/portfolio/api/v1/projects`)
+    fetch(`${API_BASE_URL}/portfolio/api/v1/projects`)
       .then(res => res.json())
       .then(data => setProjects(data))
       .catch(err => console.error('Error fetching projects:', err))

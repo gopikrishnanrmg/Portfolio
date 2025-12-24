@@ -4,9 +4,10 @@ import TestimonialCard from './TestimonialCard'
 
 const Testimonials = () => {
   const [testimonials, setTestimonials] = useState([])
+  const API_BASE_URL = window.RUNTIME_CONFIG.API_BASE_URL
 
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_BASE_URL}/portfolio/api/v1/testimonials`)
+    fetch(`${API_BASE_URL}/portfolio/api/v1/testimonials`)
       .then(res => res.json())
       .then(data => setTestimonials(data))
       .catch(err => console.error('Error fetching testimonials:', err))

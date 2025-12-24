@@ -4,11 +4,13 @@ import WorkExperienceCard from './WorkExperienceCard'
 
 const WorkExperience = () => {
   const [experiences, setExperiences] = useState([])
+  const API_BASE_URL = window.RUNTIME_CONFIG.API_BASE_URL
+
   const sectionRef = useRef(null)
   const lineRef = useRef(null)
 
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_BASE_URL}/portfolio/api/v1/workexps`)
+    fetch(`${API_BASE_URL}/portfolio/api/v1/workexps`)
       .then(res => res.json())
       .then(data => setExperiences(data))
       .catch(err => console.error('Error fetching experiences:', err))

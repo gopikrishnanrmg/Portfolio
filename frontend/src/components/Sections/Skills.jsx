@@ -12,6 +12,7 @@ const categories = [
 
 const Skills = () => {
   const [skillsData, setSkillsData] = useState({})
+  const API_BASE_URL = window.RUNTIME_CONFIG.API_BASE_URL
 
   useEffect(() => {
     const fetchSkills = async () => {
@@ -19,7 +20,7 @@ const Skills = () => {
         const results = {}
         for (const cat of categories) {
           const res = await fetch(
-            `${import.meta.env.VITE_API_BASE_URL}/portfolio/api/v1/skills/${cat.key}`
+            `${API_BASE_URL}/portfolio/api/v1/skills/${cat.key}`
           )
           const data = await res.json()
           results[cat.key] = data
