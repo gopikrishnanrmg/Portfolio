@@ -4,22 +4,52 @@ on:
   push:
     branches: ["main"]
   workflow_dispatch:
-  
+
 jobs:
-  build-and-deploy:
+  backend-build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [api-gateway, portfolio-service, config-server]
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 21
 
       - name: Log in to GHCR
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
       - name: Run backend tests
         run: |
-          cd backend
+          cd backend/${{ matrix.service }}
           ./mvnw test -DskipITs
+
+      - name: Build backend image
+        run: |
+          docker build -t ghcr.io/${{ github.actor }}/${{ matrix.service }}:latest backend/${{ matrix.service }}
+
+      - name: Push backend image
+        run: |
+          docker push ghcr.io/${{ github.actor }}/${{ matrix.service }}:latest
+
+  frontend-build:
+    runs-on: ubuntu-latest
+    needs: backend-build
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 22
 
       - name: Build frontend
         run: |
@@ -27,20 +57,22 @@ jobs:
           npm install
           npm run build
 
-      - name: Build images
-        run: |
-          docker build -t ghcr.io/${{ github.actor }}/api-gateway:latest backend/api-gateway
-          docker build -t ghcr.io/${{ github.actor }}/portfolio-service:latest backend/portfolio-service
-          docker build -t ghcr.io/${{ github.actor }}/config-server:latest backend/config-server
-          docker build -t ghcr.io/${{ github.actor }}/frontend:latest frontend
+      - name: Log in to GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-      - name: Push images
+      - name: Build frontend image
         run: |
-          docker push ghcr.io/${{ github.actor }}/api-gateway:latest
-          docker push ghcr.io/${{ github.actor }}/portfolio-service:latest
-          docker push ghcr.io/${{ github.actor }}/config-server:latest
-          docker push ghcr.io/${{ github.actor }}/frontend:latest
+          docker build -t ghcr.io/${{ github.actor }}/portfolio-frontend:latest frontend
 
+      - name: Push frontend image
+        run: |
+          docker push ghcr.io/${{ github.actor }}/portfolio-frontend:latest
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: frontend-build
+
+    steps:
       - name: Deploy
         run: |
           echo "Deploying..."
