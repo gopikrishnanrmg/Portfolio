@@ -27,22 +27,18 @@ public class SkillService {
 
     private final SkillRepository skillRepository;
     private final SkillMapper skillMapper;
-    private final StorageService storageService;
+    private final StorageService<MultipartFile> storageService;
 
     public SkillResponse createSkill(CreateSkillRequest skillRequest, MultipartFile file) {
         if (skillRepository.existsByNameAndIsDeletedFalse(skillRequest.name()))
             throw new DuplicateSkillException("Skill name already exists");
 
-        try {
-            StorageResult resource = storageService.upload(file.getBytes());
-            Skill skill = skillMapper.skillRequestToSkill(skillRequest, resource.key());
-            Skill saved = skillRepository.save(skill);
+        StorageResult resource = storageService.upload(file);
+        Skill skill = skillMapper.skillRequestToSkill(skillRequest, resource.key());
+        Skill saved = skillRepository.save(skill);
 
-            String url = storageService.generatePresignedUrl(resource.key());
-            return skillMapper.skillToSkillResponse(saved, url);
-        } catch (IOException e) {
-            throw new FileProcessingException("Failed to process uploaded file", e);
-        }
+        String url = storageService.generatePresignedUrl(resource.key());
+        return skillMapper.skillToSkillResponse(saved, url);
     }
 
     public List<SkillResponse> getAllSkills() {
@@ -65,38 +61,52 @@ public class SkillService {
         Skill skill = skillRepository.findById(skillId)
                 .orElseThrow(() -> new SkillNotFoundException("Skill not found with id: " + skillId));
 
-        if (skillRequest.category() != null)
-            skill.setCategory(skillRequest.category());
+        if (skillRequest.category() != null) {
+            if (skillRequest.category().isNull())
+                throw new InvalidSkillUpdateException("Category cannot be null");
+
+            Category value;
+            try {
+                value = Category.valueOf(skillRequest.category().asText());
+            } catch (IllegalArgumentException e) {
+                throw new InvalidSkillUpdateException("Invalid category");
+            }
+
+            skill.setCategory(value);
+        }
 
         if (skillRequest.name() != null) {
-            if(!skillRequest.name().isBlank())
-                skill.setName(skillRequest.name());
-            else
+            if (skillRequest.name().isNull())
+                throw new InvalidSkillUpdateException("Name cannot be null");
+
+            String value = skillRequest.name().asText();
+            if (value.isBlank())
                 throw new InvalidSkillUpdateException("Name cannot be blank");
+
+            skill.setName(value);
         }
 
         Skill updated = skillRepository.save(skill);
 
-        return skillMapper.skillToSkillResponse(updated, storageService.generatePresignedUrl(updated.getStorageKey()));
+        return skillMapper.skillToSkillResponse(
+                updated,
+                storageService.generatePresignedUrl(updated.getStorageKey())
+        );
     }
 
     public SkillResponse uploadSkillFile(UUID skillId, MultipartFile file) {
-        try {
-            Skill skill = skillRepository.findById(skillId)
-                    .orElseThrow(() -> new SkillNotFoundException("Skill not found with id: " + skillId));
+        Skill skill = skillRepository.findById(skillId)
+                .orElseThrow(() -> new SkillNotFoundException("Skill not found with id: " + skillId));
 
-            storageService.delete(skill.getStorageKey());
+        storageService.delete(skill.getStorageKey());
 
-            StorageResult resource = storageService.upload(file.getBytes());
-            skill.setStorageKey(resource.key());
+        StorageResult resource = storageService.upload(file);
+        skill.setStorageKey(resource.key());
 
-            Skill updated = skillRepository.save(skill);
+        Skill updated = skillRepository.save(skill);
 
-            return skillMapper.skillToSkillResponse(updated, storageService.generatePresignedUrl(updated.getStorageKey()));
+        return skillMapper.skillToSkillResponse(updated, storageService.generatePresignedUrl(updated.getStorageKey()));
 
-        } catch (IOException e) {
-            throw new FileProcessingException("Failed to process uploaded file", e);
-        }
     }
 
     public void deleteSkill(UUID skillId) {

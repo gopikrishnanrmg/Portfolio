@@ -2,6 +2,7 @@ package com.portfolio.portfolio_service.projects.controllers;
 
 import com.portfolio.portfolio_service.projects.dtos.CreateProjectRequest;
 import com.portfolio.portfolio_service.projects.dtos.ProjectResponse;
+import com.portfolio.portfolio_service.projects.dtos.ReplaceProjectRequest;
 import com.portfolio.portfolio_service.projects.dtos.UpdateProjectRequest;
 import com.portfolio.portfolio_service.projects.services.ProjectService;
 import jakarta.validation.Valid;
@@ -33,11 +34,18 @@ public class ProjectController {
         return ResponseEntity.ok().body(projectService.getAllProjects());
     }
 
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<ProjectResponse> updateProject(
             @RequestBody UpdateProjectRequest projectRequest,
             @PathVariable UUID id) {
         return ResponseEntity.ok(projectService.updateProject(id, projectRequest));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ProjectResponse> replaceProject(
+            @Valid @RequestBody ReplaceProjectRequest request,
+            @PathVariable UUID id) {
+        return ResponseEntity.ok(projectService.replaceProject(id, request));
     }
 
     @DeleteMapping("/{id}")

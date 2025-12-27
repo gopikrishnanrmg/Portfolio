@@ -1,21 +1,28 @@
-import React, { useRef } from 'react'
-import { gsap } from 'gsap'
+import React, { useRef, useCallback } from 'react'
+import { bannerMap } from '../../utils/bannerMap'
+import { throttle } from '../../utils/debounce'
 
 const ProjectCard = ({ title, description, tech = [], banner, link }) => {
   const cardRef = useRef(null)
+  const gradientClasses = bannerMap[banner] || ["from-gray-400", "to-gray-600"]
 
-  const handleMouseMove = e => {
-    const rect = cardRef.current.getBoundingClientRect()
-    const x = e.clientX - rect.left
-    const y = e.clientY - rect.top
-    cardRef.current.style.setProperty('--spotlight-x', `${x}px`)
-    cardRef.current.style.setProperty('--spotlight-y', `${y}px`)
-  }
+  const handleMouseMove = useCallback(
+    throttle((e) => {
+      if (!cardRef.current) return
+      const rect = cardRef.current.getBoundingClientRect()
+      const x = e.clientX - rect.left
+      const y = e.clientY - rect.top
+      cardRef.current.style.setProperty('--spotlight-x', `${x}px`)
+      cardRef.current.style.setProperty('--spotlight-y', `${y}px`)
+    }, 16),
+    []
+  )
 
-  const handleMouseLeave = () => {
+  const handleMouseLeave = useCallback(() => {
+    if (!cardRef.current) return
     cardRef.current.style.setProperty('--spotlight-x', `50%`)
     cardRef.current.style.setProperty('--spotlight-y', `50%`)
-  }
+  }, [])
 
   return (
     <div
@@ -36,7 +43,7 @@ const ProjectCard = ({ title, description, tech = [], banner, link }) => {
         `
       }}
     >
-      <div className={`h-28 bg-gradient-to-r ${banner}`} />
+      <div className={`h-28 bg-gradient-to-r ${gradientClasses.join(" ")}`} />
 
       <div className="p-6 bg-black/40 flex flex-col flex-1 bg-[url(/backgrounds/honeycomb.svg)]">
         <h3
@@ -82,4 +89,5 @@ const ProjectCard = ({ title, description, tech = [], banner, link }) => {
   )
 }
 
-export default ProjectCard
+export default React.memo(ProjectCard)
+

@@ -43,7 +43,7 @@ public class SkillController {
         return ResponseEntity.ok(skillService.getSkillsByCategory(enumCategory));
     }
 
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<SkillResponse> updateSkill(
             @RequestBody UpdateSkillRequest skillRequest,
             @PathVariable UUID id) {
@@ -68,5 +68,4 @@ public class SkillController {
         skillService.deleteSkillHard(id);
         return ResponseEntity.noContent().build();
     }
-
 }

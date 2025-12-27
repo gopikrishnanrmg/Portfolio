@@ -1,0 +1,47 @@
+name: CD
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+  
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Log in to GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Run backend tests
+        run: |
+          cd backend
+          ./mvnw test -DskipITs
+
+      - name: Build frontend
+        run: |
+          cd frontend
+          npm install
+          npm run build
+
+      - name: Build images
+        run: |
+          docker build -t ghcr.io/${{ github.actor }}/api-gateway:latest backend/api-gateway
+          docker build -t ghcr.io/${{ github.actor }}/portfolio-service:latest backend/portfolio-service
+          docker build -t ghcr.io/${{ github.actor }}/config-server:latest backend/config-server
+          docker build -t ghcr.io/${{ github.actor }}/frontend:latest frontend
+
+      - name: Push images
+        run: |
+          docker push ghcr.io/${{ github.actor }}/api-gateway:latest
+          docker push ghcr.io/${{ github.actor }}/portfolio-service:latest
+          docker push ghcr.io/${{ github.actor }}/config-server:latest
+          docker push ghcr.io/${{ github.actor }}/frontend:latest
+
+      - name: Deploy
+        run: |
+          echo "Deploying..."
+

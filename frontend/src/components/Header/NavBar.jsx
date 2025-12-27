@@ -49,8 +49,8 @@ const NavBar = () => {
 
   return (
     <>
-      <nav className='hidden md:flex mr-20'>
-        <ul className='flex space-x-12 text-white text-lg'>
+      <nav className='hidden md:flex'>
+        <ul className='flex space-x-8 lg:space-x-12 text-white text-lg'>
           {sections.map((s) => (
             <ListItem key={s.id} id={s.id} title={s.title} icon={s.icon} active={active} />
           ))}

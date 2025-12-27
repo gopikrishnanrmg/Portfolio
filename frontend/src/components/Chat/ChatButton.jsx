@@ -13,7 +13,7 @@ const ChatWidget = () => {
                    rounded-full bg-black/60 border border-gray-700 shadow-lg
                    hover:border-cyan-500 hover:shadow-cyan-500/30 transition"
       >
-        <AiFillMessage className="w-6 h-6 text-cyan-400" />
+      <AiFillMessage className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-cyan-400" />
       </button>
 
       {isOpen && (

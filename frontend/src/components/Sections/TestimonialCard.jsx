@@ -1,37 +1,46 @@
-import React, { useRef } from 'react'
+import React, { useRef, useCallback } from 'react'
 import { gsap } from 'gsap'
+import { throttle } from '../../utils/debounce'
+import { accentMap } from '../../utils/accentMap'
 
 const TestimonialCard = ({ text, initials, accent, name, role }) => {
   const cardRef = useRef(null)
 
-  const handleMouseMove = e => {
-    const rect = cardRef.current.getBoundingClientRect()
-    const x = e.clientX - rect.left
-    const y = e.clientY - rect.top
-    const centerX = rect.width / 2
-    const centerY = rect.height / 2
+  const handleMouseMove = useCallback(
+    throttle((e) => {
+      if (!cardRef.current) return
+      const rect = cardRef.current.getBoundingClientRect()
+      const x = e.clientX - rect.left
+      const y = e.clientY - rect.top
+      const centerX = rect.width / 2
+      const centerY = rect.height / 2
 
-    const rotateX = ((y - centerY) / centerY) * 10
-    const rotateY = ((x - centerX) / centerX) * -10
+      const rotateX = ((y - centerY) / centerY) * 10
+      const rotateY = ((x - centerX) / centerX) * -10
 
-    gsap.to(cardRef.current, {
-      rotateX,
-      rotateY,
-      transformPerspective: 1000,
-      transformOrigin: 'center',
-      duration: 0.4,
-      ease: 'power2.out',
-    })
-  }
+      gsap.to(cardRef.current, {
+        rotateX,
+        rotateY,
+        transformPerspective: 1000,
+        transformOrigin: 'center',
+        duration: 0.4,
+        ease: 'power2.out',
+      })
+    }, 16),
+    []
+  )
 
-  const handleMouseLeave = () => {
+  const handleMouseLeave = useCallback(() => {
+    if (!cardRef.current) return
     gsap.to(cardRef.current, {
       rotateX: 0,
       rotateY: 0,
       duration: 0.8,
       ease: 'elastic.out(1, 0.3)',
     })
-  }
+  }, [])
+
+  const accentClasses = accentMap[accent] || ["from-gray-400", "to-gray-600"]
 
   return (
     <div
@@ -58,12 +67,12 @@ const TestimonialCard = ({ text, initials, accent, name, role }) => {
       <p className="italic text-gray-200 mb-6 flex-1">{text}</p>
 
       <div className="flex items-center gap-4 mt-auto">
-        <div
-          className={`w-12 h-12 rounded-full flex items-center justify-center 
-                      text-white font-bold bg-gradient-to-r ${accent} flex-shrink-0`}
-        >
-          {initials}
-        </div>
+      <div
+        className={`w-12 h-12 rounded-full flex items-center justify-center 
+                    text-white font-bold bg-gradient-to-r ${accentClasses.join(" ")} flex-shrink-0`}
+      >
+        {initials}
+      </div>
 
         <div className="min-w-0">
           <p
@@ -81,4 +90,4 @@ const TestimonialCard = ({ text, initials, accent, name, role }) => {
   )
 }
 
-export default TestimonialCard
+export default React.memo(TestimonialCard)

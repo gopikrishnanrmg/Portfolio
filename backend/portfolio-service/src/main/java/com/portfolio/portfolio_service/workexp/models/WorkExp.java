@@ -36,7 +36,7 @@ public class WorkExp {
     @Column(nullable = false)
     private LocalDate startDate;
     private LocalDate endDate;
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @OrderColumn(name = "position")
     @NotEmpty
     private List<String> points;

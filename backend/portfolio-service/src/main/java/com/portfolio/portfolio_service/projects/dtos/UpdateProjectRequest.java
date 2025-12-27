@@ -1,7 +1,6 @@
 package com.portfolio.portfolio_service.projects.dtos;
 
-import java.util.List;
-import java.util.Optional;
+import com.fasterxml.jackson.databind.JsonNode;
 
-public record UpdateProjectRequest(String title, String description, List<String> tech, String banner, Optional<String> link) {
+public record UpdateProjectRequest(JsonNode title, JsonNode description, JsonNode tech, JsonNode banner, JsonNode link) {
 }

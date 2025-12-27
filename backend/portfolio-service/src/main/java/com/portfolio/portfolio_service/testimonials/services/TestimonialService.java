@@ -1,6 +1,7 @@
 package com.portfolio.portfolio_service.testimonials.services;
 
 import com.portfolio.portfolio_service.testimonials.dtos.CreateTestimonialRequest;
+import com.portfolio.portfolio_service.testimonials.dtos.ReplaceTestimonialRequest;
 import com.portfolio.portfolio_service.testimonials.dtos.TestimonialResponse;
 import com.portfolio.portfolio_service.testimonials.dtos.UpdateTestimonialRequest;
 import com.portfolio.portfolio_service.testimonials.exceptions.DuplicateTestimonialException;
@@ -44,43 +45,66 @@ public class TestimonialService {
                 .orElseThrow(() -> new TestimonialNotFoundException("Testimonial not found with id: " + testimonialId));
 
         if (testimonialRequest.name() != null) {
-            if (!testimonialRequest.name().isBlank())
-                testimonial.setName(testimonialRequest.name());
-            else
+            if (testimonialRequest.name().isNull())
+                throw new InvalidTestimonialUpdateException("Name cannot be null");
+            String value = testimonialRequest.name().asText();
+            if (value.isBlank())
                 throw new InvalidTestimonialUpdateException("Name cannot be blank");
+            testimonial.setName(value);
         }
 
         if (testimonialRequest.role() != null) {
-            if (!testimonialRequest.role().isBlank())
-                testimonial.setRole(testimonialRequest.role());
-            else
+            if (testimonialRequest.role().isNull())
+                throw new InvalidTestimonialUpdateException("Role cannot be null");
+            String value = testimonialRequest.role().asText();
+            if (value.isBlank())
                 throw new InvalidTestimonialUpdateException("Role cannot be blank");
+            testimonial.setRole(value);
         }
 
         if (testimonialRequest.text() != null) {
-            if (!testimonialRequest.text().isBlank())
-                testimonial.setText(testimonialRequest.text());
-            else
+            if (testimonialRequest.text().isNull())
+                throw new InvalidTestimonialUpdateException("Text cannot be null");
+            String value = testimonialRequest.text().asText();
+            if (value.isBlank())
                 throw new InvalidTestimonialUpdateException("Text cannot be blank");
+            testimonial.setText(value);
         }
 
         if (testimonialRequest.initials() != null) {
-            if (!testimonialRequest.initials().isBlank())
-                testimonial.setInitials(testimonialRequest.initials());
-            else
+            if (testimonialRequest.initials().isNull())
+                throw new InvalidTestimonialUpdateException("Initials cannot be null");
+            String value = testimonialRequest.initials().asText();
+            if (value.isBlank())
                 throw new InvalidTestimonialUpdateException("Initials cannot be blank");
+            testimonial.setInitials(value);
         }
 
         if (testimonialRequest.accent() != null) {
-            if (!testimonialRequest.accent().isBlank())
-                testimonial.setAccent(testimonialRequest.accent());
-            else
+            if (testimonialRequest.accent().isNull())
+                throw new InvalidTestimonialUpdateException("Accent cannot be null");
+            String value = testimonialRequest.accent().asText();
+            if (value.isBlank())
                 throw new InvalidTestimonialUpdateException("Accent cannot be blank");
+            testimonial.setAccent(value);
         }
-
 
         Testimonial updated = testimonialRepository.save(testimonial);
         return testimonialMapper.testimonialToTestimonialResponse(updated);
+    }
+
+    public TestimonialResponse replaceTestimonial(UUID id, ReplaceTestimonialRequest request) {
+        Testimonial testimonial = testimonialRepository.findById(id)
+                .orElseThrow(() -> new TestimonialNotFoundException("Testimonial not found with id: " + id));
+
+        testimonial.setName(request.name());
+        testimonial.setRole(request.role());
+        testimonial.setText(request.text());
+        testimonial.setInitials(request.initials());
+        testimonial.setAccent(request.accent());
+
+        Testimonial saved = testimonialRepository.save(testimonial);
+        return testimonialMapper.testimonialToTestimonialResponse(saved);
     }
 
     public void deleteTestimonial(UUID testimonialId) {

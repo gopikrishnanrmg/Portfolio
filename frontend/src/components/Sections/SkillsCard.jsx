@@ -68,7 +68,11 @@ const SkillsCard = ({ title, techMap }) => {
 
       <div className='flex flex-wrap gap-2 z-10'>
         {techMap.map(item => (
-          <SkillComponentMap key={item.name} name={item.name} src={item.src} />
+          <SkillComponentMap
+            key={item.name}
+            name={item.name}
+            src={`${item.url}`}
+          />
         ))}
       </div>
 

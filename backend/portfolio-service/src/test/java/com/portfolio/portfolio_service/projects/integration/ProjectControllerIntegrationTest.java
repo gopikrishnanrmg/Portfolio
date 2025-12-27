@@ -82,40 +82,78 @@ class ProjectControllerIntegrationTest {
                 .andExpect(jsonPath("$[0].title").value("Active"));
     }
 
+
     @Test
-    void updateProject_shouldUpdateFields() throws Exception {
+    void patchProject_shouldPartiallyUpdateFields() throws Exception {
+        Project project = projectRepository.save(
+                Project.builder()
+                        .title("Original Title")
+                        .description("Original Desc")
+                        .tech(List.of("Java"))
+                        .banner("original-banner")
+                        .link("http://original.com")
+                        .isDeleted(false)
+                        .build()
+        );
+
+        String patchJson = """
+        {
+          "title": "Updated Title"
+        }
+    """;
+
+        mockMvc.perform(patch("/api/v1/projects/" + project.getProjectId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(patchJson))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title").value("Updated Title"))
+                .andExpect(jsonPath("$.description").value("Original Desc"));
+
+        Project updated = projectRepository.findById(project.getProjectId()).orElseThrow();
+        assertEquals("Updated Title", updated.getTitle());
+        assertEquals("Original Desc", updated.getDescription()); // unchanged
+        assertEquals(List.of("Java"), updated.getTech()); // unchanged
+    }
+
+    @Test
+    void replaceProject_shouldFullyReplaceEntity() throws Exception {
         Project project = projectRepository.save(
                 Project.builder()
                         .title("Old Title")
                         .description("Old Desc")
                         .tech(List.of("Java"))
-                        .banner("from-pink-500 via-purple-500 to-cyan-400")
+                        .banner("old-banner")
                         .link("http://old.com")
                         .isDeleted(false)
                         .build()
         );
 
-        String updateJson = """
-            {
-              "title": "New Title",
-              "description": "New Desc",
-              "tech": ["Spring Boot"],
-              "banner": "from-fuchsia-500 via-rose-400 to-amber-400",
-              "link": "http://new.com"
-            }
-        """;
+        String replaceJson = """
+        {
+          "title": "New Title",
+          "description": "New Description",
+          "tech": ["Go"],
+          "banner": "new-banner",
+          "link": "http://new.com"
+        }
+    """;
 
         mockMvc.perform(put("/api/v1/projects/" + project.getProjectId())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(updateJson))
+                        .content(replaceJson))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value("New Title"))
-                .andExpect(jsonPath("$.description").value("New Desc"));
+                .andExpect(jsonPath("$.description").value("New Description"))
+                .andExpect(jsonPath("$.tech[0]").value("Go"));
 
         Project updated = projectRepository.findById(project.getProjectId()).orElseThrow();
         assertEquals("New Title", updated.getTitle());
-        assertEquals("New Desc", updated.getDescription());
+        assertEquals("New Description", updated.getDescription());
+        assertEquals(List.of("Go"), updated.getTech());
+        assertEquals("new-banner", updated.getBanner());
+        assertEquals("http://new.com", updated.getLink());
     }
+
 
     @Test
     void deleteProject_shouldMarkDeleted() throws Exception {

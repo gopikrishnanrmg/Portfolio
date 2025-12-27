@@ -19,7 +19,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -101,6 +101,8 @@ class SkillControllerIntegrationTest {
 
     @Test
     void updateSkill_shouldUpdateFields() throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+
         Skill skill = skillRepository.save(
                 Skill.builder()
                         .category(Category.DEVELOPMENT)
@@ -110,11 +112,14 @@ class SkillControllerIntegrationTest {
                         .build()
         );
 
-        UpdateSkillRequest update = new UpdateSkillRequest(Category.DEVELOPMENT, "Kotlin");
+        UpdateSkillRequest update = new UpdateSkillRequest(
+                mapper.readTree("\"DEVELOPMENT\""),
+                mapper.readTree("\"Kotlin\"")
+        );
 
-        mockMvc.perform(put("/api/v1/skills/" + skill.getSkillId())
+        mockMvc.perform(patch("/api/v1/skills/" + skill.getSkillId())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(update)))
+                        .content(mapper.writeValueAsString(update)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("Kotlin"));
     }

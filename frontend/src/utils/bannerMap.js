@@ -1,0 +1,16 @@
+export const bannerMap = {
+    "pink-purple-cyan": ["from-pink-500", "via-purple-500", "to-cyan-400"],
+    "fuchsia-rose-amber": ["from-fuchsia-500", "via-rose-400", "to-amber-400"],
+    "teal-cyan-blue": ["from-teal-400", "via-cyan-400", "to-blue-500"],
+    "red-pink-fuchsia": ["from-red-500", "via-pink-500", "to-fuchsia-500"],
+    "green-cyan-blue": ["from-green-400", "via-cyan-400", "to-blue-500"],
+    "lime-green-emerald": ["from-lime-400", "via-green-500", "to-emerald-600"],
+    "purple-indigo-sky": ["from-purple-500", "via-indigo-400", "to-sky-400"],
+    "orange-pink-red": ["from-orange-400", "via-pink-500", "to-red-500"],
+    "indigo-sky-emerald": ["from-indigo-500", "via-sky-400", "to-emerald-400"],
+    "amber-lime-emerald": ["from-amber-500", "via-lime-400", "to-emerald-500"],
+    "rose-orange-yellow": ["from-rose-500", "via-orange-400", "to-yellow-400"],
+    "emerald-teal-cyan": ["from-emerald-500", "via-teal-400", "to-cyan-400"],
+    "sky-cyan-indigo": ["from-sky-400", "via-cyan-400", "to-indigo-500"],
+    "yellow-amber-orange": ["from-yellow-400", "via-amber-500", "to-orange-600"],
+  }

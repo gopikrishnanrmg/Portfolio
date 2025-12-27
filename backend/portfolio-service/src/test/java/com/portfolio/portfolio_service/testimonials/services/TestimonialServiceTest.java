@@ -1,6 +1,8 @@
 package com.portfolio.portfolio_service.testimonials.services;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.portfolio.portfolio_service.testimonials.dtos.CreateTestimonialRequest;
+import com.portfolio.portfolio_service.testimonials.dtos.ReplaceTestimonialRequest;
 import com.portfolio.portfolio_service.testimonials.dtos.TestimonialResponse;
 import com.portfolio.portfolio_service.testimonials.dtos.UpdateTestimonialRequest;
 import com.portfolio.portfolio_service.testimonials.exceptions.DuplicateTestimonialException;
@@ -84,10 +86,24 @@ class TestimonialServiceTest {
     }
 
     @Test
-    void updateTestimonial_shouldReturnUpdatedResponse() {
-        UpdateTestimonialRequest request = new UpdateTestimonialRequest("Jane Doe", "Manager", "Updated text", "JD", "new-accent");
-        Testimonial testimonial = new Testimonial(testimonialId, "John Doe", "Engineer", "Old text", "JD", "accent", false);
-        TestimonialResponse response = new TestimonialResponse(testimonialId, "Jane Doe", "Manager", "Updated text", "JD", "new-accent");
+    void updateTestimonial_shouldReturnUpdatedResponse() throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+
+        UpdateTestimonialRequest request = new UpdateTestimonialRequest(
+                mapper.readTree("\"Jane Doe\""),
+                mapper.readTree("\"Manager\""),
+                mapper.readTree("\"Updated text\""),
+                mapper.readTree("\"JD\""),
+                mapper.readTree("\"new-accent\"")
+        );
+
+        Testimonial testimonial = new Testimonial(
+                testimonialId, "John Doe", "Engineer", "Old text", "JD", "accent", false
+        );
+
+        TestimonialResponse response = new TestimonialResponse(
+                testimonialId, "Jane Doe", "Manager", "Updated text", "JD", "new-accent"
+        );
 
         when(testimonialRepository.findById(testimonialId)).thenReturn(Optional.of(testimonial));
         when(testimonialRepository.save(testimonial)).thenReturn(testimonial);
@@ -104,27 +120,148 @@ class TestimonialServiceTest {
     }
 
     @Test
-    void updateTestimonial_shouldThrowTestimonialNotFoundException() {
-        UpdateTestimonialRequest request = new UpdateTestimonialRequest("Jane Doe", null, null, null, null);
+    void updateTestimonial_shouldThrowTestimonialNotFoundException() throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+
+        UpdateTestimonialRequest request = new UpdateTestimonialRequest(
+                mapper.readTree("\"Jane Doe\""),
+                null,
+                null,
+                null,
+                null
+        );
+
         when(testimonialRepository.findById(testimonialId)).thenReturn(Optional.empty());
 
-        assertThrows(TestimonialNotFoundException.class, () -> testimonialService.updateTestimonial(testimonialId, request));
+        assertThrows(TestimonialNotFoundException.class,
+                () -> testimonialService.updateTestimonial(testimonialId, request));
 
         verify(testimonialRepository).findById(testimonialId);
         verifyNoMoreInteractions(testimonialRepository, testimonialMapper);
     }
 
     @Test
-    void updateTestimonial_shouldThrowInvalidTestimonialUpdateException() {
-        UpdateTestimonialRequest request = new UpdateTestimonialRequest("", null, null, null, null);
-        Testimonial testimonial = new Testimonial(testimonialId, "John Doe", "Engineer", "Old text", "JD", "accent", false);
+    void updateTestimonial_shouldThrowInvalidTestimonialUpdateException() throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+
+        UpdateTestimonialRequest request = new UpdateTestimonialRequest(
+                mapper.readTree("\"\""),
+                null,
+                null,
+                null,
+                null
+        );
+
+        Testimonial testimonial = new Testimonial(
+                testimonialId, "John Doe", "Engineer", "Old text", "JD", "accent", false
+        );
 
         when(testimonialRepository.findById(testimonialId)).thenReturn(Optional.of(testimonial));
 
-        assertThrows(InvalidTestimonialUpdateException.class, () -> testimonialService.updateTestimonial(testimonialId, request));
+        assertThrows(InvalidTestimonialUpdateException.class,
+                () -> testimonialService.updateTestimonial(testimonialId, request));
 
         verify(testimonialRepository).findById(testimonialId);
         verifyNoMoreInteractions(testimonialRepository, testimonialMapper);
+    }
+
+    @Test
+    void replaceTestimonial_shouldReplaceAllFields() {
+        ReplaceTestimonialRequest request = new ReplaceTestimonialRequest(
+                "New Name",
+                "New Role",
+                "New Text",
+                "NN",
+                "new-accent"
+        );
+
+        Testimonial testimonial = new Testimonial(
+                testimonialId,
+                "Old Name",
+                "Old Role",
+                "Old Text",
+                "ON",
+                "old-accent",
+                false
+        );
+
+        when(testimonialRepository.findById(testimonialId)).thenReturn(Optional.of(testimonial));
+        when(testimonialRepository.save(testimonial)).thenReturn(testimonial);
+
+        TestimonialResponse response = new TestimonialResponse(
+                testimonialId,
+                "New Name",
+                "New Role",
+                "New Text",
+                "NN",
+                "new-accent"
+        );
+
+        when(testimonialMapper.testimonialToTestimonialResponse(testimonial)).thenReturn(response);
+
+        TestimonialResponse result = testimonialService.replaceTestimonial(testimonialId, request);
+
+        assertEquals("New Name", testimonial.getName());
+        assertEquals("New Role", testimonial.getRole());
+        assertEquals("New Text", testimonial.getText());
+        assertEquals("NN", testimonial.getInitials());
+        assertEquals("new-accent", testimonial.getAccent());
+    }
+
+    @Test
+    void replaceTestimonial_shouldThrowTestimonialNotFoundException() {
+        ReplaceTestimonialRequest request = new ReplaceTestimonialRequest(
+                "Name", "Role", "Text", "IN", "accent"
+        );
+
+        when(testimonialRepository.findById(testimonialId)).thenReturn(Optional.empty());
+
+        assertThrows(TestimonialNotFoundException.class,
+                () -> testimonialService.replaceTestimonial(testimonialId, request));
+
+        verify(testimonialRepository).findById(testimonialId);
+        verifyNoMoreInteractions(testimonialRepository, testimonialMapper);
+    }
+
+    @Test
+    void replaceTestimonial_shouldSaveAndReturnResponse() {
+        ReplaceTestimonialRequest request = new ReplaceTestimonialRequest(
+                "New Name",
+                "New Role",
+                "New Text",
+                "NN",
+                "new-accent"
+        );
+
+        Testimonial testimonial = new Testimonial(
+                testimonialId,
+                "Old Name",
+                "Old Role",
+                "Old Text",
+                "ON",
+                "old-accent",
+                false
+        );
+
+        TestimonialResponse expectedResponse = new TestimonialResponse(
+                testimonialId,
+                "New Name",
+                "New Role",
+                "New Text",
+                "NN",
+                "new-accent"
+        );
+
+        when(testimonialRepository.findById(testimonialId)).thenReturn(Optional.of(testimonial));
+        when(testimonialRepository.save(testimonial)).thenReturn(testimonial);
+        when(testimonialMapper.testimonialToTestimonialResponse(testimonial)).thenReturn(expectedResponse);
+
+        TestimonialResponse actual = testimonialService.replaceTestimonial(testimonialId, request);
+
+        assertEquals(expectedResponse, actual);
+        verify(testimonialRepository).findById(testimonialId);
+        verify(testimonialRepository).save(testimonial);
+        verify(testimonialMapper).testimonialToTestimonialResponse(testimonial);
     }
 
     @Test

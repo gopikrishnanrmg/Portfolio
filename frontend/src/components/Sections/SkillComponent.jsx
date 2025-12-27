@@ -13,7 +13,7 @@ const SkillComponent = (props) => {
 
         const directions = props.techMap.map(() => {
             const angle = Math.random() * 2 * Math.PI
-            const distance = 60 + Math.random() * 40 // px, reduced for less overflow
+            const distance = 60 + Math.random() * 40
             return {
                 x: Math.cos(angle) * distance,
                 y: Math.sin(angle) * distance

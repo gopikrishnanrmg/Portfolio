@@ -1,4 +1,6 @@
 package com.portfolio.portfolio_service.testimonials.dtos;
 
-public record UpdateTestimonialRequest(String name, String role, String text, String initials, String accent) {
+import com.fasterxml.jackson.databind.JsonNode;
+
+public record UpdateTestimonialRequest(JsonNode name, JsonNode role, JsonNode text, JsonNode initials, JsonNode accent) {
 }

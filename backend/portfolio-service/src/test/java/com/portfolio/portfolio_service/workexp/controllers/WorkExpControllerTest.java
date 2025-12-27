@@ -2,6 +2,7 @@ package com.portfolio.portfolio_service.workexp.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.portfolio.portfolio_service.workexp.dtos.CreateWorkExpRequest;
+import com.portfolio.portfolio_service.workexp.dtos.ReplaceWorkExpRequest;
 import com.portfolio.portfolio_service.workexp.dtos.UpdateWorkExpRequest;
 import com.portfolio.portfolio_service.workexp.dtos.WorkExpResponse;
 import com.portfolio.portfolio_service.workexp.services.WorkExpService;
@@ -115,14 +116,16 @@ class WorkExpControllerTest {
 
     @Test
     void updateWorkExp_shouldReturnUpdated() throws Exception {
-        UpdateWorkExpRequest request = new UpdateWorkExpRequest(
-                "Engineer",
-                "CompanyY",
-                Optional.empty(),
-                LocalDate.of(2022, 1, 1),
-                Optional.empty(),
-                List.of("Updated")
-        );
+        String patchJson = """
+        {
+          "role": "Engineer",
+          "company": "CompanyY",
+          "note": null,
+          "startDate": "2022-01-01",
+          "endDate": null,
+          "points": ["Updated"]
+        }
+        """;
 
         WorkExpResponse response = new WorkExpResponse(
                 workExpId,
@@ -136,9 +139,9 @@ class WorkExpControllerTest {
 
         when(workExpService.updateWorkExp(eq(workExpId), any())).thenReturn(response);
 
-        mockMvc.perform(put("/api/v1/workexps/" + workExpId)
+        mockMvc.perform(patch("/api/v1/workexps/" + workExpId)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+                        .content(patchJson))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.workExpId").value(workExpId.toString()))
                 .andExpect(jsonPath("$.role").value("Engineer"))
@@ -146,6 +149,93 @@ class WorkExpControllerTest {
                 .andExpect(jsonPath("$.note").doesNotExist());
 
         verify(workExpService).updateWorkExp(eq(workExpId), any());
+    }
+
+    @Test
+    void replaceWorkExp_shouldReturnUpdated() throws Exception {
+        ReplaceWorkExpRequest request = new ReplaceWorkExpRequest(
+                "New Role",
+                "New Company",
+                "New note",
+                LocalDate.of(2023, 1, 1),
+                LocalDate.of(2024, 1, 1),
+                List.of("New point")
+        );
+
+        WorkExpResponse response = new WorkExpResponse(
+                workExpId,
+                "New Role",
+                "New Company",
+                "New note",
+                LocalDate.of(2023, 1, 1),
+                LocalDate.of(2024, 1, 1),
+                List.of("New point")
+        );
+
+        when(workExpService.replaceWorkExp(eq(workExpId), any())).thenReturn(response);
+
+        mockMvc.perform(put("/api/v1/workexps/" + workExpId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.workExpId").value(workExpId.toString()))
+                .andExpect(jsonPath("$.role").value("New Role"))
+                .andExpect(jsonPath("$.company").value("New Company"))
+                .andExpect(jsonPath("$.note").value("New note"));
+
+        verify(workExpService).replaceWorkExp(eq(workExpId), any());
+    }
+
+    @Test
+    void replaceWorkExp_shouldAllowNullOptionalFields() throws Exception {
+        ReplaceWorkExpRequest request = new ReplaceWorkExpRequest(
+                "New Role",
+                "New Company",
+                null,
+                LocalDate.of(2023, 1, 1),
+                null,
+                List.of("Point")
+        );
+
+        WorkExpResponse response = new WorkExpResponse(
+                workExpId,
+                "New Role",
+                "New Company",
+                null,
+                LocalDate.of(2023, 1, 1),
+                null,
+                List.of("Point")
+        );
+
+        when(workExpService.replaceWorkExp(eq(workExpId), any())).thenReturn(response);
+
+        mockMvc.perform(put("/api/v1/workexps/" + workExpId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.note").doesNotExist())
+                .andExpect(jsonPath("$.endDate").doesNotExist());
+
+        verify(workExpService).replaceWorkExp(eq(workExpId), any());
+    }
+
+    @Test
+    void replaceWorkExp_shouldReturnBadRequestForInvalidDTO() throws Exception {
+        ReplaceWorkExpRequest request = new ReplaceWorkExpRequest(
+                "",
+                "Company",
+                "note",
+                LocalDate.of(2023, 1, 1),
+                null,
+                List.of("Point")
+        );
+
+        mockMvc.perform(put("/api/v1/workexps/" + workExpId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value("Validation Error"))
+                .andExpect(jsonPath("$.message").value(containsString("must not be blank")));
     }
 
     @Test
