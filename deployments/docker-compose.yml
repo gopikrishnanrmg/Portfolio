@@ -2,10 +2,11 @@ services:
   postgres:
     image: postgres:18.1
     container_name: postgres
+    profiles: ["infra"]
     environment:
-      POSTGRES_USER: myuser
-      POSTGRES_PASSWORD: mypassword
-      POSTGRES_DB: mydb
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     ports:
       - "5432:5432"
     volumes:
@@ -15,15 +16,98 @@ services:
   consul:
     image: hashicorp/consul:1.22
     container_name: consul
+    profiles: ["infra"]
     command: agent -server -bootstrap -ui -client=0.0.0.0
     ports:
       - "8500:8500"
       - "8600:8600/udp"
     restart: unless-stopped
 
+  config-server:
+    image: ghcr.io/gopikrishnanrmg/config-server:latest
+    container_name: config-server
+    profiles: ["services"]
+    depends_on:
+      - consul
+    environment:
+      CONSUL_HOST: consul
+      CONSUL_PORT: 8500
+    ports:
+      - "8888:8888"
+    healthcheck: 
+      test: ["CMD", "curl", "-f", "http://localhost:8888/actuator/health"]
+      interval: 5s 
+      timeout: 3s 
+      retries: 10
+    restart: unless-stopped
+
+  portfolio-service:
+    image: ghcr.io/gopikrishnanrmg/portfolio-service:latest
+    container_name: portfolio-service
+    profiles: ["services"]
+    depends_on:
+      config-server:
+        condition: service_healthy
+      consul:
+        condition: service_started
+      postgres:
+        condition: service_started
+    environment:
+      CONFIG_SERVER_HOST: config-server
+      CONFIG_SERVER_PORT: 8888
+      DEV_HOST: ${DEV_HOST}
+      DB_USER: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_HOST: postgres
+      DB_PORT: 5432
+      CONSUL_HOST: consul
+      CONSUL_PORT: 8500
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_REGION: ${AWS_REGION}
+      S3_BUCKET: ${S3_BUCKET}
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
+    ports:
+      - "8889:8889"
+    restart: unless-stopped
+
+  api-gateway:
+    image: ghcr.io/gopikrishnanrmg/api-gateway:latest
+    container_name: api-gateway
+    profiles: ["services"]
+    depends_on:
+      config-server:
+        condition: service_healthy
+      consul:
+        condition: service_started
+    environment:
+      CONFIG_SERVER_HOST: config-server
+      CONFIG_SERVER_PORT: 8888
+      CONSUL_HOST: consul
+      CONSUL_PORT: 8500
+    ports:
+      - "8887:8887"
+    healthcheck: 
+      test: ["CMD", "curl", "-f", "http://localhost:8887/actuator/health"]
+    restart: unless-stopped
+
+  portfolio-frontend:
+    image: ghcr.io/gopikrishnanrmg/portfolio-frontend:latest
+    container_name: portfolio-frontend
+    profiles: ["services"]
+    depends_on:
+      api-gateway:
+        condition: service_healthy
+    environment:
+      API_BASE_URL: http://localhost:8887
+    ports:
+      - "5173:80"
+    restart: unless-stopped
+
   prometheus:
     image: prom/prometheus:v3.8.1
     container_name: prometheus
+    profiles: ["infra"]
     ports:
       - "9090:9090"
     volumes:
@@ -35,6 +119,7 @@ services:
   node-exporter:
     image: prom/node-exporter:v1.10.2
     container_name: node-exporter
+    profiles: ["infra"]
     ports:
       - "9100:9100"
     restart: unless-stopped
@@ -42,11 +127,13 @@ services:
   grafana:
     image: grafana/grafana:12.4.0-20321528496-ubuntu
     container_name: grafana
+    profiles: ["infra"]
     ports:
       - "3000:3000"
     environment:
-      - GF_SECURITY_ADMIN_USER=admin
-      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_SECURITY_ADMIN_USER=${GF_SECURITY_ADMIN_USER}
+      - GF_SECURITY_ADMIN_PASSWORD=${GF_SECURITY_ADMIN_PASSWORD}
     volumes:
       - ./grafana-data:/var/lib/grafana
     restart: unless-stopped
+
