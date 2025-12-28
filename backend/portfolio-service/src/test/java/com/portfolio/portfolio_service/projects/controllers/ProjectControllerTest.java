@@ -4,19 +4,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.portfolio.portfolio_service.projects.dtos.CreateProjectRequest;
 import com.portfolio.portfolio_service.projects.dtos.ProjectResponse;
 import com.portfolio.portfolio_service.projects.dtos.ReplaceProjectRequest;
-import com.portfolio.portfolio_service.projects.dtos.UpdateProjectRequest;
 import com.portfolio.portfolio_service.projects.services.ProjectService;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.hamcrest.Matchers.containsString;
@@ -27,6 +25,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(ProjectController.class)
+@AutoConfigureMockMvc(addFilters = false)
 @RequiredArgsConstructor
 class ProjectControllerTest {
 

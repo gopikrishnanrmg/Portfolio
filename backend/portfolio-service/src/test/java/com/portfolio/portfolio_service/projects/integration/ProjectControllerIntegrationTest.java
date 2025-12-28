@@ -45,7 +45,8 @@ class ProjectControllerIntegrationTest {
 
         mockMvc.perform(post("/api/v1/projects")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestJson))
+                        .content(requestJson)
+                        .header("X-API-KEY", "test-key"))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.title").value("Portfolio App"))
                 .andExpect(jsonPath("$.description").value("A sample project"))
@@ -82,7 +83,6 @@ class ProjectControllerIntegrationTest {
                 .andExpect(jsonPath("$[0].title").value("Active"));
     }
 
-
     @Test
     void patchProject_shouldPartiallyUpdateFields() throws Exception {
         Project project = projectRepository.save(
@@ -104,7 +104,8 @@ class ProjectControllerIntegrationTest {
 
         mockMvc.perform(patch("/api/v1/projects/" + project.getProjectId())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(patchJson))
+                        .content(patchJson)
+                        .header("X-API-KEY", "test-key"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value("Updated Title"))
                 .andExpect(jsonPath("$.description").value("Original Desc"));
@@ -140,7 +141,8 @@ class ProjectControllerIntegrationTest {
 
         mockMvc.perform(put("/api/v1/projects/" + project.getProjectId())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(replaceJson))
+                        .content(replaceJson)
+                        .header("X-API-KEY", "test-key"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value("New Title"))
                 .andExpect(jsonPath("$.description").value("New Description"))
@@ -168,7 +170,8 @@ class ProjectControllerIntegrationTest {
                         .build()
         );
 
-        mockMvc.perform(delete("/api/v1/projects/" + project.getProjectId()))
+        mockMvc.perform(delete("/api/v1/projects/" + project.getProjectId())
+                        .header("X-API-KEY", "test-key"))
                 .andExpect(status().isNoContent());
 
         Project deleted = projectRepository.findById(project.getProjectId()).orElseThrow();
@@ -188,7 +191,8 @@ class ProjectControllerIntegrationTest {
                         .build()
         );
 
-        mockMvc.perform(delete("/api/v1/projects/hard/" + project.getProjectId()))
+        mockMvc.perform(delete("/api/v1/projects/hard/" + project.getProjectId())
+                        .header("X-API-KEY", "test-key"))
                 .andExpect(status().isNoContent());
 
         assertFalse(projectRepository.findById(project.getProjectId()).isPresent());
