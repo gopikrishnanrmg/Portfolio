@@ -13,6 +13,33 @@ services:
       - ./postgres-data:/var/lib/postgresql
     restart: unless-stopped
 
+  postgres_documentDB:
+    image: ghcr.io/ferretdb/postgres-documentdb:15-0.107.0-ferretdb-2.7.0
+    container_name: postgres_documentDB
+    profiles: ["infra"]
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: postgres
+    ports:
+      - "5434:5432"
+    volumes:
+      - ./postgres_documentDB-data:/var/lib/postgresql
+    restart: unless-stopped
+
+  ferretdb:
+    image: ghcr.io/ferretdb/ferretdb:2.7.0
+    container_name: ferretdb
+    profiles: ["infra"]
+    environment:
+      FERRETDB_HANDLER: documentdb
+      FERRETDB_POSTGRESQL_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres_documentDB:5432/postgres?sslmode=disable
+    ports:
+      - "27017:27017"
+    depends_on:
+      - postgres_documentDB
+    restart: unless-stopped
+
   consul:
     image: hashicorp/consul:1.22
     container_name: consul
