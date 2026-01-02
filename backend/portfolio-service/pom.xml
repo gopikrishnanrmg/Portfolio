@@ -102,6 +102,7 @@
 			<artifactId>micrometer-registry-prometheus</artifactId>
 		</dependency>
     </dependencies>
+
 	<dependencyManagement>
 		<dependencies>
 			<dependency>

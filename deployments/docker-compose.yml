@@ -68,6 +68,32 @@ services:
       retries: 10
     restart: unless-stopped
 
+  analytics-server:
+    image: ghcr.io/gopikrishnanrmg/analytics-server:latest
+    container_name: analytics-server
+    profiles: ["services"]
+    depends_on:
+      config-server:
+        condition: service_healthy
+      consul:
+        condition: service_started
+      ferretdb:
+        condition: service_started
+    environment:
+      CONFIG_SERVER_HOST: config-server
+      CONFIG_SERVER_PORT: 8888
+      CONSUL_HOST: consul
+      CONSUL_PORT: 8500
+      MONGODB_URI: mongodb://${POSTGRES_USER}:${POSTGRES_PASSWORD}@ferretdb:27017/analytics?authSource=admin
+    ports:
+      - "8886:8886"
+    healthcheck: 
+      test: ["CMD", "curl", "-f", "http://localhost:8886/actuator/health"]
+      interval: 5s 
+      timeout: 3s 
+      retries: 10
+    restart: unless-stopped
+
   portfolio-service:
     image: ghcr.io/gopikrishnanrmg/portfolio-service:latest
     container_name: portfolio-service
