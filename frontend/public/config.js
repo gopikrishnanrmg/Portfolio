@@ -1,3 +1,3 @@
 window.RUNTIME_CONFIG = {
-  API_BASE_URL: "${API_BASE_URL}"
+  API_BASE_URL: "http://192.168.2.135:8887"
 };
