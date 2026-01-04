@@ -27,7 +27,12 @@ public class Analytics {
     private String page;
     private String ip;
     private String userAgent;
+    private String browser;
+    private String os;
+    private String device;
     private String country;
     private String city;
+    private Double latitude;
+    private Double longitude;
     private Map<String, Object> eventData;
 }

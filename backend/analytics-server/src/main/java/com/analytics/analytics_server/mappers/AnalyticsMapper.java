@@ -16,9 +16,23 @@ public class AnalyticsMapper {
                 .sessionId(analyticsRequest.sessionId())
                 .eventType(analyticsRequest.eventType())
                 .page(analyticsRequest.page())
-                .ip(request.getRemoteAddr())
+                .ip(extractClientIp(request))
                 .userAgent(request.getHeader("User-Agent"))
                 .eventData(analyticsRequest.eventData())
                 .build();
+    }
+
+    private String extractClientIp(HttpServletRequest request) {
+        String xForwardedFor = request.getHeader("X-Forwarded-For");
+        if (xForwardedFor != null && !xForwardedFor.isEmpty() && !"unknown".equalsIgnoreCase(xForwardedFor)) {
+            return xForwardedFor.split(",")[0].trim();
+        }
+
+        String xRealIp = request.getHeader("X-Real-IP");
+        if (xRealIp != null && !xRealIp.isEmpty() && !"unknown".equalsIgnoreCase(xRealIp)) {
+            return xRealIp;
+        }
+
+        return request.getRemoteAddr();
     }
 }
