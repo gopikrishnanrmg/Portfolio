@@ -1,22 +1,57 @@
 @import "tailwindcss";
 
-html, body{
-    width: 100%;
-    background-color: black;
-    color: white;
-    overflow-x: hidden;
+@layer base {
+  html {
+    font-size: clamp(14px, 0.9vw, 16px);
+  }
 }
 
-@theme{
-    --color-white-50: #d9ecff;
-    --color-blue-100: #2d2d38;
-    --color-etherBlue: #5227FF;
-    --color-etherPink: #FF9FFC;
-    --color-etherPurple: #B19EEF;
+:root {
+  --space: clamp(0.5rem, 1vw, 1.5rem);
 }
 
-@layer utilities{
-    .flex-center {
-        @apply flex justify-center items-center;
-    }
+html, body {
+  width: 100%;
+  background-color: black;
+  color: white;
+  overflow-x: hidden;
+}
+
+@theme {
+  --color-white-50: #d9ecff;
+  --color-blue-100: #2d2d38;
+  --color-etherBlue: #5227FF;
+  --color-etherPink: #FF9FFC;
+  --color-etherPurple: #B19EEF;
+}
+
+@layer utilities {
+  .fluid-section {
+    padding-left: var(--space);
+    padding-right: var(--space);
+    padding-top: calc(var(--space) * 1.5);
+    padding-bottom: calc(var(--space) * 1.5);
+  }
+
+  .fluid-card {
+    padding: var(--space);
+    border-radius: clamp(0.5rem, 1vw, 1rem);
+  }
+
+  .fluid-title {
+    font-size: clamp(1.5rem, 3vw, 3rem);
+  }
+
+  .fluid-subtitle {
+    font-size: clamp(1.1rem, 2vw, 1.6rem);
+  }
+
+  .fluid-text {
+    font-size: clamp(0.9rem, 1.2vw, 1.1rem);
+  }
+
+  .flex-center {
+    @apply flex justify-center items-center;
+  }
+  
 }

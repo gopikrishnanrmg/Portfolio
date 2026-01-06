@@ -25,3 +25,4 @@ dist-ssr
 
 # Environment files
 deployments/.env
+frontend/public/config.js
