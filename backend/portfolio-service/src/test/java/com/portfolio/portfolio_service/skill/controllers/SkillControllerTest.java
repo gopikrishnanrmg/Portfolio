@@ -3,16 +3,15 @@ package com.portfolio.portfolio_service.skill.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.portfolio.portfolio_service.skill.dtos.CreateSkillRequest;
 import com.portfolio.portfolio_service.skill.dtos.SkillResponse;
-import com.portfolio.portfolio_service.skill.dtos.UpdateSkillRequest;
 import com.portfolio.portfolio_service.skill.models.Category;
 import com.portfolio.portfolio_service.skill.services.SkillService;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -31,6 +30,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 
 @WebMvcTest(SkillController.class)
+@AutoConfigureMockMvc(addFilters = false)
 @RequiredArgsConstructor
 class SkillControllerTest {
 

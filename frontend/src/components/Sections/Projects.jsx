@@ -82,7 +82,7 @@ const Projects = () => {
           .filter(proj => !proj.hidden)
           .map(proj => (
             <ProjectCard
-              key={proj.id}
+              key={proj.projectId}
               title={proj.title}
               description={proj.description}
               tech={proj.tech}

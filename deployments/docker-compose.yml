@@ -13,6 +13,33 @@ services:
       - ./postgres-data:/var/lib/postgresql
     restart: unless-stopped
 
+  postgres_documentDB:
+    image: ghcr.io/ferretdb/postgres-documentdb:15-0.107.0-ferretdb-2.7.0
+    container_name: postgres_documentDB
+    profiles: ["infra"]
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: postgres
+    ports:
+      - "5434:5432"
+    volumes:
+      - ./postgres_documentDB-data:/var/lib/postgresql
+    restart: unless-stopped
+
+  ferretdb:
+    image: ghcr.io/ferretdb/ferretdb:2.7.0
+    container_name: ferretdb
+    profiles: ["infra"]
+    environment:
+      FERRETDB_HANDLER: documentdb
+      FERRETDB_POSTGRESQL_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres_documentDB:5432/postgres?sslmode=disable
+    ports:
+      - "27017:27017"
+    depends_on:
+      - postgres_documentDB
+    restart: unless-stopped
+
   consul:
     image: hashicorp/consul:1.22
     container_name: consul
@@ -36,6 +63,32 @@ services:
       - "8888:8888"
     healthcheck: 
       test: ["CMD", "curl", "-f", "http://localhost:8888/actuator/health"]
+      interval: 5s 
+      timeout: 3s 
+      retries: 10
+    restart: unless-stopped
+
+  analytics-server:
+    image: ghcr.io/gopikrishnanrmg/analytics-server:latest
+    container_name: analytics-server
+    profiles: ["services"]
+    depends_on:
+      config-server:
+        condition: service_healthy
+      consul:
+        condition: service_started
+      ferretdb:
+        condition: service_started
+    environment:
+      CONFIG_SERVER_HOST: config-server
+      CONFIG_SERVER_PORT: 8888
+      CONSUL_HOST: consul
+      CONSUL_PORT: 8500
+      MONGODB_URI: mongodb://${POSTGRES_USER}:${POSTGRES_PASSWORD}@ferretdb:27017/analytics?authSource=admin
+    ports:
+      - "8886:8886"
+    healthcheck: 
+      test: ["CMD", "curl", "-f", "http://localhost:8886/actuator/health"]
       interval: 5s 
       timeout: 3s 
       retries: 10
@@ -66,6 +119,7 @@ services:
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       AWS_REGION: ${AWS_REGION}
       S3_BUCKET: ${S3_BUCKET}
+      ADMIN_API_KEY: ${ADMIN_API_KEY}
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
     ports:
       - "8889:8889"
@@ -133,6 +187,15 @@ services:
     environment:
       - GF_SECURITY_ADMIN_USER=${GF_SECURITY_ADMIN_USER}
       - GF_SECURITY_ADMIN_PASSWORD=${GF_SECURITY_ADMIN_PASSWORD}
+      - GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS=haohanyang-mongodb-datasource
+    entrypoint:
+    - sh
+    - -c
+    - |
+      set -e
+      grafana cli --pluginUrl https://github.com/haohanyang/mongodb-datasource/releases/download/v${MONGO_DRIVER_VERSION}/haohanyang-mongodb-datasource-${MONGO_DRIVER_VERSION}.zip plugins install haohanyang-mongodb-datasource
+      echo "Starting Grafana…"
+      /run.sh
     volumes:
       - ./grafana-data:/var/lib/grafana
     restart: unless-stopped

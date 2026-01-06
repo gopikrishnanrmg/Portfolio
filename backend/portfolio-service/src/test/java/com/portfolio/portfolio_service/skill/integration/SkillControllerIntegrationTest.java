@@ -52,7 +52,8 @@ class SkillControllerIntegrationTest {
         mockMvc.perform(multipart("/api/v1/skills")
                         .file(file)
                         .file(data)
-                        .contentType(MediaType.MULTIPART_FORM_DATA))
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .header("X-API-KEY", "test-key"))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name").value("React"));
 
@@ -119,7 +120,8 @@ class SkillControllerIntegrationTest {
 
         mockMvc.perform(patch("/api/v1/skills/" + skill.getSkillId())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(update)))
+                        .content(mapper.writeValueAsString(update))
+                        .header("X-API-KEY", "test-key"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("Kotlin"));
     }
@@ -140,6 +142,7 @@ class SkillControllerIntegrationTest {
         mockMvc.perform(multipart("/api/v1/skills/" + skill.getSkillId() + "/file")
                         .file(file)
                         .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .header("X-API-KEY", "test-key")
                         .with(request -> { request.setMethod("PUT"); return request; }))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("Java"));
@@ -156,7 +159,8 @@ class SkillControllerIntegrationTest {
                         .build()
         );
 
-        mockMvc.perform(delete("/api/v1/skills/" + skill.getSkillId()))
+        mockMvc.perform(delete("/api/v1/skills/" + skill.getSkillId())
+                        .header("X-API-KEY", "test-key"))
                 .andExpect(status().isNoContent());
 
         assertTrue(skillRepository.findById(skill.getSkillId()).get().getIsDeleted());
@@ -173,7 +177,8 @@ class SkillControllerIntegrationTest {
                         .build()
         );
 
-        mockMvc.perform(delete("/api/v1/skills/hard/" + skill.getSkillId()))
+        mockMvc.perform(delete("/api/v1/skills/hard/" + skill.getSkillId())
+                        .header("X-API-KEY", "test-key"))
                 .andExpect(status().isNoContent());
 
         assertFalse(skillRepository.findById(skill.getSkillId()).isPresent());

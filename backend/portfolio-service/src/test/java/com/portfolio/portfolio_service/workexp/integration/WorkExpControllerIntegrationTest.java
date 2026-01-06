@@ -58,7 +58,8 @@ class WorkExpControllerIntegrationTest {
 
         mockMvc.perform(post("/api/v1/workexps")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestJson))
+                        .content(requestJson)
+                        .header("X-API-KEY", "test-key"))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.role").value("Developer"))
                 .andExpect(jsonPath("$.company").value("CompanyX"))
@@ -114,7 +115,8 @@ class WorkExpControllerIntegrationTest {
 
         mockMvc.perform(patch("/api/v1/workexps/" + workExp.getWorkExpId())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(patchJson))
+                        .content(patchJson)
+                        .header("X-API-KEY", "test-key"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.role").value("Updated Role"))
                 .andExpect(jsonPath("$.company").value("Old Company"));
@@ -152,7 +154,8 @@ class WorkExpControllerIntegrationTest {
 
         mockMvc.perform(put("/api/v1/workexps/" + workExp.getWorkExpId())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(replaceJson))
+                        .content(replaceJson)
+                        .header("X-API-KEY", "test-key"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.role").value("New Role"))
                 .andExpect(jsonPath("$.company").value("New Company"))
@@ -178,7 +181,8 @@ class WorkExpControllerIntegrationTest {
                         .build()
         );
 
-        mockMvc.perform(delete("/api/v1/workexps/" + workExp.getWorkExpId()))
+        mockMvc.perform(delete("/api/v1/workexps/" + workExp.getWorkExpId())
+                        .header("X-API-KEY", "test-key"))
                 .andExpect(status().isNoContent());
 
         WorkExp deleted = workExpRepository.findById(workExp.getWorkExpId()).orElseThrow();
@@ -196,7 +200,8 @@ class WorkExpControllerIntegrationTest {
                         .build()
         );
 
-        mockMvc.perform(delete("/api/v1/workexps/hard/" + workExp.getWorkExpId()))
+        mockMvc.perform(delete("/api/v1/workexps/hard/" + workExp.getWorkExpId())
+                        .header("X-API-KEY", "test-key"))
                 .andExpect(status().isNoContent());
 
         assertFalse(workExpRepository.findById(workExp.getWorkExpId()).isPresent());

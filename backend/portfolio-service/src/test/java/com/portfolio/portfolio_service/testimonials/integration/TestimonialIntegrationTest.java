@@ -46,7 +46,8 @@ class TestimonialIntegrationTest {
 
         mockMvc.perform(post("/api/v1/testimonials")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestJson))
+                        .content(requestJson)
+                        .header("X-API-KEY", "test-key"))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name").value("John Doe"))
                 .andExpect(jsonPath("$.role").value("Software Engineer"))
@@ -104,7 +105,8 @@ class TestimonialIntegrationTest {
 
         mockMvc.perform(patch("/api/v1/testimonials/" + testimonial.getTestimonialId())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(patchJson))
+                        .content(patchJson)
+                        .header("X-API-KEY", "test-key"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("Updated Name"))
                 .andExpect(jsonPath("$.role").value("Old Role"));
@@ -139,7 +141,8 @@ class TestimonialIntegrationTest {
 
         mockMvc.perform(put("/api/v1/testimonials/" + testimonial.getTestimonialId())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(replaceJson))
+                        .content(replaceJson)
+                        .header("X-API-KEY", "test-key"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("New Name"))
                 .andExpect(jsonPath("$.role").value("New Role"))
@@ -164,7 +167,8 @@ class TestimonialIntegrationTest {
                         .build()
         );
 
-        mockMvc.perform(delete("/api/v1/testimonials/" + testimonial.getTestimonialId()))
+        mockMvc.perform(delete("/api/v1/testimonials/" + testimonial.getTestimonialId())
+                        .header("X-API-KEY", "test-key"))
                 .andExpect(status().isNoContent());
 
         Testimonial deleted = testimonialRepository.findById(testimonial.getTestimonialId()).orElseThrow();
@@ -184,7 +188,8 @@ class TestimonialIntegrationTest {
                         .build()
         );
 
-        mockMvc.perform(delete("/api/v1/testimonials/hard/" + testimonial.getTestimonialId()))
+        mockMvc.perform(delete("/api/v1/testimonials/hard/" + testimonial.getTestimonialId())
+                        .header("X-API-KEY", "test-key"))
                 .andExpect(status().isNoContent());
 
         assertFalse(testimonialRepository.findById(testimonial.getTestimonialId()).isPresent());

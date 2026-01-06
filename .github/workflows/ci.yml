@@ -12,11 +12,13 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        service: [api-gateway, portfolio-service, config-server]
+        service: [api-gateway, portfolio-service, config-server, analytics-server]
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+        with: 
+          lfs: true
 
       - name: Set up JDK
         uses: actions/setup-java@v3
@@ -34,7 +36,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-
+        with: 
+          lfs: true
+          
       - name: Set up Node
         uses: actions/setup-node@v3
         with:

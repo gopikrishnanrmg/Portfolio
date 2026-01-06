@@ -1,4 +1,5 @@
 import './App.css'
+import { useState, useEffect } from 'react'
 import ChatButton from './components/Chat/ChatButton'
 import Header from './components/Header/Header'
 import Hero from './components/Sections/Hero'
@@ -8,8 +9,54 @@ import Projects from './components/Sections/Projects'
 import Testimonials from './components/Sections/Testimonials'
 import LiquidEther from './components/Sections/LiquidEther'
 import Footer from './components/Footer/Footer'
+import CookieBanner from './components/Analytics/CookieBanner'
+import { getOrCreateVisitorId, getOrCreateSessionId, sendAnalyticsEvent } from './components/Analytics/analyticsUtils'
+
 
 function App() {
+
+  const [showBanner, setShowBanner] = useState(false);
+
+  useEffect(() => {
+    const consent = localStorage.getItem("cookieConsent");
+
+    if (consent === "accepted") {
+      const visitorId = getOrCreateVisitorId();
+      const sessionId = getOrCreateSessionId();
+      sendAnalyticsEvent(
+        {
+          visitorId,
+          sessionId,
+          eventType: "page_view",
+          page: window.location.pathname,
+          eventData: {}
+        });
+    } else if (consent === "rejected") {
+    } else {
+      setShowBanner(true);
+    }
+  }, [])
+
+  const handleAccept = () => {
+    localStorage.setItem("cookieConsent", "accepted");
+    const visitorId = getOrCreateVisitorId();
+    const sessionId = getOrCreateSessionId();
+    sendAnalyticsEvent(
+      {
+        visitorId,
+        sessionId,
+        eventType: "page_view",
+        page: window.location.pathname,
+        eventData: {}
+      });
+    setShowBanner(false);
+  }
+
+  const handleReject = () => {
+    localStorage.setItem("cookieConsent", "rejected");
+    setShowBanner(false);
+  }
+
   return (
     <div className="relative min-h-screen flex flex-col">
       <Header />
@@ -37,11 +84,12 @@ function App() {
         <Hero />
         <Skills />
         <WorkExperience />
-        <Projects/>
+        <Projects />
         <Testimonials />
         <ChatButton />
       </main>
-      <Footer/>
+      {showBanner && <CookieBanner onAccept={handleAccept} onReject={handleReject} />}
+      <Footer />
     </div>
   )
 }

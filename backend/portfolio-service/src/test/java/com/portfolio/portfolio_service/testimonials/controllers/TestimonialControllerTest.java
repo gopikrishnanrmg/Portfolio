@@ -3,12 +3,12 @@ package com.portfolio.portfolio_service.testimonials.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.portfolio.portfolio_service.testimonials.dtos.CreateTestimonialRequest;
 import com.portfolio.portfolio_service.testimonials.dtos.TestimonialResponse;
-import com.portfolio.portfolio_service.testimonials.dtos.UpdateTestimonialRequest;
 import com.portfolio.portfolio_service.testimonials.dtos.ReplaceTestimonialRequest;
 import com.portfolio.portfolio_service.testimonials.services.TestimonialService;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -24,6 +24,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(TestimonialController.class)
+@AutoConfigureMockMvc(addFilters = false)
 @RequiredArgsConstructor
 class TestimonialControllerTest {
 
