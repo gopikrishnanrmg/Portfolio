@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Request, Response
-from models.chat_models import ChatRequest, ChatResponse
+from dtos.chat_dtos import ChatRequest, ChatResponse
 from services.llm_service import generate_reply
 
 router = APIRouter()

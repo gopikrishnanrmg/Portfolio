@@ -3,7 +3,7 @@ from fastapi import Request
 from langchain_groq import ChatGroq
 
 from config.settings import LLM_API_KEY, MODEL_NAME
-from models.chat_models import ChatRequest
+from dtos.chat_dtos import ChatRequest
 
 llm = ChatGroq(
     api_key=LLM_API_KEY,
@@ -15,7 +15,7 @@ async def generate_reply(request: Request, body: ChatRequest):
 
     user_msg = body.content
 
-    messages = [("system", "You are a helpful, friendly, concise chatbot."),
+    messages = [("system", "You are a helpful, friendly, and a very concise chatbot."),
                 ("user", user_msg)]
 
     response = llm.invoke(messages)
