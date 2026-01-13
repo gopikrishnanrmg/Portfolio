@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Request, Response
 from dtos.chat_dtos import ChatRequest, ChatResponse
-from services.llm_service import generate_reply
+from services.chat_service import generate_reply
 
-router = APIRouter()
+router = APIRouter(prefix="/v1/chat")
 
-@router.post("/chat", response_model=ChatResponse)
+@router.post("/", response_model=ChatResponse)
 async def chat(request: Request, body: ChatRequest, response: Response):
     reply, session_id = await generate_reply(request, body)
 
