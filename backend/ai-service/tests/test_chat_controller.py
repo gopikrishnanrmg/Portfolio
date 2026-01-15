@@ -1,0 +1,27 @@
+import pytest
+from fastapi.testclient import TestClient
+from unittest.mock import AsyncMock, patch
+from main import app
+
+
+@patch("routes.chat_controller.generate_reply", new_callable=AsyncMock)
+def test_chat_sets_cookie_when_missing(mock_reply):
+    mock_reply.return_value = ("mock reply", "mock-session-id")
+
+    client = TestClient(app)
+    response = client.post("/v1/chat", json={"content": "hello"})
+
+    assert response.cookies.get("session_id") == "mock-session-id"
+
+
+@patch("routes.chat_controller.generate_reply", new_callable=AsyncMock)
+def test_chat_does_not_override_existing_cookie(mock_reply):
+    mock_reply.return_value = ("mock reply", "mock-session-id")
+
+    client = TestClient(app, cookies={"session_id": "existing-session-id"})
+    response = client.post(
+        "/v1/chat",
+        json={"content": "hello"},
+    )
+
+    assert response.cookies.get("session_id") is None
