@@ -2,7 +2,7 @@ from fastapi import APIRouter, Request, Response
 from dtos.chat_dtos import ChatRequest, ChatResponse
 from services.chat_service import generate_reply
 
-router = APIRouter(prefix="/v1/chat")
+router = APIRouter(prefix="/api/v1/chat")
 
 @router.post("/", response_model=ChatResponse)
 async def chat(request: Request, body: ChatRequest, response: Response):

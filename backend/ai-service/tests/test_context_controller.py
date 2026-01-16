@@ -1,10 +1,10 @@
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
+
 from fastapi.testclient import TestClient
 from starlette.status import HTTP_201_CREATED, HTTP_200_OK, HTTP_204_NO_CONTENT, HTTP_401_UNAUTHORIZED
 
 from config import settings
 from main import app
-
 
 client = TestClient(app)
 
@@ -12,7 +12,7 @@ client = TestClient(app)
 def test_add_context_item(mock_add):
     mock_add.return_value = 3
 
-    response = client.post("/v1/context", json={"title": "doc1", "content": "content1"}, headers={"X-API-Key": settings.ADMIN_API_KEY})
+    response = client.post("/api/v1/context", json={"title": "doc1", "content": "content1"}, headers={"X-API-Key": settings.ADMIN_API_KEY})
 
     mock_add.assert_called_once()
 
@@ -38,38 +38,38 @@ def test_get_context_items(mock_find):
         },
     ]
 
-    response = client.get("/v1/context", params={"query": "what is the best match?", "k": 2}, headers={"X-API-Key": settings.ADMIN_API_KEY})
+    response = client.get("/api/v1/context", params={"query": "what is the best match?", "k": 2}, headers={"X-API-Key": settings.ADMIN_API_KEY})
 
     mock_find.assert_called_once_with("what is the best match?", 2)
     assert response.status_code == HTTP_200_OK
 
 @patch("routes.context_controller.soft_delete_by_title")
 def test_delete_context_item(mock_delete):
-    response = client.delete("/v1/context", params={"title": "doc1"}, headers={"X-API-Key": settings.ADMIN_API_KEY})
+    response = client.delete("/api/v1/context", params={"title": "doc1"}, headers={"X-API-Key": settings.ADMIN_API_KEY})
 
     mock_delete.assert_called_once_with("doc1")
     assert response.status_code == HTTP_204_NO_CONTENT
 
 def test_missing_api_key_post():
-    response = client.post("/v1/context", json={"title": "doc1", "content": "c"})
+    response = client.post("/api/v1/context", json={"title": "doc1", "content": "c"})
     assert response.status_code == HTTP_401_UNAUTHORIZED
 
 def test_missing_api_key_get():
-    response = client.get("/v1/context", params={"query": "x", "k": 1})
+    response = client.get("/api/v1/context", params={"query": "x", "k": 1})
     assert response.status_code == HTTP_401_UNAUTHORIZED
 
 def test_missing_api_key_delete():
-    response = client.delete("/v1/context", params={"title": "doc1"})
+    response = client.delete("/api/v1/context", params={"title": "doc1"})
     assert response.status_code == HTTP_401_UNAUTHORIZED
 
 def test_wrong_api_key_post():
-    response = client.post("/v1/context", json={"title": "doc1", "content": "c"}, headers={"X-API-Key": "wrong"})
+    response = client.post("/api/v1/context", json={"title": "doc1", "content": "c"}, headers={"X-API-Key": "wrong"})
     assert response.status_code == HTTP_401_UNAUTHORIZED
 
 def test_wrong_api_key_get():
-    response = client.get("/v1/context", params={"query": "x", "k": 1}, headers={"X-API-Key": "wrong"})
+    response = client.get("/api/v1/context", params={"query": "x", "k": 1}, headers={"X-API-Key": "wrong"})
     assert response.status_code == HTTP_401_UNAUTHORIZED
 
 def test_wrong_api_key_delete():
-    response = client.delete("/v1/context", params={"title": "doc1"}, headers={"X-API-Key": "wrong"})
+    response = client.delete("/api/v1/context", params={"title": "doc1"}, headers={"X-API-Key": "wrong"})
     assert response.status_code == HTTP_401_UNAUTHORIZED

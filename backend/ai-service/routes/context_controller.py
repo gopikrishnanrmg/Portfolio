@@ -5,7 +5,7 @@ from dtos.context_dtos import CreateContextItemRequest, CreateContextItemRespons
 from security.api_key_filter import verify_admin_key
 from services.context_service import add_context_item, find_k_matches, soft_delete_by_title
 
-router = APIRouter(prefix="/v1/context")
+router = APIRouter(prefix="/api/v1/context")
 
 @router.post("/", response_model=CreateContextItemResponse, status_code=HTTP_201_CREATED, dependencies=[Depends(verify_admin_key)])
 async def create_context_item(item: CreateContextItemRequest):

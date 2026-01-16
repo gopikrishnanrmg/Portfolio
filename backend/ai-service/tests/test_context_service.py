@@ -1,6 +1,7 @@
 from unittest.mock import MagicMock, patch
+
 from dtos.context_dtos import CreateContextItemRequest
-import pytest
+
 
 @patch("services.context_service.vector_repo")
 @patch("services.context_service.text_splitter")

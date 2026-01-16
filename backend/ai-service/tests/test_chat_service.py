@@ -1,9 +1,9 @@
 from unittest.mock import MagicMock, patch
-import pytest
-from fastapi import Request
 
-from services.chat_service import generate_reply
+import pytest
+
 from dtos.chat_dtos import ChatRequest
+from services.chat_service import generate_reply
 
 
 @patch("services.chat_service.get_db")
