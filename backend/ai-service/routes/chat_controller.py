@@ -4,7 +4,7 @@ from services.chat_service import generate_reply
 
 router = APIRouter(prefix="/api/v1/chat")
 
-@router.post("/", response_model=ChatResponse)
+@router.post("", response_model=ChatResponse)
 async def chat(request: Request, body: ChatRequest, response: Response):
     reply, session_id = await generate_reply(request, body)
 

@@ -4,9 +4,19 @@ import ChatBubble from './ChatBubble'
 
 const ChatWindow = () => {
   const [messages, setMessages] = useState([
-    { id: 1, sender: 'bot', text: 'Welcome! You can ask questions about Gopikrishnan & I will answer them for you.\n Example: "What are Gopikrishnan\'s skills?" or "Tell me about Gopikrishnan\'s projects."' },
+    { id: Date.now(), sender: 'bot', text: 'Welcome! You can ask questions about Gopikrishnan & I will answer them for you.\n Example: "What are Gopikrishnan\'s skills?" or "Tell me about Gopikrishnan\'s projects."' },
     // { id: 2, sender: 'user', text: 'Hi there 👋' },
   ])
+  
+  const API_BASE_URL = window.RUNTIME_CONFIG.API_BASE_URL
+
+  // useEffect(() => {
+  //   fetch(`${API_BASE_URL}/ai/api/v1/chat`)
+  //     .then(res => res.json())
+  //     .then(message => setMessages([...messages, { id: Date.now(), sender: 'bot', text: message.reply }]))
+  //     .catch(err => console.error('Error fetching message:', err))
+  // }, [])
+
   const [input, setInput] = useState('')
   const messagesEndRef = useRef(null)
 
@@ -14,11 +24,37 @@ const ChatWindow = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
-  const sendMessage = () => {
+
+  const sendMessage = async () => {
     if (!input.trim()) return
-    setMessages([...messages, { id: Date.now(), sender: 'user', text: input }])
+    setMessages(messages => [...messages, { id: Date.now(), sender: 'user', text: input }])
     setInput('')
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/ai/api/v1/chat`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        credentials: "include",
+        body: JSON.stringify({ content: input })
+      })
+
+      const data = await res.json()
+      
+      setMessages(messages => [...messages, { id: Date.now(), sender: 'bot', text: data.reply }])
+
+
+    } catch(err) {
+      console.error("Error sending message:", err)
+    }
   }
+
+  // const sendMessage = () => {
+  //   if (!input.trim()) return
+  //   setMessages([...messages, { id: Date.now(), sender: 'user', text: input }])
+  //   setInput('')
+  // }
 
   return (
     <div className="flex flex-col w-full max-w-sm md:max-w-md lg:max-w-lg h-full

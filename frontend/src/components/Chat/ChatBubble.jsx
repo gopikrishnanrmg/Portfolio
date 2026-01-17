@@ -1,4 +1,5 @@
 import React from 'react'
+import ReactMarkdown from "react-markdown"
 
 const ChatBubble = ({ sender, text }) => {
   const isUser = sender === 'user'
@@ -10,7 +11,7 @@ const ChatBubble = ({ sender, text }) => {
           ? 'ml-auto bg-gradient-to-r from-cyan-500/30 to-purple-500/30 text-cyan-100'
           : 'mr-auto bg-gray-700/50 text-gray-200'}`}
     >
-      {text}
+      <ReactMarkdown>{text}</ReactMarkdown>
     </div>
   )
 }
