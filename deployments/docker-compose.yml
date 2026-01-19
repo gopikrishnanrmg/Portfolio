@@ -2,7 +2,8 @@ services:
   postgres:
     image: postgres:18.1
     container_name: postgres
-    profiles: ["infra"]
+    profiles: 
+      - infra
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -17,7 +18,8 @@ services:
   postgres_documentDB:
     image: ghcr.io/ferretdb/postgres-documentdb:15-0.107.0-ferretdb-2.7.0
     container_name: postgres_documentDB
-    profiles: ["infra"]
+    profiles:
+      - infra
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -31,7 +33,8 @@ services:
   ferretdb:
     image: ghcr.io/ferretdb/ferretdb:2.7.0
     container_name: ferretdb
-    profiles: ["infra"]
+    profiles: 
+      - infra
     environment:
       FERRETDB_HANDLER: documentdb
       FERRETDB_POSTGRESQL_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres_documentDB:5432/postgres?sslmode=disable
@@ -44,17 +47,36 @@ services:
   consul:
     image: hashicorp/consul:1.22
     container_name: consul
-    profiles: ["infra"]
+    profiles: 
+      - infra
     command: agent -server -bootstrap -ui -client=0.0.0.0
     ports:
       - "8500:8500"
       - "8600:8600/udp"
     restart: unless-stopped
 
+  ai-migrations:
+    image: ghcr.io/gopikrishnanrmg/ai-service:latest
+    container_name: ai-migrations
+    profiles: 
+      - infra
+    command: alembic upgrade head
+    environment:
+      DB_USER: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${AI_DB_NAME}
+    depends_on:
+      postgres:
+        condition: service_started
+    restart: "no"
+
   config-server:
     image: ghcr.io/gopikrishnanrmg/config-server:latest
     container_name: config-server
-    profiles: ["services"]
+    profiles: 
+      - services
     depends_on:
       - consul
     environment:
@@ -72,7 +94,8 @@ services:
   analytics-server:
     image: ghcr.io/gopikrishnanrmg/analytics-server:latest
     container_name: analytics-server
-    profiles: ["services"]
+    profiles: 
+      - services
     depends_on:
       config-server:
         condition: service_healthy
@@ -98,7 +121,8 @@ services:
   portfolio-service:
     image: ghcr.io/gopikrishnanrmg/portfolio-service:latest
     container_name: portfolio-service
-    profiles: ["services"]
+    profiles: 
+      - services
     depends_on:
       config-server:
         condition: service_healthy
@@ -129,7 +153,8 @@ services:
   api-gateway:
     image: ghcr.io/gopikrishnanrmg/api-gateway:latest
     container_name: api-gateway
-    profiles: ["services"]
+    profiles: 
+      - services
     depends_on:
       config-server:
         condition: service_healthy
@@ -145,11 +170,40 @@ services:
     healthcheck: 
       test: ["CMD", "curl", "-f", "http://localhost:8887/actuator/health"]
     restart: unless-stopped
-
+    
+  ai-service:
+    image: ghcr.io/gopikrishnanrmg/ai-service:latest
+    container_name: ai-service
+    profiles: 
+      - services
+    depends_on:
+      consul:
+        condition: service_started
+    environment:
+      CONSUL_HOST: consul
+      CONSUL_PORT: 8500
+      SERVICE_NAME: ai-service
+      SERVICE_PORT: 8885
+      DB_USER: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${AI_DB_NAME}
+      ENABLE_CONSUL_REGISTRATION: ${ENABLE_CONSUL_REGISTRATION}
+      ADMIN_API_KEY: ${ADMIN_API_KEY}
+      LLM_API_KEY: ${LLM_API_KEY}
+      MODEL_NAME: ${MODEL_NAME}
+    ports:
+      - "8885:8885"
+    healthcheck: 
+      test: ["CMD", "curl", "-f", "http://localhost:8885/actuator/health"]
+    restart: unless-stopped
+    
   portfolio-frontend:
     image: ghcr.io/gopikrishnanrmg/portfolio-frontend:latest
     container_name: portfolio-frontend
-    profiles: ["services"]
+    profiles: 
+      - services
     depends_on:
       api-gateway:
         condition: service_healthy
@@ -162,7 +216,8 @@ services:
   prometheus:
     image: prom/prometheus:v3.8.1
     container_name: prometheus
-    profiles: ["infra"]
+    profiles: 
+      - infra
     ports:
       - "9090:9090"
     volumes:
@@ -174,7 +229,8 @@ services:
   node-exporter:
     image: prom/node-exporter:v1.10.2
     container_name: node-exporter
-    profiles: ["infra"]
+    profiles: 
+      - infra
     ports:
       - "9100:9100"
     restart: unless-stopped
@@ -182,7 +238,8 @@ services:
   grafana:
     image: grafana/grafana:12.4.0-20321528496-ubuntu
     container_name: grafana
-    profiles: ["infra"]
+    profiles: 
+      - infra
     ports:
       - "3000:3000"
     environment:
@@ -200,4 +257,3 @@ services:
     volumes:
       - ./grafana-data:/var/lib/grafana
     restart: unless-stopped
-
