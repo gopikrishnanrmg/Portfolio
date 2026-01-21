@@ -44,6 +44,22 @@ services:
       - postgres_documentDB
     restart: unless-stopped
 
+  rabbitmq:
+    image: rabbitmq:4.2.2-management-alpine
+    container_name: rabbitmq
+    profiles: 
+      - infra
+    environment: 
+      RABBITMQ_DEFAULT_USER: ${RM_SECURITY_ADMIN_USER}
+      RABBITMQ_DEFAULT_PASS: ${RM_SECURITY_ADMIN_PASSWORD}
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes: 
+      - ./rabbitmq_data:/var/lib/rabbitmq 
+      - ./rabbitmq_logs:/var/log/rabbitmq
+    restart: unless-stopped
+
   consul:
     image: hashicorp/consul:1.22
     container_name: consul
