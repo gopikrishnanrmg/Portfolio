@@ -6,7 +6,7 @@ from fastapi_mcp import FastApiMCP
 from prometheus_fastapi_instrumentator import Instrumentator
 from config.settings import ENABLE_CONSUL_REGISTRATION, SERVICE_NAME
 from routes.health import router as health_router
-from routes.mcp_server import router as mcp_server
+from routes.rabbitmq import router as mcp_server
 from utils.consul_registration import register_with_consul
 
 @asynccontextmanager

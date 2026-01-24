@@ -5,8 +5,6 @@ from schemas import Message
 from services.rabbitmq.rabbitmq import publish_message
 
 router = APIRouter()
-# router = APIRouter(prefix="/mcp")
-
 @router.post("/", operation_id="send-message")
 async def send_message(request: Message):
     """Send a message to RabbitMQ"""
