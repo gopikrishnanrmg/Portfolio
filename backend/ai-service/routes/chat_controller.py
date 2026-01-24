@@ -6,7 +6,7 @@ router = APIRouter(prefix="/api/v1/chat")
 
 @router.post("", response_model=ChatResponse)
 async def chat(request: Request, body: ChatRequest, response: Response):
-    reply, session_id = await generate_reply(request, body)
+    reply, session_id = generate_reply(request, body)
 
     if not request.cookies.get("session_id"):
         response.set_cookie(

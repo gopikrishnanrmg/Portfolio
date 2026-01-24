@@ -1,7 +1,5 @@
 from unittest.mock import MagicMock, patch
 
-import pytest
-
 from dtos.chat_dtos import ChatRequest
 from services.chat_service import generate_reply
 
@@ -13,8 +11,7 @@ from services.chat_service import generate_reply
 @patch("services.chat_service.save_message")
 @patch("services.chat_service.find_k_matches")
 @patch("services.chat_service.llm")
-@pytest.mark.asyncio
-async def test_generate_reply_new_session(
+def test_generate_reply_new_session(
     mock_llm,
     mock_find_k_matches,
     mock_save_message,
@@ -37,7 +34,7 @@ async def test_generate_reply_new_session(
 
     body = ChatRequest(content="hi")
 
-    reply, session_id = await generate_reply(FakeRequest(), body) # type: ignore[arg-type]
+    reply, session_id = generate_reply(FakeRequest(), body) # type: ignore[arg-type]
 
     assert reply == "hello back!"
     assert isinstance(session_id, str)
@@ -62,8 +59,7 @@ async def test_generate_reply_new_session(
 @patch("services.chat_service.save_message")
 @patch("services.chat_service.find_k_matches")
 @patch("services.chat_service.llm")
-@pytest.mark.asyncio
-async def test_generate_reply_existing_session(
+def test_generate_reply_existing_session(
     mock_llm,
     mock_find_k_matches,
     mock_save_message,
@@ -93,7 +89,7 @@ async def test_generate_reply_existing_session(
 
     body = ChatRequest(content="hi")
 
-    reply, session_id = await generate_reply(FakeRequest(), body) # type: ignore[arg-type]
+    reply, session_id = generate_reply(FakeRequest(), body) # type: ignore[arg-type]
 
     assert reply == "hello back!"
     assert session_id == "7c84c013-4e1a-4f3d-8418-63fd7b0ceafb"

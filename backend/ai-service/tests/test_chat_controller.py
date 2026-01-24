@@ -1,11 +1,11 @@
-from unittest.mock import AsyncMock, patch
+from unittest.mock import patch, MagicMock
 
 from fastapi.testclient import TestClient
 
 from main import app
 
 
-@patch("routes.chat_controller.generate_reply", new_callable=AsyncMock)
+@patch("routes.chat_controller.generate_reply")
 def test_chat_sets_cookie_when_missing(mock_reply):
     mock_reply.return_value = ("mock reply", "mock-session-id")
 
@@ -15,7 +15,7 @@ def test_chat_sets_cookie_when_missing(mock_reply):
     assert response.cookies.get("session_id") == "mock-session-id"
 
 
-@patch("routes.chat_controller.generate_reply", new_callable=AsyncMock)
+@patch("routes.chat_controller.generate_reply")
 def test_chat_does_not_override_existing_cookie(mock_reply):
     mock_reply.return_value = ("mock reply", "mock-session-id")
 

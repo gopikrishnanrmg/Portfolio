@@ -16,7 +16,7 @@ llm = ChatGroq(
     temperature=0.7
 )
 
-async def generate_reply(request: Request, body: ChatRequest):
+def generate_reply(request: Request, body: ChatRequest):
     db = get_db()
 
     user_msg = body.content
