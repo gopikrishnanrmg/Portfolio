@@ -10,6 +10,7 @@ RABBIT_PORT = int(os.getenv("RABBIT_PORT", "5672"))
 RABBIT_USER = os.getenv("RABBIT_USER", "guest")
 RABBIT_PASSWORD = os.getenv("RABBIT_PASSWORD", "")
 EXCHANGE = os.getenv("EXCHANGE", "messages")
+QUEUE = os.getenv("QUEUE", "notification")
 ROUTING_KEY = os.getenv("ROUTING_KEY", "messages")
 
 RABBIT_URL = f"amqp://{RABBIT_USER}:{RABBIT_PASSWORD}@{RABBIT_HOST}:{RABBIT_PORT}"
