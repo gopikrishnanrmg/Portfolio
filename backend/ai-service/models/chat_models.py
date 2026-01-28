@@ -6,6 +6,7 @@ class ChatSession(Base):
     __tablename__ = "chat_sessions"
 
     session_id = Column(String, primary_key=True)
+    openai_conversation_id = Column(String, nullable=True)
 
     messages = relationship("ChatMessage", back_populates="session")
 

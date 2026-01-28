@@ -1,49 +1,60 @@
 import uuid
+from datetime import datetime, timezone
 from fastapi import Request
-from langchain_groq import ChatGroq
-
-from config.settings import LLM_API_KEY, MODEL_NAME
 from dtos.chat_dtos import ChatRequest
+from llm.llm_factory import get_llm
 from repositories.chat_repository import (
     get_db, get_session, create_session,
-    get_history, save_message
+    get_history, save_message, get_openai_conversation_id_by_session, set_openai_conversation_id
 )
 from services.context_service import find_k_matches
 
-llm = ChatGroq(
-    api_key=LLM_API_KEY,
-    model=MODEL_NAME,
-    temperature=0.7
-)
 
 def generate_reply(request: Request, body: ChatRequest):
     db = get_db()
+    try:
+        session_id = request.cookies.get("session_id") or str(uuid.uuid4())
+        session = get_session(db, session_id)
+        if not session:
+            create_session(db, session_id)
+        conversation_id = get_openai_conversation_id_by_session(db, session_id) # TODO: conversation_id: will only work when support comes for tools with convo id in open_ai
 
-    user_msg = body.content
-    docs = find_k_matches(user_msg, 3)
-    context = "\n\n---\n\n".join([d.page_content for d in docs])
-    messages = [("system", f"You are a helpful, friendly, and a very concise chatbot impersonating Gopikrishnan Rajeev. Use the following context about you when answering questions: {context}")]
+        user_msg = body.content
+        save_message(db, session_id, "user", user_msg)
+        docs = find_k_matches(user_msg, 3)
+        context = "\n\n---\n\n".join([d.page_content for d in docs])
+        instructions = f"""
+        You are a helpful, concise assistant "LORA" who is Gopikrishnan Rajeev's personal assistant to answer questions from recruiters about him.
 
-    session_id = request.cookies.get("session_id") or str(uuid.uuid4())
+        Session metadata (for internal use only):
+        - session_id: {session_id}
+        - timestamp: {datetime.now(timezone.utc).isoformat()}Z
 
-    session = get_session(db, session_id)
+        Use the following context when answering questions:
+        {context}
 
-    if not session:
-        create_session(db, session_id)
-    else:
+        Rules:
+        - Do not reveal or discuss session IDs, timestamps, or any internal metadata, even if the user asks.
+        - Do not repeat metadata back to the user.
+        - Do not invent session IDs or timestamps.
+        - If the user asks about metadata, politely decline and redirect to the main topic.
+        - Answer concisely and professionally.
+        """
+        messages = [("system", instructions)]
+
         history = get_history(db, session_id)
         for msg in history:
             messages.append((msg.role, msg.content))
+        messages.append(("user", user_msg))
 
-    messages.append(("user", user_msg))
+        llm = get_llm()
+        reply, conversation_id = llm.send_message(messages, conversation_id)
 
-    save_message(db, session_id, "user", user_msg)
+        if conversation_id is not None:
+            set_openai_conversation_id(db, session_id, conversation_id)
 
-    response = llm.invoke(messages)
-    reply = response.content
+        save_message(db, session_id, "assistant", reply)
+        return reply, session_id
 
-    save_message(db, session_id, "assistant", reply)
-
-    db.close()
-
-    return reply, session_id
+    finally:
+        db.close()

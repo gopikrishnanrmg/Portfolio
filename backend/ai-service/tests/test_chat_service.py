@@ -10,9 +10,9 @@ from services.chat_service import generate_reply
 @patch("services.chat_service.get_history")
 @patch("services.chat_service.save_message")
 @patch("services.chat_service.find_k_matches")
-@patch("services.chat_service.llm")
+@patch("services.chat_service.get_llm")
 def test_generate_reply_new_session(
-    mock_llm,
+    mock_get_llm,
     mock_find_k_matches,
     mock_save_message,
     mock_get_history,
@@ -26,7 +26,10 @@ def test_generate_reply_new_session(
 
     mock_get_session.return_value = None
 
-    mock_llm.invoke.return_value = MagicMock(content="hello back!")
+    # mock_llm.invoke.return_value = MagicMock(content="hello back!")
+    mock_llm_instance = MagicMock()
+    mock_get_llm.return_value = mock_llm_instance
+    mock_llm_instance.send_message.return_value = ("hello back!", None)
 
     class FakeRequest:
         def __init__(self):
@@ -39,18 +42,17 @@ def test_generate_reply_new_session(
     assert reply == "hello back!"
     assert isinstance(session_id, str)
 
+    mock_get_history.assert_called_once_with(mock_db, session_id)
     mock_create_session.assert_called_once()
     mock_save_message.assert_any_call(mock_db, session_id, "user", "hi")
     mock_save_message.assert_any_call(mock_db, session_id, "assistant", "hello back!")
 
-    messages = mock_llm.invoke.call_args[0][0]
+    messages = mock_llm_instance.send_message.call_args[0][0]
+
     assert messages[-1] == ("user", "hi")
     assert messages[0][0] == "system"
     assert "context1" in messages[0][1]
     assert "context2" in messages[0][1]
-
-    assert mock_get_history.call_count == 0
-
 
 @patch("services.chat_service.get_db")
 @patch("services.chat_service.get_session")
@@ -58,9 +60,9 @@ def test_generate_reply_new_session(
 @patch("services.chat_service.get_history")
 @patch("services.chat_service.save_message")
 @patch("services.chat_service.find_k_matches")
-@patch("services.chat_service.llm")
+@patch("services.chat_service.get_llm")
 def test_generate_reply_existing_session(
-    mock_llm,
+    mock_get_llm,
     mock_find_k_matches,
     mock_save_message,
     mock_get_history,
@@ -81,7 +83,9 @@ def test_generate_reply_existing_session(
 
     mock_get_history.return_value = [FakeMsg("user", "Hi"), FakeMsg("assistant", "Hi there!")]
 
-    mock_llm.invoke.return_value = MagicMock(content="hello back!")
+    mock_llm_instance = MagicMock()
+    mock_get_llm.return_value = mock_llm_instance
+    mock_llm_instance.send_message.return_value = ("hello back!", None)
 
     class FakeRequest:
         def __init__(self):
@@ -100,7 +104,7 @@ def test_generate_reply_existing_session(
     mock_save_message.assert_any_call(mock_db, session_id, "user", "hi")
     mock_save_message.assert_any_call(mock_db, session_id, "assistant", "hello back!")
 
-    messages = mock_llm.invoke.call_args[0][0]
+    messages = mock_llm_instance.send_message.call_args[0][0]
 
     assert ("user", "Hi") in messages
     assert ("assistant", "Hi there!") in messages
