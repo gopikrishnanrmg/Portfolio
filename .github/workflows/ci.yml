@@ -57,6 +57,7 @@ jobs:
       - name: Run pytest
         run: |
           cd backend/${{ matrix.service }}
+          export PYTHONPATH=$PWD
           pytest -q
 
   frontend-build:
