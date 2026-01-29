@@ -1,7 +1,7 @@
 import aio_pika
 import json
 from aio_pika import ExchangeType
-from config.settings import RABBIT_URL, EXCHANGE, QUEUE
+from app.config.settings import RABBIT_URL, EXCHANGE, QUEUE
 
 
 async def publish_message(routing_key: str, message: dict):

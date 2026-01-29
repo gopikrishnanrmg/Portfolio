@@ -1,6 +1,6 @@
 from fastapi import APIRouter
-from services.health.aggregator import build_health_report
-from config.settings import SERVICE_NAME
+from app.services.health.aggregator import build_health_report
+from app.config.settings import SERVICE_NAME
 
 router = APIRouter()
 

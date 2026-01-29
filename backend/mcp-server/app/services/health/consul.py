@@ -1,5 +1,5 @@
 import requests
-from config.settings import CONSUL_HOST, CONSUL_PORT
+from app.config.settings import CONSUL_HOST, CONSUL_PORT
 
 def check_consul():
     try:

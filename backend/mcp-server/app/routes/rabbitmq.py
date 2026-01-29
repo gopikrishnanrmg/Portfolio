@@ -1,8 +1,8 @@
 from fastapi import APIRouter
 
-from config.settings import ROUTING_KEY
-from schemas import Message
-from services.rabbitmq.rabbitmq import publish_message
+from app.config.settings import ROUTING_KEY
+from app.schema.message_schemas import Message
+from app.services.rabbitmq.rabbitmq import publish_message
 
 router = APIRouter(prefix="/api/v1/mcp") # fastmcp will just call /mcp not this api, but we add this for tests
 @router.post("/", operation_id="send-message")

@@ -2,11 +2,11 @@ import json
 from unittest.mock import AsyncMock, patch
 
 import pytest
-from services.rabbitmq.rabbitmq import publish_message
+from app.services.rabbitmq.rabbitmq import publish_message
 
 
 @pytest.mark.asyncio
-@patch("services.rabbitmq.rabbitmq.aio_pika.connect_robust", new_callable=AsyncMock)
+@patch("app.services.rabbitmq.rabbitmq.aio_pika.connect_robust", new_callable=AsyncMock)
 async def test_publish_message(mock_connect):
     mock_connection = AsyncMock()
     mock_connect.return_value = mock_connection
