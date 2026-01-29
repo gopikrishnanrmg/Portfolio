@@ -209,12 +209,41 @@ services:
       ADMIN_API_KEY: ${ADMIN_API_KEY}
       LLM_API_KEY: ${LLM_API_KEY}
       MODEL_NAME: ${MODEL_NAME}
+      API_SERVICE_NAME: ${API_SERVICE_NAME}
+      MCP_URL: ${MCP_URL}
     ports:
       - "8885:8885"
     healthcheck: 
       test: ["CMD", "curl", "-f", "http://localhost:8885/actuator/health"]
     restart: unless-stopped
     
+  mcp-server:
+    image: ghcr.io/gopikrishnanrmg/mcp-server:latest
+    container_name: mcp-server
+    profiles:
+      - services
+    depends_on:
+      consul:
+        condition: service_started
+    environment:
+      CONSUL_HOST: consul
+      CONSUL_PORT: 8500
+      SERVICE_NAME: mcp-server
+      SERVICE_PORT: 8884
+      ENABLE_CONSUL_REGISTRATION: ${ENABLE_CONSUL_REGISTRATION}
+      RABBIT_HOST: rabbitmq
+      RABBIT_PORT: 5672
+      RABBIT_USER: ${RM_SECURITY_ADMIN_USER}
+      RABBIT_PASSWORD: ${RM_SECURITY_ADMIN_PASSWORD}
+      EXCHANGE: ${EXCHANGE}
+      ROUTING_KEY: ${ROUTING_KEY}
+      QUEUE: ${QUEUE}
+    ports:
+      - "8884:8884"
+    healthcheck: 
+      test: ["CMD", "curl", "-f", "http://localhost:8884/actuator/health"]
+    restart: unless-stopped
+
   portfolio-frontend:
     image: ghcr.io/gopikrishnanrmg/portfolio-frontend:latest
     container_name: portfolio-frontend
