@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
-from app.config.settings import ENABLE_CONSUL_REGISTRATION
+from app.config.settings import get_settings
 from app.utils.consul_registration import register_with_consul
 from prometheus_fastapi_instrumentator import Instrumentator
 from app.routes.chat_controller import router as chat_router
@@ -9,7 +9,7 @@ from app.routes.health import router as health_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    if ENABLE_CONSUL_REGISTRATION:
+    if get_settings().ENABLE_CONSUL_REGISTRATION:
         register_with_consul()
     yield
 

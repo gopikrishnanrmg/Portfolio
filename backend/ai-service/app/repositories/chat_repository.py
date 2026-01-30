@@ -1,8 +1,9 @@
-from app.config.db import SessionLocal
+from app.config.db import get_session_local
 from app.models.chat_models import ChatSession, ChatMessage
 
 def get_db():
-    return SessionLocal()
+    session_local = get_session_local()
+    return session_local()
 
 def get_session(db, session_id: str):
     return db.query(ChatSession).filter_by(session_id=session_id).first()

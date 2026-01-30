@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from app.services.health_checks.aggregator import build_health_report
-from app.config.settings import SERVICE_NAME
+from app.config.settings import get_settings
 
 router = APIRouter()
 
@@ -12,7 +12,7 @@ async def health():
 def info():
     return {
         "app": {
-            "name": SERVICE_NAME,
+            "name": get_settings().SERVICE_NAME,
             "version": "1.0.0"
         }
     }
