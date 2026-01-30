@@ -1,6 +1,6 @@
 import socket
 import consul
-from config.settings import SERVICE_NAME, SERVICE_PORT, CONSUL_HOST, CONSUL_PORT
+from app.config.settings import SERVICE_NAME, SERVICE_PORT, CONSUL_HOST, CONSUL_PORT
 
 def get_lan_ip():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)

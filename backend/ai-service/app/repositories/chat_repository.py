@@ -1,5 +1,5 @@
-from config.db import SessionLocal
-from models.chat_models import ChatSession, ChatMessage
+from app.config.db import SessionLocal
+from app.models.chat_models import ChatSession, ChatMessage
 
 def get_db():
     return SessionLocal()

@@ -3,12 +3,12 @@ from unittest.mock import patch
 from fastapi.testclient import TestClient
 from starlette.status import HTTP_201_CREATED, HTTP_200_OK, HTTP_204_NO_CONTENT, HTTP_401_UNAUTHORIZED
 
-from config import settings
-from main import app
+from app.config import settings
+from app.main import app
 
 client = TestClient(app)
 
-@patch("routes.context_controller.add_context_item")
+@patch("app.routes.context_controller.add_context_item")
 def test_add_context_item(mock_add):
     mock_add.return_value = 3
 
@@ -23,7 +23,7 @@ def test_add_context_item(mock_add):
 
     assert response.status_code == HTTP_201_CREATED
 
-@patch("routes.context_controller.find_k_matches")
+@patch("app.routes.context_controller.find_k_matches")
 def test_get_context_items(mock_find):
     mock_find.return_value = [
         {
@@ -43,7 +43,7 @@ def test_get_context_items(mock_find):
     mock_find.assert_called_once_with("what is the best match?", 2)
     assert response.status_code == HTTP_200_OK
 
-@patch("routes.context_controller.soft_delete_by_title")
+@patch("app.routes.context_controller.soft_delete_by_title")
 def test_delete_context_item(mock_delete):
     response = client.delete("/api/v1/context", params={"title": "doc1"}, headers={"X-API-Key": settings.ADMIN_API_KEY})
 

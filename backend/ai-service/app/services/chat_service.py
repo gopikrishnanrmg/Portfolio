@@ -1,13 +1,13 @@
 import uuid
 from datetime import datetime, timezone
 from fastapi import Request
-from dtos.chat_dtos import ChatRequest
-from llm.llm_factory import get_llm
-from repositories.chat_repository import (
+from app.dtos.chat_dtos import ChatRequest
+from app.llm.llm_factory import get_llm
+from app.repositories.chat_repository import (
     get_db, get_session, create_session,
     get_history, save_message, get_openai_conversation_id_by_session, set_openai_conversation_id
 )
-from services.context_service import find_k_matches
+from app.services.context_service import find_k_matches
 
 
 def generate_reply(request: Request, body: ChatRequest):

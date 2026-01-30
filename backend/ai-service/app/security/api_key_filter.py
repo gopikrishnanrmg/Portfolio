@@ -1,7 +1,8 @@
 from fastapi import Header, HTTPException
 from starlette import status
 
-from config import settings
+from app.config import settings
+
 
 def verify_admin_key(x_api_key: str = Header(None)):
     if x_api_key != settings.ADMIN_API_KEY:

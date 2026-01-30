@@ -1,6 +1,6 @@
 from sqlalchemy import Column, String, Integer, ForeignKey, Text
 from sqlalchemy.orm import relationship
-from config.db import Base
+from app.config.db import Base
 
 class ChatSession(Base):
     __tablename__ = "chat_sessions"

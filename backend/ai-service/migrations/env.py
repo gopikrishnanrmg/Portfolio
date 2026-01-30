@@ -18,11 +18,12 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-from config.db import Base
-from models.chat_models import ChatSession, ChatMessage
+from app.config.db import Base
+
 target_metadata = Base.metadata
 
-from config import settings
+from app.config import settings
+
 config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
 # other values from the config, defined by the needs of env.py,
 # can be acquired:

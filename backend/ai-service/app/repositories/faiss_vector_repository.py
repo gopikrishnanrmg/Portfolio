@@ -4,7 +4,7 @@ import faiss
 from langchain_community.docstore import InMemoryDocstore
 from langchain_community.vectorstores import FAISS
 from langchain_huggingface import HuggingFaceEmbeddings
-from repositories.base_vector_repository import BaseVectorRepository
+from app.repositories.base_vector_repository import BaseVectorRepository
 
 class FaissVectorRepository(BaseVectorRepository):
     def __init__(self, index_dir="faiss_index", index_file="index.faiss"):

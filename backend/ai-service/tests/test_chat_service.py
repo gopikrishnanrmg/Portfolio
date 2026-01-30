@@ -1,16 +1,16 @@
 from unittest.mock import MagicMock, patch
 
-from dtos.chat_dtos import ChatRequest
-from services.chat_service import generate_reply
+from app.dtos.chat_dtos import ChatRequest
+from app.services.chat_service import generate_reply
 
 
-@patch("services.chat_service.get_db")
-@patch("services.chat_service.get_session")
-@patch("services.chat_service.create_session")
-@patch("services.chat_service.get_history")
-@patch("services.chat_service.save_message")
-@patch("services.chat_service.find_k_matches")
-@patch("services.chat_service.get_llm")
+@patch("app.services.chat_service.get_db")
+@patch("app.services.chat_service.get_session")
+@patch("app.services.chat_service.create_session")
+@patch("app.services.chat_service.get_history")
+@patch("app.services.chat_service.save_message")
+@patch("app.services.chat_service.find_k_matches")
+@patch("app.services.chat_service.get_llm")
 def test_generate_reply_new_session(
     mock_get_llm,
     mock_find_k_matches,
@@ -54,13 +54,13 @@ def test_generate_reply_new_session(
     assert "context1" in messages[0][1]
     assert "context2" in messages[0][1]
 
-@patch("services.chat_service.get_db")
-@patch("services.chat_service.get_session")
-@patch("services.chat_service.create_session")
-@patch("services.chat_service.get_history")
-@patch("services.chat_service.save_message")
-@patch("services.chat_service.find_k_matches")
-@patch("services.chat_service.get_llm")
+@patch("app.services.chat_service.get_db")
+@patch("app.services.chat_service.get_session")
+@patch("app.services.chat_service.create_session")
+@patch("app.services.chat_service.get_history")
+@patch("app.services.chat_service.save_message")
+@patch("app.services.chat_service.find_k_matches")
+@patch("app.services.chat_service.get_llm")
 def test_generate_reply_existing_session(
     mock_get_llm,
     mock_find_k_matches,

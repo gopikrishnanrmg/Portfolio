@@ -1,7 +1,7 @@
-from repositories.vector_repository import vector_repo
+from app.repositories.vector_repository import vector_repo
 
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from dtos.context_dtos import CreateContextItemRequest
+from app.dtos.context_dtos import CreateContextItemRequest
 
 text_splitter = RecursiveCharacterTextSplitter(
     chunk_size=800,

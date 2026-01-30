@@ -1,10 +1,10 @@
 from unittest.mock import MagicMock, patch
 
-from dtos.context_dtos import CreateContextItemRequest
+from app.dtos.context_dtos import CreateContextItemRequest
 
 
-@patch("services.context_service.vector_repo")
-@patch("services.context_service.text_splitter")
+@patch("app.services.context_service.vector_repo")
+@patch("app.services.context_service.text_splitter")
 def test_add_context_item_initializes_vectorstore(mock_splitter, mock_repo):
     mock_splitter.split_text.return_value = ["chunk1", "chunk2", "chunk3"]
 
@@ -13,7 +13,7 @@ def test_add_context_item_initializes_vectorstore(mock_splitter, mock_repo):
     mock_vectorstore = MagicMock()
     mock_repo.initialize.return_value = mock_vectorstore
 
-    from services.context_service import add_context_item
+    from app.services.context_service import add_context_item
 
     item = CreateContextItemRequest(title="Doc1", content="full text")
 
@@ -30,15 +30,15 @@ def test_add_context_item_initializes_vectorstore(mock_splitter, mock_repo):
 
     assert count == 2
 
-@patch("services.context_service.vector_repo")
-@patch("services.context_service.text_splitter")
+@patch("app.services.context_service.vector_repo")
+@patch("app.services.context_service.text_splitter")
 def test_add_context_item_existing_vectorstore(mock_splitter, mock_repo):
     mock_splitter.split_text.return_value = ["chunk1", "chunk2"]
 
     mock_vectorstore = MagicMock()
     mock_repo.get.return_value = mock_vectorstore
 
-    from services.context_service import add_context_item
+    from app.services.context_service import add_context_item
 
     item = CreateContextItemRequest(title="Doc1", content="full text")
 
@@ -55,15 +55,15 @@ def test_add_context_item_existing_vectorstore(mock_splitter, mock_repo):
 
     assert count == 2
 
-@patch("services.context_service.vector_repo")
-@patch("services.context_service.text_splitter")
+@patch("app.services.context_service.vector_repo")
+@patch("app.services.context_service.text_splitter")
 def test_add_context_item_existing_vectorstore(mock_splitter, mock_repo):
     mock_splitter.split_text.return_value = ["chunk1", "chunk2"]
 
     mock_vectorstore = MagicMock()
     mock_repo.get.return_value = mock_vectorstore
 
-    from services.context_service import add_context_item
+    from app.services.context_service import add_context_item
 
     item = CreateContextItemRequest(title="Doc1", content="full text")
 
@@ -80,7 +80,7 @@ def test_add_context_item_existing_vectorstore(mock_splitter, mock_repo):
 
     assert count == 2
 
-@patch("services.context_service.vector_repo")
+@patch("app.services.context_service.vector_repo")
 def test_soft_delete_by_title_delete_all(mock_repo):
     mock_vectorstore = MagicMock()
     mock_repo.get.return_value = mock_vectorstore
@@ -90,14 +90,14 @@ def test_soft_delete_by_title_delete_all(mock_repo):
         "2": MagicMock(page_content="B", metadata={"title": "Doc1"}),
     }
 
-    from services.context_service import soft_delete_by_title
+    from app.services.context_service import soft_delete_by_title
 
     soft_delete_by_title("Doc1")
 
     mock_repo.delete_all.assert_called_once()
     mock_repo.rebuild.assert_not_called()
 
-@patch("services.context_service.vector_repo")
+@patch("app.services.context_service.vector_repo")
 def test_soft_delete_by_title_rebuild(mock_repo):
     mock_vectorstore = MagicMock()
     mock_repo.get.return_value = mock_vectorstore
@@ -107,7 +107,7 @@ def test_soft_delete_by_title_rebuild(mock_repo):
         "2": MagicMock(page_content="B", metadata={"title": "Doc2"}),
     }
 
-    from services.context_service import soft_delete_by_title
+    from app.services.context_service import soft_delete_by_title
 
     soft_delete_by_title("Doc1")
 

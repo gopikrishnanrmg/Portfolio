@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Request, Response
-from dtos.chat_dtos import ChatRequest, ChatResponse
-from services.chat_service import generate_reply
+from app.dtos.chat_dtos import ChatRequest, ChatResponse
+from app.services.chat_service import generate_reply
 
 router = APIRouter(prefix="/api/v1/chat")
 

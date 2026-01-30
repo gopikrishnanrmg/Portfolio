@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, Response, status
 from starlette.status import HTTP_201_CREATED
 
-from dtos.context_dtos import CreateContextItemRequest, CreateContextItemResponse, GetcontextItemResponses
-from security.api_key_filter import verify_admin_key
-from services.context_service import add_context_item, find_k_matches, soft_delete_by_title
+from app.dtos.context_dtos import CreateContextItemRequest, CreateContextItemResponse, GetcontextItemResponses
+from app.security.api_key_filter import verify_admin_key
+from app.services.context_service import add_context_item, find_k_matches, soft_delete_by_title
 
 router = APIRouter(prefix="/api/v1/context")
 
