@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  backend-build:
+  java-backend-build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -32,17 +32,69 @@ jobs:
           cd backend/${{ matrix.service }}
           ./mvnw test -DskipITs
 
-      - name: Build backend image
-        run: |
-          docker build -t ghcr.io/${{ github.actor }}/${{ matrix.service }}:latest backend/${{ matrix.service }}
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
 
-      - name: Push backend image
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and Push Multi-Arch Image
+        uses: docker/build-push-action@v5
+        with:
+          context: backend/${{ matrix.service }}
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ghcr.io/${{ github.actor }}/${{ matrix.service }}:latest
+  
+  python-backend-build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [ai-service, mcp-server]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with: 
+          lfs: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.13"
+
+      - name: Install dependencies
         run: |
-          docker push ghcr.io/${{ github.actor }}/${{ matrix.service }}:latest
+          cd backend/${{ matrix.service }}
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Log in to GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Run pytest
+        run: |
+          cd backend/${{ matrix.service }}
+          export PYTHONPATH=$PWD
+          pytest -q
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and Push Multi-Arch Image
+        uses: docker/build-push-action@v5
+        with:
+          context: backend/${{ matrix.service }}
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ghcr.io/${{ github.actor }}/${{ matrix.service }}:latest
 
   frontend-build:
     runs-on: ubuntu-latest
-    needs: backend-build
+    needs: [java-backend-build, python-backend-build]
 
     steps:
       - name: Checkout code
@@ -64,13 +116,19 @@ jobs:
       - name: Log in to GHCR
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-      - name: Build frontend image
-        run: |
-          docker build -t ghcr.io/${{ github.actor }}/portfolio-frontend:latest frontend
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
 
-      - name: Push frontend image
-        run: |
-          docker push ghcr.io/${{ github.actor }}/portfolio-frontend:latest
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and Push Multi-Arch Image
+        uses: docker/build-push-action@v5
+        with:
+          context: frontend
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ghcr.io/${{ github.actor }}/portfolio-frontend:latest
 
   deploy:
     runs-on: ubuntu-latest
