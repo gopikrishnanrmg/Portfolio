@@ -7,7 +7,7 @@ on:
 
 jobs:
   java-backend-build:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, arm64]
     strategy:
       matrix:
         service: [api-gateway, portfolio-service, config-server, analytics-server]
@@ -42,12 +42,12 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: backend/${{ matrix.service }}
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/arm64
           push: true
           tags: ghcr.io/${{ github.actor }}/${{ matrix.service }}:latest
   
   python-backend-build:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, arm64]
     strategy:
       matrix:
         service: [ai-service, mcp-server]
@@ -88,12 +88,12 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: backend/${{ matrix.service }}
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/arm64
           push: true
           tags: ghcr.io/${{ github.actor }}/${{ matrix.service }}:latest
 
   frontend-build:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, arm64]
     needs: [java-backend-build, python-backend-build]
 
     steps:
@@ -126,12 +126,12 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: frontend
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/arm64
           push: true
           tags: ghcr.io/${{ github.actor }}/portfolio-frontend:latest
 
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, arm64]
     needs: frontend-build
 
     steps:
