@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        service: [api-gateway, portfolio-service, config-server, analytics-server]
+        service: [api-gateway, portfolio-service, config-server, analytics-server, notification-service]
 
     steps:
       - name: Checkout code

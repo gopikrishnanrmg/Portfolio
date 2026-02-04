@@ -216,7 +216,36 @@ services:
     healthcheck: 
       test: ["CMD", "curl", "-f", "http://localhost:8885/actuator/health"]
     restart: unless-stopped
-    
+
+  notification-service:
+    image: ghcr.io/gopikrishnanrmg/notification-service:latest
+    container_name: notification-service
+    profiles: 
+      - services
+    depends_on:
+      consul:
+        condition: service_started
+    environment:
+      CONFIG_SERVER_HOST: config-server
+      CONFIG_SERVER_PORT: 8888
+      CONSUL_HOST: consul
+      CONSUL_PORT: 8500
+      RABBIT_HOST: rabbitmq
+      RABBIT_PORT: 5672
+      RABBIT_USER: ${RM_SECURITY_ADMIN_USER}
+      RABBIT_PASSWORD: ${RM_SECURITY_ADMIN_PASSWORD}
+      EXCHANGE: ${EXCHANGE}
+      ROUTING_KEY: ${ROUTING_KEY}
+      QUEUE: ${QUEUE}
+      BOT_TOKEN: ${BOT_TOKEN}
+      CHAT_ID: ${CHAT_ID}
+      SESSION_SALT: ${SESSION_SALT}
+    ports:
+      - "8883:8883"
+    healthcheck: 
+      test: ["CMD", "curl", "-f", "http://localhost:8883/actuator/health"]
+    restart: unless-stopped
+
   mcp-server:
     image: ghcr.io/gopikrishnanrmg/mcp-server:latest
     container_name: mcp-server
