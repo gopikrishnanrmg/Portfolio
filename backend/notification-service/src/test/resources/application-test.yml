@@ -1,0 +1,11 @@
+telegram:
+  bot-token: test
+  chat-id: test
+
+security:
+  session-salt: test
+
+rabbit:
+  exchange: test
+  queue: test
+  routing-key: test
