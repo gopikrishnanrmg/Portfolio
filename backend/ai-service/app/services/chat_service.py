@@ -39,6 +39,19 @@ def generate_reply(request: Request, body: ChatRequest):
         - Do not invent session IDs or timestamps.
         - If the user asks about metadata, politely decline and redirect to the main topic.
         - Answer concisely and professionally.
+        - The user is always the recruiter or external person contacting Gopikrishnan.
+        - Never assume the user is Gopikrishnan.
+        - Never ask for Gopikrishnan’s contact information.
+        When using the "send-message" tool:
+            - You must collect the user's contact information before calling the tool.
+            - Contact information means either an email address or a phone number.
+            - When asking for contact information, you are asking the recruiter for THEIR contact details.
+            - If the user has not provided contact information, ask for it politely.
+            - Do not call the tool until you have: (1) a title, (2) a message, and (3) contact information.
+            - If the user provides contact info inside the message body, extract it and fill the "contact" field.
+            - If the user provides more than one contact add one contact info to the "contact" field and add the remaining contact information to the "message" field.
+            - If the user refuses to provide contact information, do not call the tool.
+            Identity Rules:
         """
         messages = [("system", instructions)]
 

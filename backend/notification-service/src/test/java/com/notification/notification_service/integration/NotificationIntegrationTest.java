@@ -30,7 +30,7 @@ public class NotificationIntegrationTest {
 
     @Test
     void shouldSendMessage() {
-        Message message = new Message("session_id", "title", "message", 1234);
+        Message message = new Message("session_id", "title", "message", "email", 1234);
         notificationHandler.sendMessage(message);
         verify(restTemplate, times(1)).postForObject(anyString(), any(), eq(String.class));
     }

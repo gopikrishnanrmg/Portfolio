@@ -20,7 +20,7 @@ class TelegramServiceTest {
     void sendMessage_mustReturnMD5Sum() {
         RestTemplate restTemplate = mock(RestTemplate.class);
         TelegramService telegramService = new TelegramService("token", "id", "salt", restTemplate);
-        Message message = new Message("session_id", "title", "message", 1769962920);
+        Message message = new Message("session_id", "title", "message", "email", 1769962920);
         String expectedHash = md5Hex("session_id" + "salt");
         ArgumentCaptor<Map<String, String>> bodyCaptor = ArgumentCaptor.forClass(Map.class);
         telegramService.sendMessage(message);
@@ -36,7 +36,7 @@ class TelegramServiceTest {
     void sendMessage_mustReturnFormattedTimeStamp() {
         RestTemplate restTemplate = mock(RestTemplate.class);
         TelegramService telegramService = new TelegramService("token", "id", "salt", restTemplate);
-        Message message = new Message("session_id", "title", "message", 0L);
+        Message message = new Message("session_id", "title", "message", "email", 0L);
         ArgumentCaptor<Map<String, String>> bodyCaptor = ArgumentCaptor.forClass(Map.class);
         telegramService.sendMessage(message);
         verify(restTemplate).postForObject(eq("https://api.telegram.org/bot" + "token" + "/sendMessage"), bodyCaptor.capture(), eq(String.class));
@@ -51,7 +51,7 @@ class TelegramServiceTest {
     void sendMessage_buildsCorrectRequest() {
         RestTemplate restTemplate = mock(RestTemplate.class);
         TelegramService telegramService = new TelegramService("token", "id", "salt", restTemplate);
-        Message message = new Message("session_id", "title", "message", 1769962920L);
+        Message message = new Message("session_id", "title", "message", "email", 1769962920L);
         ArgumentCaptor<Map> bodyCaptor = ArgumentCaptor.forClass(Map.class);
         telegramService.sendMessage(message);
         verify(restTemplate).postForObject(eq("https://api.telegram.org/bot" + "token" + "/sendMessage"), bodyCaptor.capture(), eq(String.class));
@@ -63,15 +63,17 @@ class TelegramServiceTest {
         assertEquals("HTML", body.get("parse_mode"));
         String text = body.get("text");
         assertNotNull(text);
-        assertTrue(text.contains("title"));
+        assertTrue(text.contains("<b>title</b>"));
         assertTrue(text.contains("message"));
+        assertTrue(text.contains("<b>📨 Contact:</b> email"));
+        assertTrue(text.contains("<b>🕒 Sent at:</b> <i>"));
+        assertTrue(text.contains("<b>🔐 Session:</b>"));
+        assertTrue(text.contains("<code>"));
+        assertTrue(text.contains("</code>"));
         assertTrue(text.contains("<b>"));
         assertTrue(text.contains("</b>"));
         assertTrue(text.contains("<i>"));
-        assertTrue(text.contains("<code>"));
-        assertTrue(text.contains("Sent at"));
-        assertTrue(text.contains("🔐 Session"));
+        assertTrue(text.contains("</i>"));
     }
-
 
 }

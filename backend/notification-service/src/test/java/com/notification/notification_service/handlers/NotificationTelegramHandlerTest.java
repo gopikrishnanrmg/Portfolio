@@ -24,7 +24,7 @@ class NotificationTelegramHandlerTest {
 
     @Test
     void sendMessage_forwardsToNextHandler() {
-        Message message = new Message("1", "title", "message", 1234);
+        Message message = new Message("1", "title", "message", "email", 1234);
         NotificationHandler next = mock(NotificationHandler.class);
         handler.addHandler(next);
         handler.sendMessage(message);
@@ -33,7 +33,7 @@ class NotificationTelegramHandlerTest {
 
     @Test
     void sendMessage_callsTelegramService() {
-        Message message = new Message("1", "title", "message", 1234);
+        Message message = new Message("1", "title", "message", "email", 1234);
         handler.sendMessage(message);
         verify(telegramService, times(1)).sendMessage(message);
     }

@@ -42,14 +42,15 @@ public class TelegramService {
                 .format(instant);
 
         return """
-                <b>📨 %s</b>
+                <b>%s</b>
                 
                 %s
                 
+                <b>📨 Contact:</b> %s
                 <b>🕒 Sent at:</b> <i>%s</i>
                 <b>🔐 Session:</b>
                 <code>%s</code>
-                """.formatted(message.title(), message.message(), time, md5Hex(message.sessionId() + salt)
+                """.formatted(message.title(), message.message(), message.contact(), time, md5Hex(message.sessionId() + salt)
         );
 
     }
