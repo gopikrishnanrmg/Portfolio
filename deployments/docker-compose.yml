@@ -83,6 +83,7 @@ services:
       DB_HOST: postgres
       DB_PORT: 5432
       DB_NAME: ${AI_DB_NAME}
+      PROFILE: ${SPRING_PROFILES_ACTIVE} #we were using the variable before, hence its easier to keep the same name though this is not a spring app, we need this for cookie samesite none support on production/else run every service on localhost
     depends_on:
       postgres:
         condition: service_started
