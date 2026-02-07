@@ -20,6 +20,7 @@ class Settings:
         self.DB_NAME = os.getenv("DB_NAME")
         self.ADMIN_API_KEY = os.getenv("ADMIN_API_KEY")
         self.API_SERVICE_NAME = os.getenv("API_SERVICE_NAME", "openai")
+        self.profile = os.getenv("PROFILE", "dev")
 
     @property
     def get_db_url(self):

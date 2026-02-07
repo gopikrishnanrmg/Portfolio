@@ -12,6 +12,7 @@ client = TestClient(app)
 @pytest.fixture(autouse=True)
 def set_admin_key(monkeypatch):
     monkeypatch.setenv("ADMIN_API_KEY", "testkey")
+    get_settings.cache_clear()
 
 @patch("app.routes.context_controller.add_context_item")
 def test_add_context_item(mock_add):
