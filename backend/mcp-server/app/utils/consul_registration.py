@@ -1,6 +1,6 @@
 import socket
 import consul
-from app.config.settings import SERVICE_NAME, SERVICE_PORT, CONSUL_HOST, CONSUL_PORT
+from app.config.settings import get_settings
 
 def get_lan_ip():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -12,14 +12,14 @@ def get_lan_ip():
 
 def register_with_consul():
     host_ip = get_lan_ip()
-    c = consul.Consul(host=CONSUL_HOST, port=CONSUL_PORT)
+    c = consul.Consul(host=get_settings().CONSUL_HOST, port=get_settings().CONSUL_PORT)
     c.agent.service.register(
-        name=SERVICE_NAME,
-        service_id=SERVICE_NAME,
+        name=get_settings().SERVICE_NAME,
+        service_id=get_settings().SERVICE_NAME,
         address=host_ip,
-        port=SERVICE_PORT,
+        port=get_settings().SERVICE_PORT,
         check=consul.Check.http(
-            f"http://{host_ip}:{SERVICE_PORT}/actuator/health",
+            f"http://{host_ip}:{get_settings().SERVICE_PORT}/actuator/health",
             "10s"
         )
     )

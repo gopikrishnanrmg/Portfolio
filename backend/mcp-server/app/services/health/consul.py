@@ -1,10 +1,11 @@
 import requests
-from app.config.settings import CONSUL_HOST, CONSUL_PORT
+from app.config.settings import get_settings
+
 
 def check_consul():
     try:
         r = requests.get(
-            f"http://{CONSUL_HOST}:{CONSUL_PORT}/v1/status/leader",
+            f"http://{get_settings().CONSUL_HOST}:{get_settings().CONSUL_PORT}/v1/status/leader",
             timeout=2
         )
         if r.status_code == 200 and r.text != '""':
