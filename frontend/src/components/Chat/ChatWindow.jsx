@@ -1,12 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { FiSend } from 'react-icons/fi'
 import ChatBubble from './ChatBubble'
+import Suggestions from './Suggestions'
 
 const ChatWindow = () => {
   const [messages, setMessages] = useState([
-    { id: 1, sender: 'bot', text: 'Welcome! You can ask questions about Gopikrishnan & I will answer them for you.\n Example: "What are Gopikrishnan\'s skills?" or "Tell me about Gopikrishnan\'s projects."' },
-    // { id: 2, sender: 'user', text: 'Hi there 👋' },
+    // { id: Date.now(), sender: 'bot', text: 'Welcome! You can ask questions about Gopikrishnan & I will answer them for you.\n Example: "What are Gopikrishnan\'s skills?" or "Tell me about Gopikrishnan\'s projects."' },
   ])
+  
+  const API_BASE_URL = window.RUNTIME_CONFIG.API_BASE_URL
+
   const [input, setInput] = useState('')
   const messagesEndRef = useRef(null)
 
@@ -14,14 +17,34 @@ const ChatWindow = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
-  const sendMessage = () => {
+
+  const sendMessage = async () => {
     if (!input.trim()) return
-    setMessages([...messages, { id: Date.now(), sender: 'user', text: input }])
+    setMessages(messages => [...messages, { id: Date.now(), sender: 'user', text: input }])
     setInput('')
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/ai/api/v1/chat`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        credentials: "include",
+        body: JSON.stringify({ content: input })
+      })
+
+      const data = await res.json()
+      
+      setMessages(messages => [...messages, { id: Date.now(), sender: 'bot', text: data.reply }])
+
+
+    } catch(err) {
+      console.error("Error sending message:", err)
+    }
   }
 
   return (
-    <div className="flex flex-col w-full max-w-sm md:max-w-md lg:max-w-lg h-[500px]
+    <div className="flex flex-col w-full max-w-sm md:max-w-md lg:max-w-lg h-full
                     rounded-2xl backdrop-blur-2xl bg-black/40 border border-gray-700
                     shadow-lg ring-1 ring-white/20 overflow-hidden z-50">
 
@@ -31,6 +54,7 @@ const ChatWindow = () => {
         ))}
         <div ref={messagesEndRef} />
       </div>
+      <Suggestions setInput={setInput}/>
 
       <div className="p-3 border-t border-gray-700 bg-black/30 flex items-center gap-2">
         <textarea

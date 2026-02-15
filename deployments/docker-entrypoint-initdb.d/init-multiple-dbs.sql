@@ -1,0 +1,2 @@
+CREATE DATABASE "ai-service";
+CREATE DATABASE "my-db";

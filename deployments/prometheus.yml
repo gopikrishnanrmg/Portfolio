@@ -14,11 +14,11 @@ scrape_configs:
     static_configs:
       - targets: ['node-exporter:9100']
 
-  - job_name: 'spring-actuator'
+  - job_name: 'actuator'
     metrics_path: '/actuator/prometheus'
     consul_sd_configs:
       - server: 'http://consul:8500'
-        services: ['config-server', 'api-gateway', 'portfolio-service, 'analytics-server']
+        services: ['config-server', 'api-gateway', 'portfolio-service', 'analytics-service', 'ai-service', 'mcp-server', 'notification-service']
     relabel_configs:
       - source_labels: [__address__]
         target_label: instance

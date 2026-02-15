@@ -17,7 +17,8 @@ const ChatWidget = () => {
       </button>
 
       {isOpen && (
-        <div className="fixed right-10 bottom-20 w-80 h-[500px] z-50">
+        <div className="fixed right-4 bottom-20 w-[90vw] sm:w-80 md:w-96 lg:w-[420px] xl:w-[460px]
+          h-[70vh] sm:h-[500px] md:h-[550px] lg:h-[600px] max-h-[80vh] z-50">
           <ChatWindow />
         </div>
       )}

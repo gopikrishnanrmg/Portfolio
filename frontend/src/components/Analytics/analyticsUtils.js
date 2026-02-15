@@ -26,7 +26,8 @@ export function getOrCreateSessionId() {
   if (!id) {
     id = generateId();
   }
-  setCookie("sessionId", id, 30); 
+  setCookie("sessionId", id, 30);
+  setCookie("session_id", id, 60 * 24 * 30); //TODO: change the name to make it less ambiguous, this is for chat
   return id;
 }
 
