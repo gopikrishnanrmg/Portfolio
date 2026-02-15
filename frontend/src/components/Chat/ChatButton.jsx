@@ -1,9 +1,9 @@
-import React, { useState } from 'react'
-import { AiFillMessage } from 'react-icons/ai'
-import ChatWindow from './ChatWindow'
+import React, { useState } from "react";
+import { AiFillMessage } from "react-icons/ai";
+import ChatWindow from "./ChatWindow";
 
 const ChatWidget = () => {
-  const [isOpen, setIsOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
     <>
@@ -13,17 +13,20 @@ const ChatWidget = () => {
                    rounded-full bg-black/60 border border-gray-700 shadow-lg
                    hover:border-cyan-500 hover:shadow-cyan-500/30 transition"
       >
-      <AiFillMessage className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-cyan-400" />
+        <AiFillMessage className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-cyan-400" />
       </button>
 
       {isOpen && (
-        <div className="fixed right-4 bottom-20 w-[90vw] sm:w-80 md:w-96 lg:w-[420px] xl:w-[460px]
-          h-[70vh] sm:h-[500px] md:h-[550px] lg:h-[600px] max-h-[80vh] z-50">
-          <ChatWindow />
+        <div
+          class="fixed inset-0 z-50 w-screen h-screen
+          md:w-[420px] md:h-[600px] md:right-4 md:bottom-20
+          md:left-auto md:top-auto md:rounded-2xl"
+        >
+          <ChatWindow onClose={() => setIsOpen(false)}/>
         </div>
       )}
     </>
-  )
-}
+  );
+};
 
-export default ChatWidget
+export default ChatWidget;
