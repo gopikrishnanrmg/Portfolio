@@ -4,6 +4,7 @@ import ChatWindow from "./ChatWindow";
 
 const ChatWidget = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [messages, setMessages] = useState([]);
 
   return (
     <>
@@ -22,7 +23,7 @@ const ChatWidget = () => {
           md:w-[420px] md:h-[600px] md:right-4 md:bottom-20
           md:left-auto md:top-auto md:rounded-2xl"
         >
-          <ChatWindow onClose={() => setIsOpen(false)}/>
+          <ChatWindow messages={messages} setMessages={setMessages} onClose={() => setIsOpen(false)}/>
         </div>
       )}
     </>

@@ -3,8 +3,7 @@ import { FiSend } from "react-icons/fi";
 import ChatBubble from "./ChatBubble";
 import Suggestions from "./Suggestions";
 
-const ChatWindow = ({ onClose }) => {
-  const [messages, setMessages] = useState([]);
+const ChatWindow = ({ messages, setMessages, onClose }) => {
 
   const API_BASE_URL = window.RUNTIME_CONFIG.API_BASE_URL;
 
