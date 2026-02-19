@@ -23,7 +23,7 @@ const TestimonialCard = ({ text, initials, accent, name, role }) => {
         rotateY,
         transformPerspective: 1000,
         transformOrigin: 'center',
-        duration: 0.4,
+        duration: 0.0,
         ease: 'power2.out',
       })
     }, 16),
@@ -35,8 +35,8 @@ const TestimonialCard = ({ text, initials, accent, name, role }) => {
     gsap.to(cardRef.current, {
       rotateX: 0,
       rotateY: 0,
-      duration: 0.8,
-      ease: 'elastic.out(1, 0.3)',
+      duration: 0.0,
+      ease: 'elastic.out(1, 0.0)',
     })
   }, [])
 

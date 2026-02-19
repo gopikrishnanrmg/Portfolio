@@ -1,6 +1,6 @@
 import './App.css'
 import { useState, useEffect } from 'react'
-import ChatButton from './components/Chat/ChatButton'
+import ChatWidget from './components/Chat/ChatWidget'
 import Header from './components/Header/Header'
 import Hero from './components/Sections/Hero'
 import Skills from './components/Sections/Skills'
@@ -86,7 +86,7 @@ function App() {
         <WorkExperience />
         <Projects />
         <Testimonials />
-        <ChatButton />
+        <ChatWidget />
       </main>
       {showBanner && <CookieBanner onAccept={handleAccept} onReject={handleReject} />}
       <Footer />
