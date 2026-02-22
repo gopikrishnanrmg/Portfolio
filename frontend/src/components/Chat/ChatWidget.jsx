@@ -19,13 +19,31 @@ const ChatWidget = () => {
 
       {isOpen && (
         <div
-          class="fixed inset-0 z-50 w-screen h-screen
-          md:w-[420px] md:h-[600px] md:right-4 md:bottom-20
-          md:left-auto md:top-auto md:rounded-2xl"
+          className="
+            fixed inset-0 z-50
+            flex items-end justify-center
+            md:inset-y-4 md:right-4 md:left-auto
+            md:justify-end
+            pointer-events-none
+          "
         >
-          <ChatWindow messages={messages} setMessages={setMessages} onClose={() => setIsOpen(false)}/>
+          <div
+            className="
+              pointer-events-auto
+              w-full h-full
+              md:w-[420px]
+              md:h-full
+            "
+          >
+            <ChatWindow
+              messages={messages}
+              setMessages={setMessages}
+              onClose={() => setIsOpen(false)}
+            />
+          </div>
         </div>
-      )}
+)}
+
     </>
   );
 };
