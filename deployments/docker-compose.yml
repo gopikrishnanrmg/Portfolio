@@ -90,6 +90,8 @@ services:
     environment:
       MINIO_ROOT_USER: ${AWS_ACCESS_KEY_ID}
       MINIO_ROOT_PASSWORD: ${AWS_SECRET_ACCESS_KEY}
+      MINIO_SERVER_URL: ${MINIO_DOMAIN_URL}
+      MINIO_REGION: ${MINIO_DOMAIN_REGION}
     command: server /data --console-address ":9001"
     ports:
       - "9000:9000"
@@ -133,6 +135,7 @@ services:
       interval: 5s 
       timeout: 3s 
       retries: 10
+      start_period: 60s
     restart: unless-stopped
 
   analytics-server:
@@ -160,6 +163,7 @@ services:
       interval: 5s 
       timeout: 3s 
       retries: 10
+      start_period: 60s
     restart: unless-stopped
 
   portfolio-service:
@@ -191,7 +195,7 @@ services:
       AWS_REGION: ${AWS_REGION}
       S3_BUCKET: ${S3_BUCKET}
       ADMIN_API_KEY: ${ADMIN_API_KEY}
-      STORAGE_HOST: http://minio:9000 #leave this blank/unset this variable when we deploy to AWS
+      STORAGE_HOST: ${STORAGE_HOST} #leave this blank/unset this variable when we deploy to AWS
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
     ports:
       - "8889:8889"
@@ -220,6 +224,10 @@ services:
       - "8887:8887"
     healthcheck: 
       test: ["CMD", "curl", "-f", "http://localhost:8887/actuator/health"]
+      interval: 5s 
+      timeout: 3s 
+      retries: 10
+      start_period: 60s
     restart: unless-stopped
     
   ai-service:
@@ -246,10 +254,15 @@ services:
       MODEL_NAME: ${MODEL_NAME}
       API_SERVICE_NAME: ${API_SERVICE_NAME}
       MCP_URL: ${MCP_URL}
+      PROFILE: ${SPRING_PROFILES_ACTIVE}
     ports:
       - "8885:8885"
     healthcheck: 
       test: ["CMD", "curl", "-f", "http://localhost:8885/actuator/health"]
+      interval: 5s 
+      timeout: 3s 
+      retries: 10
+      start_period: 60s
     restart: unless-stopped
 
   notification-service:
@@ -279,6 +292,10 @@ services:
       - "8883:8883"
     healthcheck: 
       test: ["CMD", "curl", "-f", "http://localhost:8883/actuator/health"]
+      interval: 5s 
+      timeout: 3s 
+      retries: 10
+      start_period: 60s
     restart: unless-stopped
 
   mcp-server:
@@ -302,10 +319,15 @@ services:
       EXCHANGE: ${EXCHANGE}
       ROUTING_KEY: ${ROUTING_KEY}
       QUEUE: ${QUEUE}
+      ADMIN_API_KEY:${ADMIN_API_KEY}
     ports:
       - "8884:8884"
     healthcheck: 
       test: ["CMD", "curl", "-f", "http://localhost:8884/actuator/health"]
+      interval: 5s 
+      timeout: 3s 
+      retries: 10
+      start_period: 60s
     restart: unless-stopped
 
   portfolio-frontend:
