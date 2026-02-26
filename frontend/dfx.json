@@ -1,0 +1,21 @@
+{
+    "canisters": {
+      "frontend": {
+        "type": "assets",
+        "source": [
+          "dist"
+        ]
+      }
+    },
+    "networks": {
+      "local": {
+        "bind": "127.0.0.1:4943",
+        "type": "ephemeral"
+      },
+      "ic": {
+        "providers": ["https://icp-api.io"]
+      }
+    },
+    "version": 1
+  }
+  
