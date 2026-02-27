@@ -8,11 +8,13 @@ import {
   FaBriefcase,
   FaCode,
   FaComments,
+  FaJedi,
 } from "react-icons/fa";
 import { IoMdAnalytics } from "react-icons/io";
 
 const sections = [
   { id: "#hero", title: "Introduction", icon: <FaUser />, type: "scroll" },
+  { id: "#features", title: "Features", icon: <FaJedi />, type: "scroll" },
   { id: "#skills", title: "Skills", icon: <FaTools />, type: "scroll" },
   {
     id: "#work-experience",

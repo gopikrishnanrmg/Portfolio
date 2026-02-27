@@ -45,17 +45,17 @@ const SkillsCard = ({ title, techMap }) => {
   }
 
   return (
-<div
-  ref={cardRef}
-  onMouseMove={handleMouseMove}
-  onMouseLeave={handleMouseLeave}
-  className="skills-card relative flex flex-col rounded-2xl p-4 w-full min-h-40
-             transition-all duration-300 backdrop-blur-2xl bg-black/40 border border-gray-700
-             shadow-lg ring-1 ring-white/20 overflow-hidden
-             bg-[url(/backgrounds/honeycomb.svg)] bg-[length:120px_69.28px]
-             hover:border-cyan-500 hover:shadow-cyan-500/30"
-  style={{ transformStyle: 'preserve-3d' }}
->
+    <div
+      ref={cardRef}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      className='skills-card relative flex flex-col rounded-2xl p-4 w-full min-h-40
+                transition-all duration-300 backdrop-blur-2xl bg-black/40 border border-gray-700
+                shadow-lg ring-1 ring-white/20 overflow-hidden
+                bg-[url(/backgrounds/honeycomb.svg)] bg-[length:120px_69.28px]
+                hover:border-cyan-500 hover:shadow-cyan-500/30'
+      style={{ transformStyle: 'preserve-3d' }}
+    >
       <div
         ref={titleRef}
         className='text-2xl mb-3 z-10
