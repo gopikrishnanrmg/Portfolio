@@ -30,7 +30,7 @@ const sections = [
     type: "scroll",
   },
   {
-    id: window.RUNTIME_CONFIG.GRAFANA_URL,
+    id: `${window.RUNTIME_CONFIG.GRAFANA_URL}dashboards`,
     title: "Analytics",
     icon: <IoMdAnalytics />,
     type: "external",
