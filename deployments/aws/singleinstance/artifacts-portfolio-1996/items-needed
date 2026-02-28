@@ -1,0 +1,9 @@
+.env    
+alerts.yml      
+docker-compose.yml      
+init-multiple-dbs.sql   
+config.yml #cloudflare tunnel alternative for nginx
+nginx.conf      
+origin.key #cloudflare cert nginx      
+origin.pem #cloudflare cert nginx     
+prometheus.yml
