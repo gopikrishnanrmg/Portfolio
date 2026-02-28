@@ -1,13 +1,18 @@
-import React, { useRef, useCallback } from 'react'
-import { gsap } from 'gsap'
-import { throttle } from '../../utils/debounce'
+import React, { useRef, useState, useEffect } from 'react'
 import { accentMap } from '../../utils/accentMap'
 
 const TestimonialCard = ({ text, initials, accent, name, role }) => {
   const cardRef = useRef(null)
+  const [rotateX, setRotateX] = useState(0)
+  const [rotateY, setRotateY] = useState(0)
+  const lastUpdateRef = useRef(0)
 
-  const handleMouseMove = useCallback(
-    throttle((e) => {
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      const now = Date.now()
+      if (now - lastUpdateRef.current < 16) return 
+      lastUpdateRef.current = now
+
       if (!cardRef.current) return
       const rect = cardRef.current.getBoundingClientRect()
       const x = e.clientX - rect.left
@@ -15,29 +20,28 @@ const TestimonialCard = ({ text, initials, accent, name, role }) => {
       const centerX = rect.width / 2
       const centerY = rect.height / 2
 
-      const rotateX = ((y - centerY) / centerY) * 10
-      const rotateY = ((x - centerX) / centerX) * -10
+      const newRotateX = ((y - centerY) / centerY) * 10
+      const newRotateY = ((x - centerX) / centerX) * -10
 
-      gsap.to(cardRef.current, {
-        rotateX,
-        rotateY,
-        transformPerspective: 1000,
-        transformOrigin: 'center',
-        duration: 0.0,
-        ease: 'power2.out',
-      })
-    }, 16),
-    []
-  )
+      setRotateX(newRotateX)
+      setRotateY(newRotateY)
+    }
 
-  const handleMouseLeave = useCallback(() => {
-    if (!cardRef.current) return
-    gsap.to(cardRef.current, {
-      rotateX: 0,
-      rotateY: 0,
-      duration: 0.0,
-      ease: 'elastic.out(1, 0.0)',
-    })
+    const handleMouseLeave = () => {
+      setRotateX(0)
+      setRotateY(0)
+    }
+
+    const node = cardRef.current
+    if (node) {
+      node.addEventListener('mousemove', handleMouseMove)
+      node.addEventListener('mouseleave', handleMouseLeave)
+      
+      return () => {
+        node.removeEventListener('mousemove', handleMouseMove)
+        node.removeEventListener('mouseleave', handleMouseLeave)
+      }
+    }
   }, [])
 
   const accentClasses = accentMap[accent] || ["from-gray-400", "to-gray-600"]
@@ -45,14 +49,16 @@ const TestimonialCard = ({ text, initials, accent, name, role }) => {
   return (
     <div
       ref={cardRef}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
       className="testimonial-card flex flex-col h-full
                  rounded-2xl backdrop-blur-2xl bg-black/40 border border-gray-700
                  shadow-lg ring-1 ring-white/20 bg-[url(/backgrounds/honeycomb.svg)]
                  hover:border-cyan-500 hover:shadow-cyan-500/30
                  transition-all duration-300 p-6 relative"
-      style={{ transformStyle: 'preserve-3d' }}
+      style={{ 
+        transformStyle: 'preserve-3d',
+        transform: `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`,
+        transition: 'transform 0.3s ease-out'
+      }}
     >
       <div className="w-full flex justify-center mb-4">
         <span

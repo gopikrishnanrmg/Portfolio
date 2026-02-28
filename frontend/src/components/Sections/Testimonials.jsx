@@ -14,45 +14,44 @@ const Testimonials = () => {
   }, [])
 
   useEffect(() => {
-    const scrollTriggers = []
-    const animations = []
+    if (testimonials.length === 0) return;
 
-    gsap.utils.toArray('.testimonial-card').forEach(card => {
-      const anim = gsap.fromTo(
-        card,
-        { opacity: 0, y: 40, scale: 0.95 },
-        {
-          opacity: 1,
-          y: 0,
-          scale: 1,
-          duration: 0.8,
-          ease: 'power3.out',
-          scrollTrigger: {
-            trigger: card,
-            start: 'top 85%',
-            toggleActions: 'play none none reverse',
-          },
-        }
-      )
-      animations.push(anim)
-      if (anim.scrollTrigger) {
-        scrollTriggers.push(anim.scrollTrigger)
-      }
-    })
+    const timeout = setTimeout(() => {
+      const scrollTriggers = [];
+      const animations = [];
 
-    const nameAnim = gsap.to('.testimonial-name', {
-      backgroundPosition: '100% center',
-      duration: 4,
-      repeat: -1,
-      yoyo: true,
-      ease: 'linear',
-    })
+      gsap.utils.toArray('.testimonial-card').forEach(card => {
+        const anim = gsap.fromTo(
+          card,
+          { opacity: 0, y: 40, scale: 0.95 },
+          {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 0.8,
+            ease: 'power3.out',
+            scrollTrigger: {
+              trigger: card,
+              start: 'top 85%',
+              toggleActions: 'play none none none',
+              once: true,
+            },
+          }
+        );
+        animations.push(anim);
+      });
 
-    return () => {
-      animations.forEach(anim => anim.kill())
-      nameAnim.kill()
-      scrollTriggers.forEach(trigger => trigger.kill())
-    }
+      return () => {
+        clearTimeout(timeout);
+        animations.forEach(anim => {
+          anim.scrollTrigger?.kill();
+          anim.kill();
+        });
+        scrollTriggers.forEach(trigger => trigger.kill());
+      };
+    }, 0);
+
+    return () => clearTimeout(timeout);
   }, [testimonials]) 
 
   return (

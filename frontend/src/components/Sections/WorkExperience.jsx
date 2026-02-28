@@ -17,50 +17,57 @@ const WorkExperience = () => {
   }, [])
 
   useEffect(() => {
-    const animations = []
-    const scrollTriggers = []
+    if (experiences.length === 0) return;
 
-    const lineAnim = gsap.fromTo(
-      lineRef.current,
-      { scaleY: 0, transformOrigin: 'top center' },
-      {
-        scaleY: 1,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: 'top center',
-          end: 'bottom center',
-          scrub: 1,
-        },
-      }
-    )
-    animations.push(lineAnim)
-    if (lineAnim.scrollTrigger) scrollTriggers.push(lineAnim.scrollTrigger)
+    const timeout = setTimeout(() => {
+      const animations = [];
 
-    gsap.utils.toArray('.experience-card').forEach(card => {
-      const anim = gsap.fromTo(
-        card,
-        { opacity: 0, y: 50 },
+      const lineAnim = gsap.fromTo(
+        lineRef.current,
+        { scaleY: 0, transformOrigin: 'top center' },
         {
-          opacity: 1,
-          y: 0,
-          duration: 0.8,
-          ease: 'power3.out',
+          scaleY: 1,
+          ease: 'none',
           scrollTrigger: {
-            trigger: card,
-            start: 'top 80%',
-            toggleActions: 'play none none reverse',
+            trigger: sectionRef.current,
+            start: 'top center',
+            end: 'bottom center',
+            scrub: 1,
           },
         }
-      )
-      animations.push(anim)
-      if (anim.scrollTrigger) scrollTriggers.push(anim.scrollTrigger)
-    })
+      );
+      animations.push(lineAnim);
 
-    return () => {
-      animations.forEach(anim => anim.kill())
-      scrollTriggers.forEach(trigger => trigger.kill())
-    }
+      gsap.utils.toArray('.experience-card').forEach(card => {
+        const anim = gsap.fromTo(
+          card,
+          { opacity: 0, y: 50 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            ease: 'power3.out',
+            scrollTrigger: {
+              trigger: card,
+              start: 'top 80%',
+              toggleActions: 'play none none none',
+              once: true,
+            },
+          }
+        );
+        animations.push(anim);
+      });
+
+      return () => {
+        clearTimeout(timeout);
+        animations.forEach(anim => {
+          anim.scrollTrigger?.kill();
+          anim.kill();
+        });
+      };
+    }, 0);
+
+    return () => clearTimeout(timeout);
   }, [experiences])
 
   return (

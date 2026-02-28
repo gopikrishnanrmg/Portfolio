@@ -48,7 +48,12 @@ const NavBar = () => {
   }, [open]);
 
   useEffect(() => {
-    const handler = () => {
+    let lastUpdate = 0;
+    const scrollHandler = () => {
+      const now = Date.now();
+      if (now - lastUpdate < 100) return;
+      lastUpdate = now;
+
       const scrollPos = window.scrollY + window.innerHeight / 2;
       let current = sections[0].id;
 
@@ -68,10 +73,10 @@ const NavBar = () => {
       setActive(current);
     };
 
-    window.addEventListener("scroll", handler);
-    handler();
+    window.addEventListener("scroll", scrollHandler);
+    scrollHandler();
 
-    return () => window.removeEventListener("scroll", handler);
+    return () => window.removeEventListener("scroll", scrollHandler);
   }, []);
 
   return (

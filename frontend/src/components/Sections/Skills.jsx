@@ -34,55 +34,59 @@ const Skills = () => {
   }, [])
 
   useEffect(() => {
-    const animations = []
-    const scrollTriggers = []
+    if (Object.keys(skillsData).length === 0) return;
 
-    gsap.utils.toArray('.skills-card').forEach(card => {
-      const anim = gsap.fromTo(
-        card,
-        { opacity: 0, y: 40, scale: 0.95 },
+    const timeout = setTimeout(() => {
+      const animations = [];
+
+      gsap.utils.toArray('.skills-card').forEach(card => {
+        const anim = gsap.fromTo(
+          card,
+          { opacity: 0, y: 40, scale: 0.95 },
+          {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 0.8,
+            ease: 'power3.out',
+            scrollTrigger: {
+              trigger: card,
+              start: 'top 85%',
+              toggleActions: 'play none none none',
+              once: true,
+            },
+          }
+        );
+        animations.push(anim);
+      });
+
+      const titleAnim = gsap.fromTo(
+        '#skills-title',
+        { opacity: 0, y: -30 },
         {
           opacity: 1,
           y: 0,
-          scale: 1,
-          duration: 0.8,
+          duration: 1,
           ease: 'power3.out',
           scrollTrigger: {
-            trigger: card,
-            start: 'top 85%',
-            toggleActions: 'play none none reverse',
+            trigger: '#skills-title',
+            start: 'top 90%',
+            once: true,
           },
         }
-      )
-      animations.push(anim)
-      if (anim.scrollTrigger) {
-        scrollTriggers.push(anim.scrollTrigger)
-      }
-    })
+      );
+      animations.push(titleAnim);
 
-    const titleAnim = gsap.fromTo(
-      '#skills-title',
-      { opacity: 0, y: -30 },
-      {
-        opacity: 1,
-        y: 0,
-        duration: 1,
-        ease: 'power3.out',
-        scrollTrigger: {
-          trigger: '#skills-title',
-          start: 'top 90%',
-        },
-      }
-    )
-    animations.push(titleAnim)
-    if (titleAnim.scrollTrigger) {
-      scrollTriggers.push(titleAnim.scrollTrigger)
-    }
+      return () => {
+        clearTimeout(timeout);
+        animations.forEach(anim => {
+          anim.scrollTrigger?.kill();
+          anim.kill();
+        });
+      };
+    }, 0);
 
-    return () => {
-      animations.forEach(anim => anim.kill())
-      scrollTriggers.forEach(trigger => trigger.kill())
-    }
+    return () => clearTimeout(timeout);
   }, [skillsData])
 
   return (

@@ -6,10 +6,9 @@ const Features = () => {
 
     useEffect(() => {
         const anim = gsap.to('.featurecard-title', {
-          backgroundPosition: '100% center',
-          duration: 4,
-          repeat: -1,
-          yoyo: true,
+          backgroundPosition: '200% center',
+          duration: 8,
+          repeat: 0,
           ease: 'linear',
         })
       
