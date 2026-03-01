@@ -6,7 +6,7 @@ const Suggestions = ({ setInput }) => {
     { id: 1, text: "What are Rajeev's core skills?" },
     {
       id: 2,
-      text: "Send a message to Rajeev if he would love to work on a project",
+      text: "Send a message to Rajeev to ask if he would love to work on a project",
     },
   ]);
 
