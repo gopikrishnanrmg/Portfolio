@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { createPortal } from "react-dom";
 import ListItem from "./ListItem";
 import Hamburger from "./Hamburger";
@@ -12,7 +12,16 @@ import {
 } from "react-icons/fa";
 import { IoMdAnalytics } from "react-icons/io";
 
-const sections = [
+const NavBar = () => {
+  const [open, setOpen] = useState(false);
+  const [active, setActive] = useState("#hero");
+  const [grafanaUrl, setGrafanaUrl] = useState(null);
+  
+  useEffect(() => {
+    setGrafanaUrl(window.RUNTIME_CONFIG?.GRAFANA_URL || null);
+  }, []);
+
+const sections = useMemo(() => [
   { id: "#hero", title: "Introduction", icon: <FaUser />, type: "scroll" },
   { id: "#features", title: "Features", icon: <FaJedi />, type: "scroll" },
   { id: "#skills", title: "Skills", icon: <FaTools />, type: "scroll" },
@@ -29,17 +38,15 @@ const sections = [
     icon: <FaComments />,
     type: "scroll",
   },
-  {
-    id: `${window.RUNTIME_CONFIG.GRAFANA_URL}dashboards`,
+  grafanaUrl && {
+    id: `${grafanaUrl}dashboards`,
     title: "Analytics",
     icon: <IoMdAnalytics />,
     type: "external",
-  },
-];
+  }
+].filter(Boolean), [grafanaUrl]);
 
-const NavBar = () => {
-  const [open, setOpen] = useState(false);
-  const [active, setActive] = useState("#hero");
+
 
   const toggleMenu = () => setOpen(!open);
 
@@ -77,7 +84,7 @@ const NavBar = () => {
     scrollHandler();
 
     return () => window.removeEventListener("scroll", scrollHandler);
-  }, []);
+  }, [sections]);
 
   return (
     <>
@@ -100,10 +107,10 @@ const NavBar = () => {
 
       {createPortal(
         <div
-          className={`fixed inset-0 h-screen backdrop-blur-xl text-white p-6 z-40 transition-all duration-300 ease-in-out
+          className={`fixed inset-0 h-screen overflow-hidden touch-none backdrop-blur-xl text-white p-6 z-40 transition-all duration-300 ease-in-out
             ${
               open
-                ? "translate-y-0 opacity-100"
+                ? "translate-y-0 opacity-100 pointer-events-auto"
                 : "-translate-y-full opacity-0 pointer-events-none"
             }`}
         >
@@ -115,6 +122,7 @@ const NavBar = () => {
                 title={s.title}
                 icon={s.icon}
                 active={active}
+                type={s.type}
                 onClick={() => setOpen(false)}
               />
             ))}
