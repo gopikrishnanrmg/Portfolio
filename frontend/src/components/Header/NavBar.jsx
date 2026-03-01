@@ -8,11 +8,13 @@ import {
   FaBriefcase,
   FaCode,
   FaComments,
+  FaJedi,
 } from "react-icons/fa";
 import { IoMdAnalytics } from "react-icons/io";
 
 const sections = [
   { id: "#hero", title: "Introduction", icon: <FaUser />, type: "scroll" },
+  { id: "#features", title: "Features", icon: <FaJedi />, type: "scroll" },
   { id: "#skills", title: "Skills", icon: <FaTools />, type: "scroll" },
   {
     id: "#work-experience",
@@ -28,7 +30,7 @@ const sections = [
     type: "scroll",
   },
   {
-    id: window.RUNTIME_CONFIG.GRAFANA_URL,
+    id: `${window.RUNTIME_CONFIG.GRAFANA_URL}dashboards`,
     title: "Analytics",
     icon: <IoMdAnalytics />,
     type: "external",
@@ -46,7 +48,12 @@ const NavBar = () => {
   }, [open]);
 
   useEffect(() => {
-    const handler = () => {
+    let lastUpdate = 0;
+    const scrollHandler = () => {
+      const now = Date.now();
+      if (now - lastUpdate < 100) return;
+      lastUpdate = now;
+
       const scrollPos = window.scrollY + window.innerHeight / 2;
       let current = sections[0].id;
 
@@ -66,10 +73,10 @@ const NavBar = () => {
       setActive(current);
     };
 
-    window.addEventListener("scroll", handler);
-    handler();
+    window.addEventListener("scroll", scrollHandler);
+    scrollHandler();
 
-    return () => window.removeEventListener("scroll", handler);
+    return () => window.removeEventListener("scroll", scrollHandler);
   }, []);
 
   return (

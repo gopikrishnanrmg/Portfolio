@@ -1,42 +1,58 @@
-import React, { useRef, useCallback } from 'react'
+import React, { useRef, useCallback, useEffect, useState } from 'react'
 import { bannerMap } from '../../utils/bannerMap'
-import { throttle } from '../../utils/debounce'
 
 const ProjectCard = ({ title, description, tech = [], banner, link }) => {
   const cardRef = useRef(null)
+  const throttleRef = useRef(null)
+  const [lastX, setLastX] = useState(50)
+  const [lastY, setLastY] = useState(50)
   const gradientClasses = bannerMap[banner] || ["from-gray-400", "to-gray-600"]
 
-  const handleMouseMove = useCallback(
-    throttle((e) => {
-      if (!cardRef.current) return
-      const rect = cardRef.current.getBoundingClientRect()
-      const x = e.clientX - rect.left
-      const y = e.clientY - rect.top
-      cardRef.current.style.setProperty('--spotlight-x', `${x}px`)
-      cardRef.current.style.setProperty('--spotlight-y', `${y}px`)
-    }, 16),
-    []
-  )
+  useEffect(() => {
+    let lastUpdate = 0;
+    
+    const handleMouseMove = (e) => {
+      const now = Date.now();
+      if (now - lastUpdate < 16) return;
+      lastUpdate = now;
+      
+      if (!cardRef.current) return;
+      const rect = cardRef.current.getBoundingClientRect();
+      const x = ((e.clientX - rect.left) / rect.width) * 100;
+      const y = ((e.clientY - rect.top) / rect.height) * 100;
+      
+      setLastX(x);
+      setLastY(y);
+    };
 
-  const handleMouseLeave = useCallback(() => {
-    if (!cardRef.current) return
-    cardRef.current.style.setProperty('--spotlight-x', `50%`)
-    cardRef.current.style.setProperty('--spotlight-y', `50%`)
-  }, [])
+    const handleMouseLeave = () => {
+      setLastX(50);
+      setLastY(50);
+    };
+
+    const node = cardRef.current;
+    if (node) {
+      node.addEventListener('mousemove', handleMouseMove);
+      node.addEventListener('mouseleave', handleMouseLeave);
+      
+      return () => {
+        node.removeEventListener('mousemove', handleMouseMove);
+        node.removeEventListener('mouseleave', handleMouseLeave);
+      };
+    }
+  }, []);
 
   return (
     <div
       ref={cardRef}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
       className="project-card relative flex flex-col rounded-2xl overflow-hidden
-+                transition-all duration-300 backdrop-blur-2xl bg-black/40 border border-gray-700
-+                shadow-lg ring-1 ring-white/20 hover:border-cyan-500
-+                hover:shadow-cyan-500/30"
+                  transition-all duration-300 backdrop-blur-2xl bg-black/40 border border-gray-700
+                  shadow-lg ring-1 ring-white/20 hover:border-cyan-500
+                  hover:shadow-cyan-500/30"
       style={{
         background: `
           radial-gradient(
-            250px circle at var(--spotlight-x, 50%) var(--spotlight-y, 50%),
+            250px circle at ${lastX}% ${lastY}%,
             rgba(0,229,255,0.15),
             transparent 80%
           )

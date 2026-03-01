@@ -8,6 +8,7 @@ import software.amazon.awssdk.auth.credentials.EnvironmentVariableCredentialsPro
 import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.S3Configuration;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 
 import java.net.URI;
@@ -30,7 +31,11 @@ public class AwsConfig {
 
         if (!endpoint.isEmpty()) {
             builder.endpointOverride(URI.create(endpoint))
-                    .forcePathStyle(true);
+                    .serviceConfiguration(
+                            S3Configuration.builder()
+                                    .pathStyleAccessEnabled(true)
+                                    .build()
+                    );
         }
 
         return builder.build();
@@ -43,7 +48,12 @@ public class AwsConfig {
                 .credentialsProvider(EnvironmentVariableCredentialsProvider.create());
 
         if (!endpoint.isEmpty()) {
-            builder.endpointOverride(URI.create(endpoint));
+            builder.endpointOverride(URI.create(endpoint))
+                    .serviceConfiguration(
+                            S3Configuration.builder()
+                                    .pathStyleAccessEnabled(true)
+                                    .build()
+                    );
         }
 
         return builder.build();

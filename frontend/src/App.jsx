@@ -11,6 +11,7 @@ import LiquidEther from './components/Sections/LiquidEther'
 import Footer from './components/Footer/Footer'
 import CookieBanner from './components/Analytics/CookieBanner'
 import { getOrCreateVisitorId, getOrCreateSessionId, sendAnalyticsEvent } from './components/Analytics/analyticsUtils'
+import Features from './components/Sections/Features'
 
 
 function App() {
@@ -82,6 +83,7 @@ function App() {
           />
         </div>
         <Hero />
+        <Features />
         <Skills />
         <WorkExperience />
         <Projects />

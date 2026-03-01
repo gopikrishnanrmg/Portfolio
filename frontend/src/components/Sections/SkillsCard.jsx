@@ -1,61 +1,53 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import SkillComponentMap from './SkillComponentMap'
-import { gsap } from 'gsap'
 
 const SkillsCard = ({ title, techMap }) => {
   const titleRef = useRef(null)
   const cardRef = useRef(null)
+  const [rotateX, setRotateX] = useState(0)
+  const [rotateY, setRotateY] = useState(0)
 
   useEffect(() => {
-    gsap.to(titleRef.current, {
-      backgroundPosition: '200% center',
-      duration: 8,
-      repeat: -1,
-      ease: 'linear',
-    })
+    return () => {};
   }, [])
 
   const handleMouseMove = e => {
-    const rect = cardRef.current.getBoundingClientRect()
+    const rect = cardRef.current?.getBoundingClientRect()
+    if (!rect) return
+    
     const x = e.clientX - rect.left
     const y = e.clientY - rect.top
     const centerX = rect.width / 2
     const centerY = rect.height / 2
 
-    const rotateX = ((y - centerY) / centerY) * 10 
-    const rotateY = ((x - centerX) / centerX) * -10 
+    const newRotateX = ((y - centerY) / centerY) * 10 
+    const newRotateY = ((x - centerX) / centerX) * -10
 
-    gsap.to(cardRef.current, {
-      rotateX,
-      rotateY,
-      transformPerspective: 1000,
-      transformOrigin: 'center',
-      duration: 0.0,
-      ease: 'power2.out',
-    })
+    setRotateX(newRotateX)
+    setRotateY(newRotateY)
   }
 
   const handleMouseLeave = () => {
-    gsap.to(cardRef.current, {
-      rotateX: 0,
-      rotateY: 0,
-      duration: 0.0,
-      ease: 'elastic.out(1, 0.0)',
-    })
+    setRotateX(0)
+    setRotateY(0)
   }
 
   return (
-<div
-  ref={cardRef}
-  onMouseMove={handleMouseMove}
-  onMouseLeave={handleMouseLeave}
-  className="skills-card relative flex flex-col rounded-2xl p-4 w-full min-h-40
-             transition-all duration-300 backdrop-blur-2xl bg-black/40 border border-gray-700
-             shadow-lg ring-1 ring-white/20 overflow-hidden
-             bg-[url(/backgrounds/honeycomb.svg)] bg-[length:120px_69.28px]
-             hover:border-cyan-500 hover:shadow-cyan-500/30"
-  style={{ transformStyle: 'preserve-3d' }}
->
+    <div
+      ref={cardRef}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      className='skills-card relative flex flex-col rounded-2xl p-4 w-full min-h-40
+                transition-all duration-300 backdrop-blur-2xl bg-black/40 border border-gray-700
+                shadow-lg ring-1 ring-white/20 overflow-hidden
+                bg-[url(/backgrounds/honeycomb.svg)] bg-[length:120px_69.28px]
+                hover:border-cyan-500 hover:shadow-cyan-500/30'
+      style={{ 
+        transformStyle: 'preserve-3d',
+        transform: `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`,
+        transition: 'transform 0.3s ease-out'
+      }}
+    >
       <div
         ref={titleRef}
         className='text-2xl mb-3 z-10

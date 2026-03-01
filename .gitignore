@@ -28,3 +28,4 @@ __pycache__/
 # Environment files
 deployments/.env
 frontend/public/config.js
+frontend/.dfx/

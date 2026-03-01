@@ -49,11 +49,11 @@ const ChatWindow = ({ messages, setMessages, onClose }) => {
         backdrop-blur-2xl bg-black/40 border border-gray-700 shadow-lg 
         ring-1 ring-white/20 overflow-hidden"
     >
-      <div className="md:hidden flex items-center justify-end p-3 border-b border-gray-700 bg-black/30">
+      <div className="flex items-center justify-end p-3 border-b border-gray-700 bg-black/30">
         <button
           onClick={onClose}
           className="text-white w-8 h-8 flex items-center justify-center rounded-full 
-            bg-black/40 border border-gray-600"
+            bg-black/40 border border-gray-600 hover:bg-cyan-600"
         >
           ✕
         </button>
