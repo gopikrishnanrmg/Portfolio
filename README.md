@@ -1,5 +1,9 @@
 # AI‑Microservices Portfolio
 
+![CI](https://github.com/gopikrishnanrmg/Portfolio/actions/workflows/ci.yml/badge.svg)
+![CD](https://github.com/gopikrishnanrmg/Portfolio/actions/workflows/cd.yml/badge.svg)
+
+
 **Copyleft © _2026_ Gopikrishnan Rajeev**  
 This repository contains the source for a **cloud‑native, AI‑powered portfolio application**.  
 It is built as a polyglot microservice system – the **frontend runs on the DFINITY Internet Computer (ICP)** while the **backend services run on AWS** – and is designed to demonstrate real‑world engineering practices, modern toolchains, observability, AI/ML integration, and a complete CI/CD‑driven software development lifecycle.
@@ -27,8 +31,11 @@ It is built as a polyglot microservice system – the **frontend runs on the DFI
   - All services expose `/actuator/health`/`info`/`prometheus` endpoints and can register with Consul.
 
 - **Python services**  
-  - `ai-service` – FastAPI AI chatbot (LangChain + OpenAI/GROQ). Stores chat history in PostgreSQL; uses FAISS vectors.  
-  - `mcp-server` – Messaging Control Plane (MCP) for sending messages via RabbitMQ; includes auth and Prometheus metrics.
+  - `ai-service` – FastAPI AI chatbot implementing **Retrieval-Augmented Generation (RAG)** via LangChain + OpenAI/GROQ.  
+  Context documents are stored as FAISS vectors with dynamic retrieval to enrich LLM replies.  
+  Chat history persists in PostgreSQL.  
+  - `mcp-server` – full **Model Context Protocol (MCP)** implementation built in FastAPI.  
+  It provides a secure API for other services (including the AI chatbot) to push messages into RabbitMQ, exposes Prometheus metrics, and enforces token‑based auth.
 
 - **Infrastructure & Observability**  
   - PostgreSQL (multiple databases), MongoDB, Redis, RabbitMQ, MinIO.  
@@ -41,8 +48,8 @@ It is built as a polyglot microservice system – the **frontend runs on the DFI
 
 ## 🚀 Features
 
-- AI chat widget powered by LLMs with recruitment‑oriented instructions.  
-- Messaging tool available to LLM.
+- AI chat widget powered by RAG-enabled LLMs; ice‑breaking questions and contextual answers are fetched from vector indexes.  
+- Ability for the AI (and other services) to send outbound messages via the **Model Context Protocol (MCP)** API.
 - Visitor analytics with cookie consent banner (`CookieBanner.jsx`).  
 - Dynamic content fetching from backend services.  
 - CRUD operations with duplicate prevention, soft deletes.  
@@ -81,6 +88,8 @@ It is built as a polyglot microservice system – the **frontend runs on the DFI
    ```
 
 2. **Infrastructure**
+
+   Add the .env file to satisfy the dependencies 
 
    ```sh
    cd deployments
